@@ -1,0 +1,41 @@
+/* pages/home/home.wxss */
+Page{
+  background-color: rgb(247, 241, 241);
+}
+.container {
+  padding: 15rpx 10rpx;
+  margin: 20rpx 10rpx;
+  
+}
+.container .info {
+  margin: 30rpx 30rpx;
+  padding: 20rpx 20rpx;
+  border: rgb(196, 189, 189) 1rpx solid;
+  border-radius: 20rpx;
+
+  background-color: #fff;
+  box-shadow: 0 10rpx 50rpx 0rpx rgb(204, 202, 216);
+  
+}
+.container .info .getInfo {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  
+  margin: 30rpx 0rpx;
+}
+.container .info .text {
+  margin: 30rpx 50rpx;
+}
+.container .info .button {
+  /* float: right; */
+  margin-left: 400rpx; 
+}
+.container .info .IdInput {
+  border: rgb(196, 189, 189) 1rpx solid;
+  border-radius: 15rpx;
+  width: 500rpx;
+}
+.container .info .IdPlaceHolder {
+  margin-left: 20rpx;
+}

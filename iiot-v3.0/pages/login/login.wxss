@@ -1,0 +1,86 @@
+/* pages/login/login.wxss *//* pages/login/login.wxss *//* pages/usernameLogin/usernameLogin.wxss *//* pages/login/login.wxss */
+
+page{
+  height: 100%;
+}
+.body{
+  background-image: linear-gradient(to bottom right, rgb(114,135,254), rgb(130,88,186), rgb(58,45,159));
+  height:100%;
+
+  padding-top: 150rpx;
+  padding-left: 35rpx;
+  padding-right: 35rpx;
+}
+.body .container1{
+
+  box-shadow: 0 10rpx 50rpx 0rpx rgb(59, 45, 159);
+  height: 600rpx;
+
+  border-radius: 20rpx;
+  background-image: linear-gradient(to bottom right, rgb(95, 76, 194),rgb(130,88,186),rgb(114,135,254) ) ;
+}
+.body .container1 .top-container{
+  padding: 10rpx;
+  padding-top: 60rpx;
+}
+.body .container1 .top-container .title{
+  color: #fff;
+  font-size: 38rpx;
+  margin:30rpx 15rpx;
+  border-bottom: 8rpx solid rgb(237, 221, 22) ;
+}
+.body .container1 .button-login{
+  box-shadow: 0  10rpx 50rpx 0rpx rgb(112, 124, 192) ;
+  color: rgb(130,88,186);
+  /* background-image: linear-gradient(to bottom right, #fff,rgb(205, 192, 223) ); */
+  background-color: #fff;
+  border-color: rgb(114,135,254);
+
+}
+/* 按钮按压下去之后的样式设置,通过设置不同的颜色,实现按钮按压效果 */
+.body .container1 .button-hover{
+  box-shadow: 0  10rpx 50rpx 0rpx rgb(112, 124, 192) ;
+  color: rgb(73, 171, 236);
+  /* background-image: linear-gradient(to bottom right, #fff,rgb(205, 192, 223) ); */
+  background-color: rgb(207, 228, 220);
+  border-color: rgb(114,135,254);
+}
+
+.CheckCode{
+
+  font-size: 30rpx;
+  color: black;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+  border-bottom: rgb(199, 191, 219) 2rpx solid;
+
+  margin: 30rpx 10rpx;
+
+}
+/* 设置placeholder的属性  */
+.CheckCode .input-placeholder {
+  color: rgb(199,191,219);
+}
+
+.CheckCode .code-input {
+  width: 100%;
+  padding-left: 5rpx;
+  color: #fff;
+  
+}
+.CheckCode .Button{
+  width:40%;
+  
+  color: rgb(237, 221, 22);
+  font-size: 35rpx;
+  border: 5rpx rgb(237, 221, 22) solid;
+  border-radius: 10rpx;
+
+  margin-bottom: 10rpx;
+  margin-right: 20rpx;
+
+  padding: 5rpx;
+}

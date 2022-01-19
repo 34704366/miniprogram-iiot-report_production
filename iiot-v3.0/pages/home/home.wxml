@@ -1,0 +1,19 @@
+<view class="container">
+  <view class="info">
+    <view class="text">
+      用户姓名: {{userName}}
+    </view>
+    <view class="text">
+      工卡编号: {{userId}}
+    </view>
+  </view>
+  <view class="info">
+    <view class="getInfo">
+      <button size="mini" bindtap="onDuty" type="primary" plain="true">一键在岗</button>
+      <button size="mini" bindtap="offDuty" type="primary" plain="true">一键离岗</button>
+    </view>
+  </view>
+  <view class="info">
+    <button type="warn" plain="true" bindtap="logout">退出登录</button>
+  </view>
+</view>

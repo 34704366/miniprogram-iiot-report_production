@@ -1,0 +1,20 @@
+<view class="body">
+    <view class="container1">
+        <view class="top-container">
+
+            <text class="title">用户名</text>
+            <view class="CheckCode">
+                <input class="code-input" placeholder="请输入用户名" placeholder-class="input-placeholder" maxlength="20" bindinput="inputUsername" value="{{username}}"></input>
+            </view>
+            <text class="title">密码</text>
+            <view class="CheckCode">
+                <input class="code-input" placeholder="请输入密码" password="true" placeholder-class="input-placeholder" maxlength="20"  bindinput="inputPassword" value="{{password}}"></input>
+            </view>
+        </view>
+
+        <view class="line"></view>
+
+        <button class="button-login" type="primary" bindtap="login" hover-class="button-hover" >登 录</button>
+
+    </view>
+</view>
