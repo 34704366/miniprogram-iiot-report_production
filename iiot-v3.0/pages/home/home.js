@@ -25,10 +25,8 @@ Page(check_login.checkLogin({
       userId: wx.getStorageSync('emp_code'),
       userName: wx.getStorageSync('emp_name')
     });
-    console.log("123");
+    // console.log("123");
     // console.log("456");
-    // console.log("789");
-    console.log("123");
   },
   onDuty() {
     console.log("一键在岗");

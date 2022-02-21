@@ -1,0 +1,64 @@
+/* pages/component/modal/modal.wxss */
+/* 定义最底的蒙层，制造透明背景效果 */
+.mask{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0,0,0,0.4);
+  z-index: 9999;
+ }
+ .modal-content{
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  /* height: 80%; */
+  background-color: #fff;
+  border-radius: 18rpx;
+ }
+ .modal-btn-wrapper{
+  display: flex;
+  flex-direction: row;
+  height: 100rpx;
+  line-height: 100rpx;
+  border-top: 2rpx solid rgba(7,17,27,0.1);
+ }
+.cancel-btn, .confirm-btn{
+  flex: 1;
+  height: 100rpx;
+  line-height: 100rpx;
+  text-align: center;
+  font-size: 32rpx;
+}
+ .cancel-btn{
+  border-right: 2rpx solid rgba(18, 43, 66, 0.425);
+ }
+ .confirm-btn{
+  color:  rgb(54, 219, 32);
+ }
+  
+.main-content{
+  flex: 1;
+  /* height: 100%; */
+  /* overflow-y: hidden;  */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 38rpx;
+}
+.main-content .picker{
+  padding: 26rpx;
+  /* background-color: #FFFFFF; */
+  background-color: rgb(236, 236, 236);
+  width: 500rpx;
+  height: 40rpx;
+  border-radius: 12rpx;
+}
+.main-content .title{
+  font-size: 22px;
+  margin: 50rpx 10rpx;
+}

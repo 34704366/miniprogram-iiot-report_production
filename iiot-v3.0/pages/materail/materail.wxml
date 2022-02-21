@@ -1,2 +1,94 @@
-<!--pages/materail/materail.wxml-->
-<text>pages/materail/materail.wxml</text>
+<view class="container">
+  <view class="info" wx:for="{{warehouseList}}">
+    
+    <!-- 展开状态 -->
+    <view wx:if="{{item.onHide == 0}}">
+      <view class="row-box">
+        <view class="col-box">
+        
+          <view class="title">
+            {{item.repo_name}}
+          </view>
+          <view class="text">
+            编号：{{item.repo_code}}
+          </view>
+          <view class="text">
+            最大容量：{{item.storage_max}}
+          </view>
+        </view>
+        <view class="col-box">
+        
+          <button bindtap="inWarehouse" data-index="{{index}}" size="mini" type="primary" plain="true" class="button">入库</button>
+        </view>
+      </view>
+      <view class="info-box" wx:for="{{item.material}}" >
+        <view class="text">
+          {{item.material_name}}
+        </view>
+        <view class="text">
+          {{item.material_spec}}
+        </view>
+        <view class="text">
+          {{item.material_num}}
+        </view>
+      </view>
+
+      <view class="show" bindtap="flod" data-index="{{index}}">
+        收起
+      </view>
+    </view>
+    <!-- 折叠状态 -->
+    <view wx:if="{{item.onHide==1}}" bindtap="unfold" data-index="{{index}}" class="row-box">
+      <view class="col-box">
+        <view class="title">
+          {{item.repo_name}}
+        </view>
+        <view class="text">
+          编号：{{item.repo_code}}
+        </view>
+      </view>
+      <view class="col-box">
+        <view class="text">
+          状态：{{item.repo_status}}
+        </view>
+        <view class="text">
+          库存：{{item.storage_num}}
+        </view>
+      </view>
+      <!-- <view class="show" bindtap="unfold" data-index="{{index}}">
+        展开全部
+      </view> -->
+    </view>
+  </view>
+  <!-- <view class="popModal">
+    <input type="text" placeholder="在这里输入" />
+    <button>提交</button>
+  </view> -->
+  <modal show="{{showModal}}" height="60%" bind:cancel="modalCancel" bind:confirm="modalConfirm" title="{{title}}" index="{{warehouseListIndex}}" repo_code="{{repo_code}}">
+    <!-- <view class='modal-content'>自己的布局</view> -->
+    <view class="main-content">
+      <view class="modal-box">
+        <text>来源：</text>
+        <picker mode="selector" range="{{sourceArray}}" value="{{sourceIndex}}" bindchange="sourceChange">
+          <view class="picker">{{sourceArray[sourceIndex]}}</view>
+        </picker>
+      </view>
+      <view class="modal-box">
+        <text>物料：</text>
+        <picker mode="selector" range="{{materialArray}}" value="{{materialIndex}}" bindchange="materialChange">
+          <view class="picker">{{materialArray[materialIndex]}}</view>
+        </picker>
+      </view>
+      <view class="modal-box">
+        <text>库存：</text>
+        {{material_num}}
+      </view>
+      <view class="modal-box">
+        <text>入库：</text>
+        <input class="input" type="number" placeholder="请输入数量" bindinput="getInWarehouseNumInput" value="{{inWarehouseNumber}}"/>
+      </view>
+
+
+    </view>
+  </modal>
+</view>

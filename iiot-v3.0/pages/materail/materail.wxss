@@ -1,1 +1,99 @@
-/* pages/materail/materail.wxss */
+/* pages/materail/materail.wxss *//* pages/task/task.wxss */
+
+.container {
+  /* padding: 10rpx 10rpx; */
+  margin: 10rpx 10rpx;
+  
+}
+.container .info {
+  /* margin: 20rpx 30rpx; */
+  padding: 20rpx 20rpx;
+  border: rgb(196, 189, 189) 1rpx solid;
+  border-radius: 20rpx;
+
+  background-color: #fff;
+  box-shadow: 0 10rpx 50rpx 0rpx rgb(204, 202, 216);
+  
+}
+.container .info .row-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+.container .info .col-box {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+.container .info .info-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.container .info .getInfo {
+  display: flex;
+  flex-direction: row;
+  /* 主轴上排列 */
+  justify-content: space-between;
+  /* 侧轴上的排列方式 */
+  align-items: center;
+  
+  margin: 30rpx 0rpx;
+}
+.container .info .title{
+  font-size: 38rpx;
+  margin: 10rpx 0rpx;
+}
+.container .info .text{
+  font-size: 30rpx;
+  
+  margin: 10rpx 0rpx;
+}
+.container .info .button {
+  height: 150rpx;
+  width: 200rpx;
+  padding: 40rpx;
+}
+.container .info .show{ 
+  font-size: 30rpx;
+  color: chartreuse;
+ 
+}
+.popModal {
+  overflow: hidden;
+  background: #fff;
+  position: absolute;
+  left: 200rpx;
+  top: 300rpx;
+  width: 600rpx;
+}
+
+.main-content{
+  flex: 1;
+  /* height: 100%; */
+  /* overflow-y: hidden;  */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 38rpx;
+}
+.main-content .picker{
+  padding: 5rpx;
+  /* background-color: #FFFFFF; */
+  background-color: rgb(236, 236, 236);
+  width: 400rpx;
+  height: 60rpx;
+  border-radius: 12rpx;
+}
+.modal-box{
+  display: flex;
+  flex-direction: row;
+  width: auto;
+  justify-content: flex-start;
+  margin: 20rpx 30rpx;
+}
+.modal-box .input{
+  background-color: rgb(236, 236, 236);
+  border-radius: 12rpx;
+  height: 60rpx;
+}
