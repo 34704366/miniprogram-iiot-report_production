@@ -1,2 +1,93 @@
-<!--pages/device/device.wxml-->
-<text>pages/device/device.wxml</text>
+<view class="container">
+  <view class="info" wx:for="{{taskList}}">
+
+    <!-- 折叠状态 -->
+    <view wx:if="{{item.onHide==1}}" bindtap="unfold" data-index="{{index}}" class="row-box">
+      <view class="col-box">
+        <view class="title">
+            {{item.machine_name}}
+          </view>
+        <view class="text">
+          工单：{{item.work_order}}
+        </view>
+      </view>
+      <view class="col-box">
+        <view class="title">
+          状态：{{item.machine_status}}
+        </view>
+      </view>
+      <!-- <view class="show" bindtap="unfold" data-index="{{index}}">
+        展开全部
+      </view> -->
+    </view>
+
+    <!-- 展开状态 -->
+    <view wx:if="{{item.onHide == 0}}">
+      <view class="col-box">
+        <!-- <view class="row-box">
+        </view> -->
+        <text class="title" decode="{{true}}">
+        {{item.machine_name}}&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{{item.machine_id}}
+        </text>
+        <view class="small-text" wx:for="{{item.task_info}}">
+          {{index}}：{{item}}
+        </view>
+        
+        <view class="row-box">
+          <view class="text">
+            工作台库存（进）：
+          </view>
+          <view class="modal-button" bindtap="popModal" data-index="{{index}}">
+            {{item.workbench_in}}
+          </view>
+        </view>
+      </view>
+      <!-- <view class="col-box">
+      
+        <button bindtap="inWarehouse" data-index="{{index}}" size="mini" type="primary" plain="true" class="button">入库</button>
+      </view> -->
+      <view class="info-box" wx:for="{{item.material}}" >
+        <view class="text">
+          {{item.material_name}}
+        </view>
+        <view class="text">
+          {{item.material_spec}}
+        </view>
+        <view class="text">
+          {{item.material_num}}
+        </view>
+      </view>
+
+      <view class="show" bindtap="flod" data-index="{{index}}">
+        收起
+      </view>
+    </view>
+
+    <modal show="{{showModal}}" height="60%" bind:cancel="modalCancel" bind:confirm="modalConfirm" title="{{title}}" index="{{taskListIndex}}" repo_code="{{machine_code}}">
+      <view class="main-content">
+        <view class="modal-box">
+          <text>来源：</text>
+          <picker mode="selector" range="{{sourceArray}}" value="{{sourceIndex}}" bindchange="sourceChange">
+            <view class="picker">{{sourceArray[sourceIndex]}}</view>
+          </picker>
+        </view>
+        <view class="modal-box">
+          <text>物料：</text>
+          <picker mode="selector" range="{{materialArray}}" value="{{materialIndex}}" bindchange="materialChange">
+            <view class="picker">{{materialArray[materialIndex]}}</view>
+          </picker>
+        </view>
+        <view class="modal-box">
+          <text>库存：</text>
+          {{material_num}}
+        </view>
+        <view class="modal-box">
+          <text>入库：</text>
+          <input class="input" type="number" placeholder="请输入数量" bindinput="getInWarehouseNumInput" value="{{inWarehouseNumber}}"/>
+        </view>
+
+
+      </view>
+    </modal>
+  </view>
+</view>
