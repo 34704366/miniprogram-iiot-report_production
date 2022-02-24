@@ -37,6 +37,7 @@
         收起
       </view>
     </view>
+    
     <!-- 折叠状态 -->
     <view wx:if="{{item.onHide==1}}" bindtap="unfold" data-index="{{index}}" class="row-box">
       <view class="col-box">

@@ -46,7 +46,7 @@ Page({
         // http码
         if(result.statusCode == 200) {
           // 业务状态码
-          if (result.data.code == 200) {
+          if (result.data.code == 0) {
             // app.showSuccessToast("成功");
 
             let list = [];
@@ -69,7 +69,7 @@ Page({
         }
       },
       fail: (res) => {
-        app.requestSendError(res);
+        // app.requestSendError(res);
       },
       complete: (res) => {},
     })
@@ -124,12 +124,12 @@ Page({
 
   // modal层传来的confirm事件
   modalConfirm() {
-    console.log('material confirm');
+    // console.log('material confirm');
     wx.request({
       url: app.globalData.serverUrl + '/pda/suz/repo/checkin',
       data: {
         repo_code: this.data.repo_code,
-        source: this.data.source,
+        source: this.data.sourceArray[this.data.sourceIndex],
         material_code: this.data.material_code,
         material_num: this.data.material_num,
         work_code: '',
@@ -212,7 +212,7 @@ Page({
         // http码
         if(result.statusCode == 200) {
           // 业务状态码
-          if (result.data.code == 200) {
+          if (result.data.code == 0) {
             // app.showSuccessToast("成功");
 
             // console.log(result.data.data)
@@ -254,7 +254,7 @@ Page({
         }
       },
       fail: (res) => {
-        app.requestSendError(res);
+        // app.requestSendError(res);
       },
       complete: (res) => {},
     })

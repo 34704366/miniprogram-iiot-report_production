@@ -18,9 +18,9 @@ App({
   },
 
   globalData: {
-    // serverUrl: "http://202.116.3.50:8100",  // 测试服务器
+    serverUrl: "http://202.116.3.50:8100",  // 测试服务器
     // serverUrl: "https://api.jnurobot.com",  // 生产服务器 
-    serverUrl: "http://127.0.0.1:4523/mock/575590",  // MOCK数据
+    // serverUrl: "http://127.0.0.1:4523/mock/575590",  // MOCK数据
     backgroundColor: '#',
     emp_code: "",
   },
@@ -53,7 +53,7 @@ App({
 
   // 根据业务状态码进行判断
   processPostRequestConcreteCode(code, message) {
-    if(code != 200) {
+    if(code != 0) {
       this.showErrorToast(`后台错误，原因：${message}`);
     }
   },

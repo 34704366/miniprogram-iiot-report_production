@@ -2,30 +2,25 @@
   <view class="info" wx:for="{{taskList}}">
 
     <!-- 折叠状态 -->
-    <view wx:if="{{item.onHide==1}}" bindtap="unfold" data-index="{{index}}" class="row-box">
+    <view wx:if="{{item.onHide==1}}" bindtap="unfold" data-index="{{index}}" class="fold-row-box">
       <view class="col-box">
         <view class="title">
             {{item.machine_name}}
           </view>
         <view class="text">
-          工单：{{item.work_order}}
+          工单：{{item.work_code}}
         </view>
       </view>
       <view class="col-box">
         <view class="title">
-          状态：{{item.machine_status}}
+          状态：{{item.task_status}}
         </view>
       </view>
-      <!-- <view class="show" bindtap="unfold" data-index="{{index}}">
-        展开全部
-      </view> -->
     </view>
 
     <!-- 展开状态 -->
     <view wx:if="{{item.onHide == 0}}">
       <view class="col-box">
-        <!-- <view class="row-box">
-        </view> -->
         <text class="title" decode="{{true}}">
         {{item.machine_name}}&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{{item.machine_id}}
         </text>
@@ -35,59 +30,100 @@
         
         <view class="row-box">
           <view class="text">
-            工作台库存（进）：
+            A库库存：
           </view>
-          <view class="modal-button" bindtap="popModal" data-index="{{index}}">
-            {{item.workbench_in}}
+          <view class="modal-button" bindtap="popModal" data-index="{{index}}" data-id="1">
+            {{item.repo_A_num}}
           </view>
         </view>
+        <view class="row-box">
+          <view class="text">
+            B库库存：
+          </view>
+          <view class="modal-button" bindtap="popModal" data-index="{{index}}" data-id="2">
+              {{item.repo_B_num}}
+            </view>
+        </view>
+        <view class="text">
+          已报良品数：{{item.pass_reported}}
+        </view>
+        <view class="text">
+          已报次品数：{{item.defect_reported}}
+        </view>
+        <view class="input-row-box">
+          <view class="text">
+            良品报数：
+          </view>
+          <input class="prodNumberInput" type="number" placeholder="请输入数量" bindinput="getPassNumInput" value="{{item.passNumber}}" data-index="{{index}}"  /> 
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="passSubmit" data-index="{{index}}">提交</button>
+        </view>
+        <view class="input-row-box">
+          <view class="text">
+            次品报数：
+          </view>
+          <input class="prodNumberInput" type="number" placeholder="请输入数量" bindinput="getDefectNumInput" value="{{item.defectNumber}}" data-index="{{index}}"  /> 
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="defectSubmit" data-index="{{index}}">提交</button>
+        </view>
+        <view class="row-box">
+          <view class="text">
+            人员状态：
+          </view>
+          <radio-group class="radio-group" bindchange="changeOpreatorStatus" data-index="{{index}}">
+            <label class="radio">
+              <radio value='3' class="text" checked="{{item.inDuty}}" disabled="{{item.button_disabled}}" >在岗</radio>
+            </label>
+            <label class="radio">
+              <radio value='2' class="text" checked="{{item.offDuty}}" disabled="{{item.button_disabled}}" >离岗</radio>
+            </label>
+          </radio-group>
+        </view>
+        <view class="row-box">
+          <view class="text">
+            设备状态：
+          </view>
+          <picker mode="selector" range="{{item.machine_status_array}}" value="{{item.statusIndex}}" bindchange="statusChange" data-index="{{index}}">
+            <view class="picker">{{item.machine_status_array[item.statusIndex]}}</view>
+          </picker>
+          <!-- <picker mode="selector" range="{{machine_status_obj}}" value="{{statusIndex}}" bindchange="statusChange">
+            <view class="picker">{{machine_status_obj[statusIndex]}}</view>
+          </picker> -->
+        </view>
+        <button class="task-button" type="primary" plain="true" bindtap="taskStartOrEnd" data-index="{{index}}" disabled="{{item.button_disabled}}">任务{{item.task_button_text}}</button>
+
       </view>
-      <!-- <view class="col-box">
       
-        <button bindtap="inWarehouse" data-index="{{index}}" size="mini" type="primary" plain="true" class="button">入库</button>
-      </view> -->
-      <view class="info-box" wx:for="{{item.material}}" >
-        <view class="text">
-          {{item.material_name}}
-        </view>
-        <view class="text">
-          {{item.material_spec}}
-        </view>
-        <view class="text">
-          {{item.material_num}}
-        </view>
-      </view>
 
       <view class="show" bindtap="flod" data-index="{{index}}">
         收起
       </view>
     </view>
-
-    <modal show="{{showModal}}" height="60%" bind:cancel="modalCancel" bind:confirm="modalConfirm" title="{{title}}" index="{{taskListIndex}}" repo_code="{{machine_code}}">
-      <view class="main-content">
-        <view class="modal-box">
-          <text>来源：</text>
-          <picker mode="selector" range="{{sourceArray}}" value="{{sourceIndex}}" bindchange="sourceChange">
-            <view class="picker">{{sourceArray[sourceIndex]}}</view>
-          </picker>
-        </view>
-        <view class="modal-box">
-          <text>物料：</text>
-          <picker mode="selector" range="{{materialArray}}" value="{{materialIndex}}" bindchange="materialChange">
-            <view class="picker">{{materialArray[materialIndex]}}</view>
-          </picker>
-        </view>
-        <view class="modal-box">
-          <text>库存：</text>
-          {{material_num}}
-        </view>
-        <view class="modal-box">
-          <text>入库：</text>
-          <input class="input" type="number" placeholder="请输入数量" bindinput="getInWarehouseNumInput" value="{{inWarehouseNumber}}"/>
-        </view>
-
-
-      </view>
-    </modal>
   </view>
+
+  <modal show="{{showModal}}" height="60%" bind:cancel="modalCancel" bind:confirm="modalConfirm" title="{{title}}" index="{{taskListIndex}}" repo_code="{{machine_code}}">
+    <view class="main-content">
+      <view class="modal-box">
+        <text>来源：</text>
+        <picker mode="selector" range="{{sourceArray}}" value="{{sourceIndex}}" bindchange="sourceChange">
+          <view class="picker">{{sourceArray[sourceIndex]}}</view>
+        </picker>
+      </view>
+      <view class="modal-box">
+        <text>物料：</text>
+        <picker mode="selector" range="{{materialArray}}" value="{{materialIndex}}" bindchange="materialChange">
+          <view class="picker">{{materialArray[materialIndex]}}</view>
+        </picker>
+      </view>
+      <view class="modal-box">
+        <text>库存：</text>
+        {{material_num}}
+      </view>
+      <view class="modal-box">
+        <text>入库：</text>
+        <input class="input" type="number" placeholder="请输入数量" bindinput="getInWarehouseNumInput" value="{{inWarehouseNumber}}"/>
+      </view>
+
+
+    </view>
+  </modal>
+
 </view>

@@ -15,6 +15,11 @@
   box-shadow: 0 10rpx 50rpx 0rpx rgb(204, 202, 216);
   
 }
+.container .info .fold-row-box{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 .container .info .row-box {
   display: flex;
   flex-direction: row;
@@ -81,13 +86,14 @@
   align-items: flex-start;
   font-size: 38rpx;
 }
-.main-content .picker{
+.picker{
   padding: 5rpx;
   /* background-color: #FFFFFF; */
   background-color: rgb(236, 236, 236);
-  width: 400rpx;
+  width: 430rpx;
   height: 60rpx;
   border-radius: 12rpx;
+  padding-left: 10rpx;
 }
 .modal-box{
   display: flex;
@@ -100,9 +106,37 @@
   background-color: rgb(236, 236, 236);
   border-radius: 12rpx;
   height: 60rpx;
+  width: 430rpx;
+  padding-left: 10rpx;
+
+}
+.container .info .prodNumberInput{
+  background-color: rgb(236, 236, 236);
+  border-radius: 12rpx;
+  height: 60rpx;
+  width: 290rpx;
+  padding-left: 10rpx;
+}
+.container .info .input-row-box{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  padding: 10rpx 0rpx;
+}
+.container .info .row-box .submitButton{
+  margin: 0rpx 0rpx;
+  /* height: 60rpx; */
+}
+.container .info .row-box .radio-group .radio{
+  padding-right: 60rpx;
 }
 .modal-button{
   margin: 10rpx 0rpx;
   background-color: rgb(236, 236, 236);
   border-radius: 12rpx;
+  width: 80rpx;
+  padding-left: 10rpx;
+}
+.task-button {
+  margin-top: 30rpx;
 }
