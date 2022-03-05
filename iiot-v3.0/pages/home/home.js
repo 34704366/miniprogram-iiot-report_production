@@ -7,7 +7,8 @@ let check_login = require("../../utils/util");
 const ON_DUTY_STATUS = 3;
 const OFF_DUTY_STATUS = 2;
 
-Page(check_login.checkLogin({
+// Page(check_login.checkLogin({
+Page({
 
   data: {
     userId: 1,
@@ -85,4 +86,5 @@ Page(check_login.checkLogin({
     
   },
 
-}))
+// }))
+})

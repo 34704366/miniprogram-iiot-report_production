@@ -31,6 +31,7 @@ Page({
     // console.log("123");
     this.getTaskList();
     // this.judgeOpreatorStatus();
+    
   },
 
   getTaskList() {
@@ -245,13 +246,19 @@ Page({
       };
     }
     // 在岗
-
     else if(status == 3 || status == 1) {
       return {
         inDuty: true,
         offDuty: false
       }
     } 
+    else {
+      return {
+        inDuty: false,
+        offDuty: true
+      }
+    }
+
   },
 
   // 修改人员状态
@@ -301,9 +308,23 @@ Page({
   
   // 良品报数
   passSubmit(e) {
+    // 如果数量为0，不发送请求
     const index = e.currentTarget.dataset.index;
     const number = this.data.taskList[index].passNumber;
     const url = app.globalData.serverUrl + "/pda/suz/task/pass";
+    if (number <= 0) {
+      app.showErrorToast('请输入大于0的整数');
+      return
+    }
+
+    // 添加蒙层阻止连续点击
+    wx.showLoading({
+      title: '数据加载中',
+      mask: true,
+      complete(res) {
+        console.log(res);
+      }
+    })
     const data = {
       machine_code: this.data.taskList[index].machine_code,
       work_order: this.data.taskList[index].work_code,
@@ -329,6 +350,10 @@ Page({
     const index = e.currentTarget.dataset.index;
     const number = this.data.taskList[index].defectNumber;
     const url = app.globalData.serverUrl + "/pda/suz/task/defect";
+    if (number <= 0) {
+      app.showErrorToast('请输入大于0的整数');
+      return
+    }
     const data = {
       machine_code: this.data.taskList[index].machine_code,
       work_order: this.data.taskList[index].work_code,
@@ -392,7 +417,11 @@ Page({
         // return -1;
         that.result = -1;
       },
-      complete: (res) => {},
+      complete: (res) => {
+        wx.hideLoading({
+          success: (res) => {},
+        }) 
+      },
     });
   },
 
@@ -512,6 +541,7 @@ Page({
 
   // 任务启动或者结束
   taskStartOrEnd(e) {
+
     const index = e.currentTarget.dataset.index;
     // 判断任务状态
     const taskStatus = this.data.taskList[index].task_status;
@@ -521,6 +551,9 @@ Page({
       const data = {
         task_code: this.data.taskList[index].task_code,
       }
+
+
+      console.log(data)
       // 发送post请求
       this.taskRequest(url, data);
       
@@ -555,8 +588,10 @@ Page({
         // http码
         if(result.statusCode == 200) {
           // 业务状态码
-          if (result.data.code == 200) {
+          if (result.data.code == 0) {
             app.showSuccessToast("成功");
+            // 页面重新渲染
+            that.onShow();
           } else {
             // 业务码判断打印错误
             app.processPostRequestConcreteCode(result.data.code, result.data.message);
@@ -565,8 +600,6 @@ Page({
           // 对code码进行校验并且处理
           app.processPostRequestStatusCode(result.statusCode);
         }
-        // 页面重新渲染
-        that.onShow();
       },
       fail: (res) => {
         // app.requestSendError(res);

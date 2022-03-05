@@ -40,7 +40,7 @@ Page({
       app.showErrorToast("请输入完整的用户名和密码");
       return;
     }
-
+    console.log(this.data.serverUrl + '/pda/suz/login')
     // 向后台发送用户名和密码
     wx.request({ 
       // url: 'http://202.116.3.50:8001/WeChatpro/getUserInfo',

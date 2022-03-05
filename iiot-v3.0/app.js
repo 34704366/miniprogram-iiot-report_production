@@ -54,7 +54,7 @@ App({
   // 根据业务状态码进行判断
   processPostRequestConcreteCode(code, message) {
     if(code != 0) {
-      this.showErrorToast(`后台错误，原因：${message}`);
+      this.showErrorToast(`${message}`);
     }
   },
 
