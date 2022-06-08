@@ -2,7 +2,7 @@
   <view class="info" wx:for="{{taskList}}">
 
     <!-- 折叠状态 -->
-    <view wx:if="{{item.onHide==1}}" bindtap="unfold" data-index="{{index}}" class="fold-row-box">
+    <view wx:if="{{item.onHide==1}}" bindtap="unfoldTask" data-index="{{index}}" class="fold-row-box">
       <view class="col-box">
         <view class="title">
             {{item.machine_name}}
@@ -24,10 +24,14 @@
         <text class="title" decode="{{true}}">
         {{item.machine_name}}&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{{item.machine_id}}
         </text>
+        
+        <view style="width: 150px"></view>
+        
         <view class="small-text" wx:for="{{item.task_info}}">
           {{index}}：{{item}}
         </view>
-        
+
+        <view class="devide-line"></view>
         
         <view class="input-row-box">
           <view class="text">
@@ -36,7 +40,7 @@
           <!-- <view class="modal-button" bindtap="popModal" data-index="{{index}}" data-id="1">
             {{item.repo_A_num}}
           </view> -->
-          <view class="stock-number">{{item.repo_A_num}}</view> 
+          <view class="stock-number">{{item.repo_A}}</view> 
           <button class="submitButton" size="mini" plain="true" type="primary" bindtap="inWarehouse" data-index="{{index}}">入库</button>
         </view>
 
@@ -47,9 +51,44 @@
           <!-- <view class="modal-button" bindtap="popModal" data-index="{{index}}" data-id="2">
               {{item.repo_B_num}}
             </view> -->
-          <view class="stock-number">{{item.repo_B_num}}</view> 
+          <view class="stock-number">{{item.repo_B}}</view> 
           <button class="submitButton" size="mini" plain="true" type="primary" bindtap="outWarehouse" data-index="{{index}}">出库</button>
         </view>
+
+        <view class="input-row-box">
+          <view class="text">
+            已报调机数：
+          </view>
+          <view class="stock-number">{{item.test_reported}}</view> 
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="testReportClick" data-index="{{index}}">调机报产</button>
+        </view>
+
+        <view class="input-row-box">
+          <view class="text">
+            已报良品数：
+          </view>
+          <view class="stock-number">{{item.pass_reported}}</view> 
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="passReportClick" data-index="{{index}}">良品报产</button>
+        </view>
+
+        <view class="input-row-box">
+          <view class="text">
+            已报次品数：
+          </view>
+          <view class="stock-number">{{item.defect_reported}}</view> 
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="defectReportClick" data-index="{{index}}">次品报产</button>
+        </view>
+
+        <view class="input-row-box">
+          <view class="text">
+            故障上报
+          </view>
+
+          <view style="width: 150px"></view>
+          
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="faultReportClick" data-index="{{index}}">故障上报</button>
+        </view>
+<!-- 
         <view class="text">
           已报良品数：{{item.pass_reported}}
         </view>
@@ -69,7 +108,7 @@
           </view>
           <input class="prodNumberInput" type="number" placeholder="请输入数量" bindinput="getDefectNumInput" value="{{item.defectNumber}}" data-index="{{index}}"  /> 
           <button class="submitButton" size="mini" plain="true" type="primary" bindtap="defectSubmit" data-index="{{index}}">提交</button>
-        </view>
+        </view> -->
         <view class="row-box">
           <view class="text">
             人员状态：
@@ -99,10 +138,69 @@
       </view>
       
 
-      <view class="show" bindtap="flod" data-index="{{index}}">
+      <view class="show" bindtap="flodTask" data-index="{{index}}">
         收起
       </view>
     </view>
+  </view>
+
+  <view class="info" wx:for="{{fixList}}">
+
+    <!-- 折叠状态 -->
+    <view wx:if="{{item.onHide==1}}" bindtap="unfoldFix" data-index="{{index}}" class="fold-row-box">
+      <view class="col-box">
+        <view class="title">
+            {{item.machine_name}}
+          </view>
+        <view class="text">
+          单号：{{item.work_code}}
+        </view>
+      </view>
+      <view class="col-box">
+        <view class="title">
+          状态：{{item.task_status}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 展开状态 -->
+    <view wx:if="{{item.onHide == 0}}">
+      <view class="col-box">
+        <text class="title" decode="{{true}}">
+        {{item.machine_name}}&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{{item.machine_id}}
+        </text>
+
+        <view class="devide-line"></view>
+
+        <view class="text">
+          任务编号：{{item.task_code}}
+        </view>
+        <view class="text">
+          维护人员姓名：{{item.operator_name}}
+        </view>
+        <view class="text">
+          维护人员编号：{{item.operator_code}}
+        </view>
+        <view class="text">
+          维护内容：{{item.fix_content}}
+        </view>
+        <view class="text">
+          开始时间：{{item.start_time}}
+        </view>
+        <view class="text">
+          结束时间：{{item.end_time}}
+        </view>
+
+        <view class="devide-line"></view>
+      </view>
+
+      <button class="task-button" type="primary" plain="true" bindtap="taskStartOrEnd" data-index="{{index}}" disabled="{{item.button_disabled}}">任务{{item.task_button_text}}</button>
+
+      <view class="show" bindtap="flodFix" data-index="{{index}}">
+        收起
+      </view>
+    </view>
+    
   </view>
 
   <modal show="{{showModal}}" height="60%" bind:cancel="modalCancel" bind:confirm="modalConfirm" title="{{title}}" index="{{taskListIndex}}" repo_code="{{machine_code}}">

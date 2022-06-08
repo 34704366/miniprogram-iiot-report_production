@@ -11,6 +11,9 @@ Page({
     taskList:[],
     taskListIndex: 0,
 
+    fixList: [],
+    fixListIndex: 0,
+
     showModal: false,
     machine_code: 'xxx',
     title: '123',
@@ -31,6 +34,7 @@ Page({
   onShow: function (options) {
     // 获取设备列表
     this.getTaskList();
+    this.getFixList();
     const that = this;
     // this.judgeOpreatorStatus();
 
@@ -66,7 +70,10 @@ Page({
     let that = this;
     wx.request({
       // url: app.globalData.serverUrl + '/pda/suz/tasks'+ '/' +wx.getStorageSync('emp_code'),
-      url: app.globalData.serverUrl + '/pda/suz/tasks',
+
+      // url: app.globalData.serverUrl + '/pda/suz/tasks',
+      url: app.globalData.serverUrl + '/pda/suz/production-plan',
+
       header: {
         "content-type" : "application/json",
         "Authorization" : wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token')
@@ -158,8 +165,71 @@ Page({
     })
   },
 
+  getFixList(){
+    const that = this;
+    wx.request({
+
+      // url: app.globalData.serverUrl + '/pda/suz/tasks',
+      url: app.globalData.serverUrl + '/pda/suz/fix-plan',
+
+      header: {
+        "content-type" : "application/json",
+        "Authorization" : wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token')
+      },
+      method: "GET",
+      dataType: 'json',
+      success: (result) => {
+        // console.log(result);
+
+        // http码
+        if(result.statusCode == 200) {
+          // 业务状态码
+          if (result.data.code == 0) {
+            
+            const data = result.data.data;
+            let list = [];
+            for (let item of data) {
+              item.onHide = 1;
+
+              // 判断任务状态
+              if (item.task_status == "未启动") {
+                item.task_button_text = "启动";
+                item.button_disabled = false;
+              } else if (item.task_status == "进行中") {
+                item.task_button_text = "完成"
+                item.button_disabled = false;
+              } 
+              else {
+                item.task_button_text = item.task_status;
+                item.button_disabled = true;
+              }
+
+              list.push(item);
+            }
+            console.log(list);
+            that.setData({
+              fixList: list,
+            })
+
+          } else {
+            // 业务码判断打印错误
+            app.processPostRequestConcreteCode(result.data.code, result.data.message);
+          }
+        } else {
+          // 对code码进行校验并且处理
+          app.processPostRequestStatusCode(result.statusCode);
+        }
+      },
+      fail: (res) => {
+        app.requestSendError(res);
+      },
+      complete: (res) => {},
+    })
+
+  },
+
   // 展开折叠信息
-  unfold(event) {
+  unfoldTask(event) {
     // console.log(event);
     const index = event.currentTarget.dataset.index;
     let list = this.data.taskList;
@@ -170,8 +240,20 @@ Page({
     })
   },
 
+  // 展开折叠信息
+  unfoldFix(event) {
+    // console.log(event);
+    const index = event.currentTarget.dataset.index;
+    let list = this.data.fixList;
+    // 将对应字典中的onHide标志位改变成0
+    list[index].onHide = 0;
+    this.setData({
+      fixList: list,
+    })
+  },
+
   // 折叠信息
-  flod(event) {
+  flodTask(event) {
     // console.log(event);
     const index = event.currentTarget.dataset.index;
     let list = this.data.taskList;
@@ -179,6 +261,18 @@ Page({
     list[index].onHide = 1;
     this.setData({
       taskList: list,
+    })
+  },
+
+  // 折叠信息
+  flodFix(event) {
+    // console.log(event);
+    const index = event.currentTarget.dataset.index;
+    let list = this.data.fixList;
+    // 将对应字典中的onHide标志位改变成0
+    list[index].onHide = 1;
+    this.setData({
+      fixList: list,
     })
   },
 
@@ -309,7 +403,7 @@ Page({
     // console.log(e.detail.value);
     const index = e.currentTarget.dataset.index;
     const status = e.detail.value;
-    const url = app.globalData.serverUrl + "/pda/suz/task/operator";
+    const url = app.globalData.serverUrl + "/pda/suz/production/operator";
     const data = {
       machine_code: this.data.taskList[index].machine_code,
       work_order: this.data.taskList[index].work_code,
@@ -586,6 +680,36 @@ Page({
       // console.log(url);
       const data = {
         task_code: this.data.taskList[index].task_code,
+      }
+
+
+      console.log(data)
+      // 发送post请求
+      this.taskRequest(url, data);
+      
+    } else if (taskStatus == "进行中") {
+      const url = app.globalData.serverUrl + "/pda/suz/task/end";
+      const data = {
+        task_code: this.data.taskList[index].task_code,
+      }
+      console.log(data);
+      // 发送post请求
+      this.taskRequest(url, data);
+    }
+
+  },
+
+  // 任务启动或者结束
+  fixStartOrEnd(e) {
+
+    const index = e.currentTarget.dataset.index;
+    // 判断任务状态
+    const taskStatus = this.data.fixList[index].task_status;
+    if (taskStatus == "未启动") {
+      const url = app.globalData.serverUrl + "/pda/suz/task/start";
+      // console.log(url);
+      const data = {
+        task_code: this.data.fixList[index].task_code,
       }
 
 

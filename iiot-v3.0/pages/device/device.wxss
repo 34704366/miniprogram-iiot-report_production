@@ -112,7 +112,7 @@
 }
 .container .info .stock-number {
   height: 60rpx;
-  width: 290rpx;
+  width: 230rpx;
   padding-left: 10rpx;
   padding-top: 10rpx;
 }
@@ -155,4 +155,7 @@
 }
 .task-button {
   margin-top: 30rpx;
+}
+.devide-line {
+  border-bottom: solid 1px black;
 }
