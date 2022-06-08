@@ -139,12 +139,21 @@ Page({
         if(result.statusCode == 200) {
           // 业务状态码
           if (result.data.code == 0) {
-            // app.showSuccessToast("成功");
             const data = result.data.data;
-            console.log(data);
+            // console.log(data);
+            let list = [];
+            for (let item of data) {
+              item.onHide = 1;
+
+              list.push(item);
+            }
+
             that.setData({
-              palletsList: data,
+              palletsList: list,
             });
+
+
+
           } else {
             // 业务码判断打印错误
             app.processPostRequestConcreteCode(result.data.code, result.data.message);
@@ -162,7 +171,7 @@ Page({
   },
 
   // 展开折叠信息
-  unfold(event) {
+  unfoldWarehouse(event) {
     // console.log(event);
     const index = event.currentTarget.dataset.index;
     let list = this.data.warehouseList;
@@ -173,8 +182,20 @@ Page({
     })
   },
 
+  // 展开折叠信息
+  unfoldPallets(event) {
+    // console.log(event);
+    const index = event.currentTarget.dataset.index;
+    let list = this.data.palletsList;
+    // 将对应字典中的onHide标志位改变成0
+    list[index].onHide = 0;
+    this.setData({
+      palletsList: list,
+    })
+  },
+
   // 折叠信息
-  flod(event) {
+  foldWarehouse(event) {
     // console.log(event);
     const index = event.currentTarget.dataset.index;
     let list = this.data.warehouseList;
@@ -182,6 +203,18 @@ Page({
     list[index].onHide = 1;
     this.setData({
       warehouseList: list,
+    })
+  },
+
+  // 折叠信息
+  foldPallets(event) {
+    // console.log(event);
+    const index = event.currentTarget.dataset.index;
+    let list = this.data.palletsList;
+    // 将对应字典中的onHide标志位改变成0
+    list[index].onHide = 1;
+    this.setData({
+      palletsList: list,
     })
   },
 

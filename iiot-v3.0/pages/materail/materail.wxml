@@ -21,7 +21,7 @@
           <button bindtap="inWarehouse" data-index="{{index}}" size="mini" type="primary" plain="true" class="button">入库</button>
         </view>
       </view>
-
+      
       <!-- 已弃用 -->
       <!-- <view class="info-box" wx:for="{{item.material}}" >
         <view class="text">
@@ -34,10 +34,8 @@
           {{item.material_num}}
         </view>
       </view> -->
-      <view class="sub-title">
-        仓库
-      </view>
       <view class="info-box" wx:for="{{item.pallet}}" >
+        <view class="devide-line"></view>
         <view class="text">
           卡板编号：{{item.pallet_code}}
         </view>
@@ -55,17 +53,14 @@
         </view>
       </view>
 
-      <view class="sub-title">
-        卡板
-      </view>
       
-      <view class="show" bindtap="flod" data-index="{{index}}">
+      <view class="show" bindtap="foldWarehouse" data-index="{{index}}">
         收起
       </view>
     </view>
     
     <!-- 折叠状态 -->
-    <view wx:if="{{item.onHide==1}}" bindtap="unfold" data-index="{{index}}" class="row-box">
+    <view wx:if="{{item.onHide==1}}" bindtap="unfoldWarehouse" data-index="{{index}}" class="row-box">
       <view class="col-box">
         <view class="title">
           {{item.repo_name}}
@@ -87,6 +82,83 @@
       </view> -->
     </view>
   </view>
+
+  <view class="info" wx:for="{{palletsList}}">
+    <!-- 折叠状态 -->
+    <view wx:if="{{item.onHide==1}}" bindtap="unfoldPallets" data-index="{{index}}" class="row-box">
+      <view class="col-box">
+        <view class="title">
+          {{item.pallet_name}}
+        </view>
+        <view class="text">
+          编号：{{item.pallet_code}}
+        </view>
+      </view>
+      <view class="col-box">
+        <view class="text">
+          状态：{{item.pallet_status}}
+        </view>
+        <view class="text">
+          库存：{{item.storage_num}}
+        </view>
+      </view>
+    </view>
+
+
+    <!-- 展开状态 -->
+    <view wx:if="{{item.onHide == 0}}">
+      
+      <view class="row-box">
+        <view class="col-box">
+        
+          <view class="title">
+            {{item.pallet_name}}
+          </view>
+          <view class="text">
+            编号：{{item.pallet_code}}
+          </view>
+          <view class="text">
+            最大容量：{{item.storage_max}}
+          </view>
+        </view>
+        <view class="col-box">
+        
+          <button bindtap="inWarehouse" data-index="{{index}}" size="mini" type="primary" plain="true" class="button">入库</button>
+        </view>
+      </view>
+
+      <view class="devide-line"></view>
+
+      <view class="text">
+        当前位置：{{item.pallet_code}}
+      </view>
+      <view class="devide-line"></view>
+      <view class="info-box" wx:for="{{item.material}}">
+        <view class="text">
+          物料编号：{{item.material_code}}
+        </view>
+        <view class="text">
+          物料名称：{{item.material_name}}
+        </view>
+        <view class="text">
+          物料规格：{{item.material_spec}}
+        </view>
+        <view class="text">
+          物料数量：{{item.material_num}}
+        </view>
+      </view>
+
+      <view class="show" bindtap="foldPallets" data-index="{{index}}">
+        收起
+      </view>
+    </view>
+
+
+
+  </view>
+
+
+
   <!-- <view class="popModal">
     <input type="text" placeholder="在这里输入" />
     <button>提交</button>

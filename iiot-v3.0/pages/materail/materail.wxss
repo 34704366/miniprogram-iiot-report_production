@@ -34,7 +34,7 @@
   flex-direction: column;
   justify-content: space-between;
 
-  border-bottom: black 1px solid;
+  /* border-bottom: black 1px solid; */
 }
 .container .info .getInfo {
   display: flex;
