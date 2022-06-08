@@ -28,21 +28,27 @@
           {{index}}：{{item}}
         </view>
         
-        <view class="row-box">
+        
+        <view class="input-row-box">
           <view class="text">
             A库库存：
           </view>
-          <view class="modal-button" bindtap="popModal" data-index="{{index}}" data-id="1">
+          <!-- <view class="modal-button" bindtap="popModal" data-index="{{index}}" data-id="1">
             {{item.repo_A_num}}
-          </view>
+          </view> -->
+          <view class="stock-number">{{item.repo_A_num}}</view> 
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="inWarehouse" data-index="{{index}}">入库</button>
         </view>
-        <view class="row-box">
+
+        <view class="input-row-box">
           <view class="text">
             B库库存：
           </view>
-          <view class="modal-button" bindtap="popModal" data-index="{{index}}" data-id="2">
+          <!-- <view class="modal-button" bindtap="popModal" data-index="{{index}}" data-id="2">
               {{item.repo_B_num}}
-            </view>
+            </view> -->
+          <view class="stock-number">{{item.repo_B_num}}</view> 
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="outWarehouse" data-index="{{index}}">出库</button>
         </view>
         <view class="text">
           已报良品数：{{item.pass_reported}}

@@ -24,13 +24,41 @@ Page({
     },
     statusIndex: 0,
     inWarehouseNumber: 0,
+    selected_machine_code: ''
   },
 
   
   onShow: function (options) {
-    // console.log("123");
+    // 获取设备列表
     this.getTaskList();
+    const that = this;
     // this.judgeOpreatorStatus();
+
+
+    wx.getStorage({
+      key: 'machine_code',
+      success(res) {
+        if (res.data) {
+          // 放入appData中,然后请求设备列表的回调函数会去判断这个字段是否为空
+          // 如果不为空，就将该信息展开
+          that.setData({
+            selected_machine_code: res.data
+          })
+          console.log(res.data)
+
+
+          // 拿到machine_code以后从缓存删除掉
+          wx.removeStorage({
+            key: 'machine_code',
+          })
+        } 
+      },
+      fail(res) {
+        that.setData({
+          selected_machine_code: '',
+        })
+      }
+    })
     
   },
 
@@ -68,12 +96,6 @@ Page({
               item.inDuty = inDuty;
               item.offDuty = offDuty;
 
-              let machine_status_obj = {
-                "1": "设备预热",
-                "2": "设备试生产",
-                "3": "设备生产循环",
-                "4": "设备清洗",
-              }
               // item.machine_status_obj = machine_status_obj;
               let machine_status_array = [];
               let machine_status_index = [];
@@ -105,7 +127,21 @@ Page({
             that.setData({
               taskList: list,
             });
-            console.log(that.data.taskList);
+            
+
+            // 判断是否有machine_code(是否是由扫码跳转而来)
+            const machine_code = that.data.selected_machine_code;
+            if (machine_code != '') {
+              // 判断列表里面有没有
+              for (const item of list) {
+                if (item.machine_code == machine_code) {
+                  item.onHide = 0;
+                }
+              }
+              that.setData({
+                taskList: list,
+              })
+            }
           } else {
             // 业务码判断打印错误
             app.processPostRequestConcreteCode(result.data.code, result.data.message);
@@ -446,7 +482,7 @@ Page({
         // http码
         if(result.statusCode == 200) {
           // 业务状态码
-          if (result.data.code == 200) {
+          if (result.data.code == 0) {
             // app.showSuccessToast("成功");
 
             // console.log(result.data.data)
@@ -609,5 +645,62 @@ Page({
       },
     })
   },
+
+  // 入库事件回调函数
+  inWarehouse(event) {
+    const index = event.currentTarget.dataset.index;
+
+    this.scanCode();
+
+  },
+
+  // 出库事件回调函数
+  outWarehouse(event) {
+    const index = event.currentTarget.dataset.index;
+
+    this.scanCode();
+  },
+
+  scanCode() {
+    const that = this;
+    wx.scanCode({
+      success: (res) => {
+        app.showErrorToast("未识别的信息");
+
+        // // console.log(res.result);
+        // const result = res.result;
+        // that.setData({
+        //   scanResult: res.result
+        // })
+        // if(result=='material') {
+        //   wx.navigateTo({
+        //     url: `/pages/materail/materail?name=${this.data.scanResult}`,
+        //     success: (result) => {},
+        //     fail: (res) => {},
+        //   })
+        // }
+        // else if(result=='device') {
+        //   wx.navigateTo({
+        //     url: `/pages/warehouse/warehouse?name=${this.data.scanResult}`,
+        //   })
+        // }
+        // else {
+        //   wx.showToast({
+        //     title: '找不到该二维码的信息！',
+        //     icon: 'error'
+        //   })
+        // }
+      },
+      fail: (res) => {
+        console.log(`扫描失败`)
+        wx.showToast({
+          title: '扫描失败',
+          icon: 'error'
+        })
+      }
+    })
+    
+  },
+
 
 })

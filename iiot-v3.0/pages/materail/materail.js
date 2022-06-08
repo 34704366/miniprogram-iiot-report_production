@@ -23,11 +23,40 @@ Page({
 
     inWarehouseNumber: 0,
     
+    selected_repo_code: '',
   },
 
   
-  onLoad: function (options) {
+  onShow: function (options) {
     this.getWarehouseList();
+    const that = this;
+
+
+    wx.getStorage({
+      key: 'repo_code',
+      success(res) {
+        if (res.data != '') {
+          // 放入appData中,然后请求设备列表的回调函数会去判断这个字段是否为空
+          // 如果不为空，就将该信息展开
+          that.setData({
+            selected_repo_code: res.data
+          })
+          console.log(res.data)
+
+
+          // 拿到repo_code以后删除掉
+          wx.removeStorage({
+            key: 'repo_code',
+          })
+        }
+      },
+      fail(res) {
+        // console.log('repo_code缓存为空')
+        that.setData({
+          selected_repo_code: '',
+        })
+      }
+    })
   },
   getWarehouseList() {
     
@@ -54,11 +83,28 @@ Page({
               item.onHide = 1;
               list.push(item);
             }
-            console.log(list);
+
+            // console.log(list);
             that.setData({
               warehouseList: list,
             });
-            console.log(that.data.warehouseList);
+            
+            // 判断是否是由扫码跳转而来
+            const selected_repo_code = that.data.selected_repo_code;
+
+            if (selected_repo_code != '') {
+              let newList = list;
+              for (const item of newList) {
+                // 如果扫码的结果是该库
+                if (selected_repo_code == item.repo_code) {
+                  item.onHide = 0;
+                }
+              }
+              that.setData({
+                warehouseList: newList
+              })
+            }
+
           } else {
             // 业务码判断打印错误
             app.processPostRequestConcreteCode(result.data.code, result.data.message);
@@ -99,23 +145,72 @@ Page({
     })
   },
 
+  // // 点击入库按钮的动作
+  // inWarehouse(event) {
+  //   // console.log(event)
+  //   const warehouseListIndex = event.currentTarget.dataset.index;
+  //   console.log(warehouseListIndex)
+  //   this.setData({
+  //     showModal: true,
+  //     warehouseListIndex: warehouseListIndex,
+  //     title: this.data.warehouseList[warehouseListIndex].repo_name,
+  //     repo_code: this.data.warehouseList[warehouseListIndex].repo_code
+  //   });
+
+  //   // 调用函数获取入库信息
+  //   let repo_code = this.data.warehouseList[warehouseListIndex].repo_code
+  //   this.getInWarehouseInfo(repo_code);
+    
+  // },
+
   // 点击入库按钮的动作
   inWarehouse(event) {
-    // console.log(event)
-    const warehouseListIndex = event.currentTarget.dataset.index;
-    console.log(warehouseListIndex)
-    this.setData({
-      showModal: true,
-      warehouseListIndex: warehouseListIndex,
-      title: this.data.warehouseList[warehouseListIndex].repo_name,
-      repo_code: this.data.warehouseList[warehouseListIndex].repo_code
-    });
+    const index = event.currentTarget.dataset.index;
+    this.scanCode();
+  },
 
-    // 调用函数获取入库信息
-    let repo_code = this.data.warehouseList[warehouseListIndex].repo_code
-    this.getInWarehouseInfo(repo_code);
+  scanCode() {
+    const that = this;
+    wx.scanCode({
+      success: (res) => {
+        app.showErrorToast("未识别的信息");
+
+        // // console.log(res.result);
+        // const result = res.result;
+        // that.setData({
+        //   scanResult: res.result
+        // })
+        // if(result=='material') {
+        //   wx.navigateTo({
+        //     url: `/pages/materail/materail?name=${this.data.scanResult}`,
+        //     success: (result) => {},
+        //     fail: (res) => {},
+        //   })
+        // }
+        // else if(result=='device') {
+        //   wx.navigateTo({
+        //     url: `/pages/warehouse/warehouse?name=${this.data.scanResult}`,
+        //   })
+        // }
+        // else {
+        //   wx.showToast({
+        //     title: '找不到该二维码的信息！',
+        //     icon: 'error'
+        //   })
+        // }
+      },
+      fail: (res) => {
+        console.log(`扫描失败`)
+        wx.showToast({
+          title: '扫描失败',
+          icon: 'error'
+        })
+      }
+    })
     
   },
+
+
 
   // modal层传来的cancel事件
   modalCancel() {
