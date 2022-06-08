@@ -1,0 +1,13 @@
+<!--index.wxml-->
+<view class="container">
+  <view class="action">
+    <view class="title">
+      智慧车间系统
+    </view>
+    <image class="button" src="/static/images/scan.png" bindtap="scanCode" mode="widthFix">    </image>
+    <view class="introduction">
+      点击图片扫码
+    </view>
+  </view>
+  
+</view>

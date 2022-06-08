@@ -1,0 +1,43 @@
+/* pages/index/index.wxss *//**index.wxss**/
+Page{
+  background-color: #fff;
+}
+.container {
+  margin-top: 10rpx;
+  padding: 20rpx;
+}
+.container .action {
+  display: flex;
+  flex-direction: column;   /* 主轴垂直方向 */
+  align-items: center;
+  margin: 30rpx;
+}
+.container .action .title {
+  color: black;
+  text-align: center;
+  margin: 30rpx;
+  font-size: 40rpx;
+  font-weight: 800;
+}
+.container .action .button {
+  text-align: center;
+  width: 380rpx;
+  margin-top: 30rpx;
+}
+.container .action .introduction {
+  color: black;
+  text-align: center;
+  margin: 10rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+.container .infomation {
+  background-color: rgb(255, 246, 251);
+  border-radius: 15rpx;
+  box-shadow: 0 3rpx 50rpx 3rpx rgb(238, 224, 250);
+}
+.container .infomation .box {
+  color: rgb(37, 57, 236);
+  font-size: 32rpx;
+  font-weight: 500;
+}
