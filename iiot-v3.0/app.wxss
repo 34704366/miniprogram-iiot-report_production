@@ -50,3 +50,6 @@ Page {
   
   margin: 35rpx 0rpx;
 }
+.devide-line {
+  border-bottom: solid 1px black;
+}
