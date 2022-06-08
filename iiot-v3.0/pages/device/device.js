@@ -673,13 +673,28 @@ Page({
   taskStartOrEnd(e) {
 
     const index = e.currentTarget.dataset.index;
+    const type = e.currentTarget.dataset.type;
+
+    let objectList = [];
+
+    if (type == 'production') {
+      objectList = this.data.taskList;
+
+    } else if (type == 'fix') {
+      objectList = this.data.fixList;
+    } else {
+      app.showErrorToast('提交类型错误');
+      return;
+    }
+    // console.log(type)
+
     // 判断任务状态
-    const taskStatus = this.data.taskList[index].task_status;
+    const taskStatus = objectList[index].task_status;
     if (taskStatus == "未启动") {
       const url = app.globalData.serverUrl + "/pda/suz/task/start";
       // console.log(url);
       const data = {
-        task_code: this.data.taskList[index].task_code,
+        task_code: objectList[index].task_code,
       }
 
 
@@ -690,9 +705,10 @@ Page({
     } else if (taskStatus == "进行中") {
       const url = app.globalData.serverUrl + "/pda/suz/task/end";
       const data = {
-        task_code: this.data.taskList[index].task_code,
+        task_type: type,
+        task_code: objectList[index].task_code,
       }
-      console.log(data);
+      // console.log(data);
       // 发送post请求
       this.taskRequest(url, data);
     }
@@ -731,7 +747,6 @@ Page({
 
   // 任务开始或者任务结束的request请求
   taskRequest(url, data) {
-    console.log('11')
     let that = this;
     wx.request({
       url: url,
@@ -743,7 +758,7 @@ Page({
       method: "post",
       dataType: 'json',
       success: (result) => {
-        console.log(result);
+        // console.log(result);
 
         // http码
         if(result.statusCode == 200) {

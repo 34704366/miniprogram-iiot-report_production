@@ -24,7 +24,7 @@
         <text class="title" decode="{{true}}">
         {{item.machine_name}}&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{{item.machine_id}}
         </text>
-        
+
         <view style="width: 150px"></view>
         
         <view class="small-text" wx:for="{{item.task_info}}">
@@ -133,7 +133,7 @@
             <view class="picker">{{machine_status_obj[statusIndex]}}</view>
           </picker> -->
         </view>
-        <button class="task-button" type="primary" plain="true" bindtap="taskStartOrEnd" data-index="{{index}}" disabled="{{item.button_disabled}}">任务{{item.task_button_text}}</button>
+        <button class="task-button" type="primary" plain="true" bindtap="taskStartOrEnd" data-index="{{index}}" data-type="production" disabled="{{item.button_disabled}}">任务{{item.task_button_text}}</button>
 
       </view>
       
@@ -194,7 +194,7 @@
         <view class="devide-line"></view>
       </view>
 
-      <button class="task-button" type="primary" plain="true" bindtap="taskStartOrEnd" data-index="{{index}}" disabled="{{item.button_disabled}}">任务{{item.task_button_text}}</button>
+      <button class="task-button" type="primary" plain="true" bindtap="taskStartOrEnd" data-index="{{index}}" data-type="fix" disabled="{{item.button_disabled}}">任务{{item.task_button_text}}</button>
 
       <view class="show" bindtap="flodFix" data-index="{{index}}">
         收起
