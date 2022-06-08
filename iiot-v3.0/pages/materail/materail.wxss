@@ -25,10 +25,16 @@
   flex-direction: column;
   width: 50%;
 }
+.sub-title {
+  font-size: 25px;
+  color: green;
+}
 .container .info .info-box {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
+
+  border-bottom: black 1px solid;
 }
 .container .info .getInfo {
   display: flex;

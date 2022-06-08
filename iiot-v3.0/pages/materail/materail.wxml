@@ -21,7 +21,9 @@
           <button bindtap="inWarehouse" data-index="{{index}}" size="mini" type="primary" plain="true" class="button">入库</button>
         </view>
       </view>
-      <view class="info-box" wx:for="{{item.material}}" >
+
+      <!-- 已弃用 -->
+      <!-- <view class="info-box" wx:for="{{item.material}}" >
         <view class="text">
           {{item.material_name}}
         </view>
@@ -31,8 +33,32 @@
         <view class="text">
           {{item.material_num}}
         </view>
+      </view> -->
+      <view class="sub-title">
+        仓库
+      </view>
+      <view class="info-box" wx:for="{{item.pallet}}" >
+        <view class="text">
+          卡板编号：{{item.pallet_code}}
+        </view>
+        <view class="text">
+          物料编号：{{item.material_code}}
+        </view>
+        <view class="text">
+          物料名称：{{item.material_name}}
+        </view>
+        <view class="text">
+          物料规格：{{item.material_spec}}
+        </view>
+        <view class="text">
+          物料数量：{{item.material_num}}
+        </view>
       </view>
 
+      <view class="sub-title">
+        卡板
+      </view>
+      
       <view class="show" bindtap="flod" data-index="{{index}}">
         收起
       </view>

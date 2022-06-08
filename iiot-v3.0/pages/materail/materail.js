@@ -4,9 +4,10 @@ const app = getApp();
 Page({
 
   data: {
-    warehouseList: [],
-    warehouseListIndex: 0,
-    showModal: false,
+    warehouseList: [],      // 仓库信息列表
+    warehouseListIndex: 0,      
+    palletsList:[],        // 卡板信息列表
+    showModal: false,       // modal框控制位
     title: 'xxx',
     repo_code: 'xxx',
     array:['123','22','33'],
@@ -29,6 +30,7 @@ Page({
   
   onShow: function (options) {
     this.getWarehouseList();
+    this.getpalletsList();
     const that = this;
 
 
@@ -70,7 +72,7 @@ Page({
       method: "GET",
       dataType: 'json',
       success: (result) => {
-        console.log(result);
+        // console.log(result);
 
         // http码
         if(result.statusCode == 200) {
@@ -105,6 +107,44 @@ Page({
               })
             }
 
+          } else {
+            // 业务码判断打印错误
+            app.processPostRequestConcreteCode(result.data.code, result.data.message);
+          }
+        } else {
+          // 对code码进行校验并且处理
+          app.processPostRequestStatusCode(result.statusCode);
+        }
+      },
+      fail: (res) => {
+        // app.requestSendError(res);
+      },
+      complete: (res) => {},
+    })
+  },
+
+  getpalletsList() {
+    
+    let that = this;
+    wx.request({
+      url: app.globalData.serverUrl + '/pda/suz/pallets',
+      header: {
+        "content-type" : "application/json",
+        "Authorization" : wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token')
+      },
+      method: "GET",
+      dataType: 'json',
+      success: (result) => {
+        // http码
+        if(result.statusCode == 200) {
+          // 业务状态码
+          if (result.data.code == 0) {
+            // app.showSuccessToast("成功");
+            const data = result.data.data;
+            console.log(data);
+            that.setData({
+              palletsList: data,
+            });
           } else {
             // 业务码判断打印错误
             app.processPostRequestConcreteCode(result.data.code, result.data.message);
