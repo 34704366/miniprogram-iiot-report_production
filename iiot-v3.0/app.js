@@ -53,7 +53,7 @@ App({
 
   // 根据业务状态码进行判断
   processPostRequestConcreteCode(code, message) {
-    if(code != 0) {
+    if(code != 200) {
       this.showErrorToast(`${message}`);
     }
   },
