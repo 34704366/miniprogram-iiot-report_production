@@ -23,6 +23,9 @@ App({
     serverUrl: "http://127.0.0.1:4523/mock/992675",  // MOCK数据
     backgroundColor: '#',
     emp_code: "",
+    
+    normalHttpCode: 200,
+    normalBusinessCode: 200
   },
 
   // 根据状态码进行判断

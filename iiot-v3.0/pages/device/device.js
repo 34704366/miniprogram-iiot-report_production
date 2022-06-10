@@ -1,4 +1,8 @@
 const app = getApp();
+
+const normalHttpCode  = app.globalData.normalHttpCode;
+const normalBusinessCode = app.globalData.normalBusinessCode;
+
 // 良品报数的函数控制标志位
 const REPORT_PASS = 1;
 // 残次品报数的函数控制标志位
@@ -84,9 +88,9 @@ Page({
         console.log(result);
 
         // http码
-        if(result.statusCode == 200) {
+        if(result.statusCode == normalHttpCode) {
           // 业务状态码
-          if (result.data.code == 0) {
+          if (result.data.code == normalBusinessCode) {
             // app.showSuccessToast("成功");
 
             let list = [];
@@ -182,9 +186,9 @@ Page({
         // console.log(result);
 
         // http码
-        if(result.statusCode == 200) {
+        if(result.statusCode == normalHttpCode) {
           // 业务状态码
-          if (result.data.code == 0) {
+          if (result.data.code == normalBusinessCode) {
             
             const data = result.data.data;
             let list = [];
@@ -330,7 +334,7 @@ Page({
           inWarehouseNumber: 0,
         });
         app.processPostRequestStatusCode(result.statusCode);
-        if (result.statusCode == 200) {
+        if (result.statusCode == normalHttpCode) {
           app.showSuccessToast("提交成功");
           that.onShow();
         }
@@ -510,7 +514,7 @@ Page({
         // console.log(result);
         // console.log(data);
         app.processPostRequestStatusCode(result.statusCode);
-        if(result.statusCode == 200) {
+        if(result.statusCode == normalHttpCode) {
           app.showSuccessToast(showTitle);
           
           // 如果是良品报数
@@ -574,9 +578,9 @@ Page({
         // console.log(result);
 
         // http码
-        if(result.statusCode == 200) {
+        if(result.statusCode == normalHttpCode) {
           // 业务状态码
-          if (result.data.code == 0) {
+          if (result.data.code == normalBusinessCode) {
             // app.showSuccessToast("成功");
 
             // console.log(result.data.data)
@@ -761,9 +765,9 @@ Page({
         // console.log(result);
 
         // http码
-        if(result.statusCode == 200) {
+        if(result.statusCode == normalHttpCode) {
           // 业务状态码
-          if (result.data.code == 0) {
+          if (result.data.code == normalBusinessCode) {
             app.showSuccessToast("成功");
             // 页面重新渲染
             that.onShow();

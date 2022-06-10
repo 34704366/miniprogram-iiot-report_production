@@ -3,6 +3,9 @@
 // 获取公共的app
 const app =  getApp();
 
+const normalHttpCode  = app.globalData.normalHttpCode;
+const normalBusinessCode = app.globalData.normalBusinessCode;
+
 Page({
 
   data: {
@@ -60,9 +63,9 @@ Page({
         console.log('post请求发送成功',result)
         // console.log(result.statusCode)
         
-        if(result.statusCode == 200) {
+        if(result.statusCode == normalHttpCode) {
           // console.log("statusCode200");
-          if (result.data.code == 200) {
+          if (result.data.code == normalBusinessCode) {
             // console.log("data.code 200")
             app.showSuccessToast("登录成功");
             // // 设置全局数据

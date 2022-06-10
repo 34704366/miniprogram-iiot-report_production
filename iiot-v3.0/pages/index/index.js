@@ -4,6 +4,9 @@ const app = getApp()
 // 获取校验登录的中间件
 let check_login = require("../../utils/util");
 
+const normalHttpCode  = app.globalData.normalHttpCode;
+const normalBusinessCode = app.globalData.normalBusinessCode;
+
 Page(check_login.checkLogin({
   data: {
     serverUrl: '',  // 服务器地址
@@ -63,9 +66,9 @@ Page(check_login.checkLogin({
             console.log(result);
             
             // http码
-            if(result.statusCode == 200) {
+            if(result.statusCode == normalHttpCode) {
               // 业务状态码
-              if (result.data.code == 0) {
+              if (result.data.code == normalBusinessCode) {
                 const data = result.data.data;
                 // 如果扫到的是仓库
                 if (data.type == 'repo') {

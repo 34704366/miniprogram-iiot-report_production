@@ -1,6 +1,9 @@
 // pages/home/home.js
 // 获取应用实例
 const app = getApp();
+
+const normalHttpCode  = app.globalData.normalHttpCode;
+const normalBusinessCode = app.globalData.normalBusinessCode;
 // 获取校验登录的中间件
 let check_login = require("../../utils/util");
 
@@ -54,7 +57,7 @@ Page({
       success: (result) => {
         console.log(result);
         app.processPostRequestStatusCode(result.statusCode);
-        if (result.statusCode == 200) {
+        if (result.statusCode == normalHttpCode) {
           app.showSuccessToast("变更成功");
         }
       },
