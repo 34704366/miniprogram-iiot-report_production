@@ -49,6 +49,8 @@
   flex-direction: column;
   align-items: center;
   font-size: 38rpx;
+
+  height: 80px;
 }
 .main-content .picker{
   padding: 26rpx;

@@ -20,7 +20,7 @@ Component({
       value: 'title'
     },
     // 编号
-    repo_code: {
+    showCode: {
       type: String,
       value: 'xxx'
     },
