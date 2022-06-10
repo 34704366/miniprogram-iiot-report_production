@@ -1,4 +1,6 @@
 const app = getApp();
+const normalHttpCode  = app.globalData.normalHttpCode;
+const normalBusinessCode = app.globalData.normalBusinessCode;
 
 // pages/materail/materail.js
 Page({
@@ -7,9 +9,12 @@ Page({
     warehouseList: [],      // 仓库信息列表
     warehouseListIndex: 0,      
     palletsList:[],        // 卡板信息列表
+    palletsListIndex: 0,
     showModal: false,       // modal框控制位
+    showWarehouseModal: false,  // 仓库扫描卡板的modal框的控制位
+    showPalletsModal: false,  // 卡板扫描物料的modal框的控制位
     title: 'xxx',
-    repo_code: 'xxx',
+    showCode: 'xxx',
     array:['123','22','33'],
     index:0,
     sourceArray: [],
@@ -23,8 +28,12 @@ Page({
     InWarehouseInfoIndex: 0,
 
     inWarehouseNumber: 0,
-    
+    inPalletsNumber: 0,
+
     selected_repo_code: '',
+
+    modalWarehouseData: {},    // 仓库扫描卡板得到需要展示的信息
+    modalPalletsData: {},     // 卡板扫描物料得到的需要展示的信息      
   },
 
   
@@ -43,7 +52,6 @@ Page({
           that.setData({
             selected_repo_code: res.data
           })
-          console.log(res.data)
 
 
           // 拿到repo_code以后删除掉
@@ -75,9 +83,9 @@ Page({
         // console.log(result);
 
         // http码
-        if(result.statusCode == 200) {
+        if(result.statusCode == normalHttpCode) {
           // 业务状态码
-          if (result.data.code == 0) {
+          if (result.data.code == normalBusinessCode) {
             // app.showSuccessToast("成功");
 
             let list = [];
@@ -86,7 +94,6 @@ Page({
               list.push(item);
             }
 
-            // console.log(list);
             that.setData({
               warehouseList: list,
             });
@@ -136,9 +143,9 @@ Page({
       dataType: 'json',
       success: (result) => {
         // http码
-        if(result.statusCode == 200) {
+        if(result.statusCode == normalHttpCode) {
           // 业务状态码
-          if (result.data.code == 0) {
+          if (result.data.code == normalBusinessCode) {
             const data = result.data.data;
             // console.log(data);
             let list = [];
@@ -218,59 +225,134 @@ Page({
     })
   },
 
-  // // 点击入库按钮的动作
-  // inWarehouse(event) {
-  //   // console.log(event)
-  //   const warehouseListIndex = event.currentTarget.dataset.index;
-  //   console.log(warehouseListIndex)
-  //   this.setData({
-  //     showModal: true,
-  //     warehouseListIndex: warehouseListIndex,
-  //     title: this.data.warehouseList[warehouseListIndex].repo_name,
-  //     repo_code: this.data.warehouseList[warehouseListIndex].repo_code
-  //   });
-
-  //   // 调用函数获取入库信息
-  //   let repo_code = this.data.warehouseList[warehouseListIndex].repo_code
-  //   this.getInWarehouseInfo(repo_code);
-    
-  // },
-
   // 点击入库按钮的动作
-  inWarehouse(event) {
-    const index = event.currentTarget.dataset.index;
-    this.scanCode();
+  inPop(event) {
+    // console.log(event)
+    const warehouseListIndex = event.currentTarget.dataset.index;
+    // console.log(warehouseListIndex)
+    this.setData({
+      showModal: true,
+      warehouseListIndex: warehouseListIndex,
+      // title: this.data.warehouseList[warehouseListIndex].repo_name,
+      // showCode: this.data.warehouseList[warehouseListIndex].repo_code
+    });
+
+    // 调用函数获取入库信息
+    let repo_code = this.data.warehouseList[warehouseListIndex].repo_code
+    this.getInWarehouseInfo(repo_code);
+    
   },
 
-  scanCode() {
+  // 仓库中点击入库按钮的动作
+  inWarehouse(event) {
+    const index = event.currentTarget.dataset.index;    
+    
+    const code = event.currentTarget.dataset.code;   // 发送post请求的仓库编号
+    const title = event.currentTarget.dataset.title;   // 显示在modal上的title
+    const showCode = event.currentTarget.dataset.showCode;  // 显示在modal上的name
+    // console.log(code);
+    const type = 'repo';    // 扫码类型为仓库扫卡板
+    this.scanCode(type, code, title, showCode);
+  },
+
+  // 卡板中点击入库按钮的动作
+  inPallets(event) {
+    const index = event.currentTarget.dataset.index;
+
+    const code = event.currentTarget.dataset.code;    // post请求的仓库编号
+    const title = event.currentTarget.dataset.title;   // 显示在modal上的title
+    const showCode = event.currentTarget.dataset.showCode;  // 显示在modal上的code
+
+    const type = 'pallet';   // 扫码类型为卡板扫物料
+    this.scanCode(type, code, title, showCode);
+  },
+
+  // 扫码逻辑
+  scanCode(type, code, title, showCode) {
     const that = this;
     wx.scanCode({
       success: (res) => {
-        app.showErrorToast("未识别的信息");
+        // app.showErrorToast("未识别的信息");
+        // console.log(res.result);
 
-        // // console.log(res.result);
-        // const result = res.result;
-        // that.setData({
-        //   scanResult: res.result
-        // })
-        // if(result=='material') {
-        //   wx.navigateTo({
-        //     url: `/pages/materail/materail?name=${this.data.scanResult}`,
-        //     success: (result) => {},
-        //     fail: (res) => {},
-        //   })
-        // }
-        // else if(result=='device') {
-        //   wx.navigateTo({
-        //     url: `/pages/warehouse/warehouse?name=${this.data.scanResult}`,
-        //   })
-        // }
-        // else {
-        //   wx.showToast({
-        //     title: '找不到该二维码的信息！',
-        //     icon: 'error'
-        //   })
-        // }
+        const resultCode = res.result;   // 扫码结果
+        const qr_code = resultCode;    // 要传递的参数
+        let url = '';
+        let data = {};
+
+        // 判断是仓库信息框中扫码还是卡板信息扫码
+        if (type == 'repo') {
+          url = '/pda/suz/repo/scan';
+          data = {
+            repo_code : code,
+            qr_code : qr_code
+          }
+        } else if (type == 'pallet') {
+          url = '/pda/suz/pallet/scan';
+          data = {
+            pallet_code : code,
+            qr_code : qr_code
+          }
+        } else {
+          app.showErrorToast('只能扫卡板或仓库，客户端错误');
+        }
+
+        wx.request({
+          url: app.globalData.serverUrl + url,
+          header: {
+            "content-type" : "application/json",
+            "Authorization" : wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token')
+          },
+          method: "GET",
+          dataType: 'json',
+          data: data,
+          success: (result) => {
+            // http码
+            if(result.statusCode == normalHttpCode) {
+              // 业务状态码
+              if (result.data.code == normalBusinessCode) {
+                const data = result.data.data;
+                // console.log(data);
+                if (type == 'repo') {
+                  // 更新数据值
+                  that.setData({
+                    modalWarehouseData: data,
+                    inWarehouseNumber: data.material_num,
+                    title: title,
+                    showCode: showCode,
+
+                    showWarehouseModal: true,
+                  })
+
+                } else if (type == 'pallet') {
+                  // 更新数据值
+                  that.setData({
+                    modalPalletsData: data,
+                    inPalletsNumber: data.material_num,
+                    title: title,
+                    showCode: showCode,
+
+                    showPalletsModal: true,
+                  })
+                } else {
+                  app.showErrorToast('客服端错误501');
+                } 
+
+              } else {
+                // 业务码判断打印错误
+                app.processPostRequestConcreteCode(result.data.code, result.data.message);
+              }
+            } else {
+              // 对code码进行校验并且处理
+              app.processPostRequestStatusCode(result.statusCode);
+            }
+          },
+          fail: (res) => {
+            // app.requestSendError(res);
+          },
+          complete: (res) => {},
+        })
+
       },
       fail: (res) => {
         console.log(`扫描失败`)
@@ -283,6 +365,107 @@ Page({
     
   },
 
+  // 仓库扫描卡板 的提交动作
+  postWarehouse(e) {
+    // console.log(e);
+    const action = this.data.modalWarehouseData.action;
+    const repo_code = this.data.modalWarehouseData.repo_code;
+    const pallet_code = this.data.modalWarehouseData.pallet_code;
+
+    let url = ''
+    let toastMsg = ''
+    // 判断是出库还是入库
+    if (action == 'checkin') {
+      url = '/pda/suz/repo/checkin';     // 入库的uri
+      toastMsg = '入库成功'     // 入库的成功提示语
+    } else if (action == 'checkout') {
+      url = '/pda/suz/repo/checkout';
+      toastMsg = '出库成功'
+    } else {
+      app.showErrorToast('后台错误，出入库类型错误')
+      return;
+    }
+    // 发送请求提交
+    wx.request({
+      url: app.globalData.serverUrl + url,
+      data: {
+        repo_code: repo_code,
+        pallet_code: pallet_code
+      },
+      dataType: 'json',
+      header: {
+        "content-type": "application/json",
+        "Authorization": wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token'),
+      },
+      method: 'POST',
+      success: (result) => {
+        // console.log(result);
+        this.setData({
+          inWarehouseNumber: 0,
+        });
+        app.processPostRequestStatusCode(result.statusCode);
+        if (result.statusCode == normalHttpCode) {
+          app.showSuccessToast(toastMsg);
+        }
+      },
+      fail: (res) => {
+        app.showErrorToast("request请求发送失败");
+      },
+      complete: (res) => {},
+    })
+
+  },
+
+
+  // 卡板扫描物料 的提交动作
+  postPallets(e) {
+    // console.log(e);
+    const action = this.data.modalPalletsData.action;
+    const pallet_code = this.data.modalPalletsData.pallet_code;
+    const material_code = this.data.modalPalletsData.material_code;
+    const material_num = this.data.modalPalletsData.material_num;
+    
+    let url = ''
+    let toastMsg = ''
+    // 判断是出库还是入库
+    if (action == 'bind') {
+      url = '/pda/suz/pallet/bind';     // 入库的uri
+      toastMsg = '绑定成功'     // 入库的成功提示语
+    } else if (action == 'unbind') {
+      url = '/pda/suz/pallet/unbind';
+      toastMsg = '解绑成功'
+    } else {
+      app.showErrorToast('后台错误，出入库类型错误')
+      return;
+    }
+    // 发送请求提交
+    wx.request({
+      url: app.globalData.serverUrl + url,
+      data: {
+        pallet_code: pallet_code,
+        material_code: material_code,
+        material_num: material_num
+      },
+      dataType: 'json',
+      header: {
+        "content-type": "application/json",
+        "Authorization": wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token'),
+      },
+      method: 'POST',
+      success: (result) => {
+        // console.log(result);
+        app.processPostRequestStatusCode(result.statusCode);
+        if (result.statusCode == normalHttpCode) {
+          app.showSuccessToast(toastMsg);
+        }
+      },
+      fail: (res) => {
+        app.showErrorToast("request请求发送失败");
+      },
+      complete: (res) => {},
+    })
+
+  },
 
 
   // modal层传来的cancel事件
@@ -313,7 +496,7 @@ Page({
           inWarehouseNumber: 0,
         });
         app.processPostRequestStatusCode(result.statusCode);
-        if (result.statusCode == 200) {
+        if (result.statusCode == normalHttpCode) {
           app.showSuccessToast("提交成功");
         }
       },
@@ -326,7 +509,6 @@ Page({
 
 
   sourceChange: function(e) {
-    // console.log('picker发送选择改变，携带值为', e.detail.value)
     // console.log(e)
 
     // 如果来源改变了，那么物料列表也需要改变
@@ -375,21 +557,18 @@ Page({
       method: "GET",
       dataType: 'json',
       success: (result) => {
-        // console.log(result);
 
         // http码
-        if(result.statusCode == 200) {
+        if(result.statusCode == normalHttpCode) {
           // 业务状态码
-          if (result.data.code == 0) {
+          if (result.data.code == normalBusinessCode) {
             // app.showSuccessToast("成功");
 
-            // console.log(result.data.data)
             let sourceArray = [];
             let materialArray = [];
             // 修改sourceArray
             let list = result.data.data;
             for (const key in list) {
-              // console.log(list[key].source);
               sourceArray.push(list[key].source);
             }
             // 修改materialArray （修改默认为第一项）
@@ -397,7 +576,6 @@ Page({
             for (const key in list) {
               materialArray.push(list[key].material_name);
             }
-                // console.log(this.data.materialArray);
             // 修改material_num （修改默认为第一项）
             let material_num = result.data.data[0].material[0].material_num;
             // 物料码
@@ -429,9 +607,14 @@ Page({
   },
 
   getInWarehouseNumInput(event) {
-    // console.log(event.detail.value);
     this.setData({
       inWarehouseNumber: Number(event.detail.value)
+    });
+  },
+
+  getInPalletsNumInput(event) {
+    this.setData({
+      inPalletsNumber: Number(event.detail.value)
     });
   }
 

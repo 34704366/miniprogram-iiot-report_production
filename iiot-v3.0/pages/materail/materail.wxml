@@ -18,7 +18,7 @@
         </view>
         <view class="col-box">
         
-          <button bindtap="inWarehouse" data-index="{{index}}" size="mini" type="primary" plain="true" class="button">入库</button>
+          <button bindtap="inWarehouse" data-index="{{index}}" data-code="{{item.repo_code}}" data-title="{{item.repo_name}}" data-showCode="{{item.repo_code}}" size="mini" type="primary" plain="true" class="button">入库</button>
         </view>
       </view>
       
@@ -53,6 +53,7 @@
         </view>
       </view>
 
+      <button bindtap="inPop">弹出来</button>
       
       <view class="show" bindtap="foldWarehouse" data-index="{{index}}">
         收起
@@ -123,7 +124,7 @@
         </view>
         <view class="col-box">
         
-          <button bindtap="inWarehouse" data-index="{{index}}" size="mini" type="primary" plain="true" class="button">入库</button>
+          <button bindtap="inPallets" data-index="{{index}}" size="mini" data-code="{{item.pallet_code}}" data-title="{{item.pallet_name}}" data-showCode="{{item.pallet_code}}"  type="primary" plain="true" class="button">入库</button>
         </view>
       </view>
 
@@ -153,8 +154,6 @@
       </view>
     </view>
 
-
-
   </view>
 
 
@@ -163,7 +162,7 @@
     <input type="text" placeholder="在这里输入" />
     <button>提交</button>
   </view> -->
-  <modal show="{{showModal}}" height="60%" bind:cancel="modalCancel" bind:confirm="modalConfirm" title="{{title}}" index="{{warehouseListIndex}}" repo_code="{{repo_code}}">
+  <modal show="{{showModal}}" height="60%" bind:cancel="modalCancel" bind:confirm="modalConfirm" title="{{title}}" index="{{warehouseListIndex}}" showCode="{{showCode}}">
     <!-- <view class='modal-content'>自己的布局</view> -->
     <view class="main-content">
       <view class="modal-box">
@@ -187,7 +186,57 @@
         <input class="input" type="number" placeholder="请输入数量" bindinput="getInWarehouseNumInput" value="{{inWarehouseNumber}}"/>
       </view>
 
-
     </view>
+  </modal>
+
+  <modal show="{{showWarehouseModal}}" height="70%" bind:cancel="modalCancel" bind:confirm="postWarehouse"  title="{{title}}" index="{{warehouseListIndex}}" showCode="{{showCode}}">
+    <scroll-view scroll-y="true" style="height: 75%">
+      <view class="main-content">
+        <view class="modal-box">
+          卡板名称：{{modalWarehouseData.pallet_name}}
+        </view>
+        <view class="modal-box">
+          卡板编号：{{modalWarehouseData.material_code}}
+        </view>
+        <view class="modal-box">
+          物料编号：{{modalWarehouseData.material_code}}
+        </view>
+        <view class="modal-box">
+          物料名称：{{modalWarehouseData.material_name}}
+        </view>
+        <view class="modal-box">
+          物料规格：{{modalWarehouseData.material_spec}}
+        </view>
+        <view class="modal-box">
+          物料数量：{{modalWarehouseData.material_num}}
+        </view>
+      </view>
+    </scroll-view>
+  </modal>
+
+  <modal show="{{showPalletsModal}}" height="70%" bind:cancel="modalCancel" bind:confirm="postPallets" title="{{title}}" index="{{palletsListIndex}}" showCode="{{showCode}}">
+    <scroll-view scroll-y="true" style="height: 75%">
+      <view class="main-content">
+        <view class="modal-box">
+          卡板名称：{{modalPalletsData.pallet_name}}
+        </view>
+        <view class="modal-box">
+          卡板编号：{{modalPalletsData.pallet_code}}
+        </view>
+        <view class="modal-box">
+          物料编号：{{modalPalletsData.material_code}}
+        </view>
+        <view class="modal-box">
+          物料名称：{{modalPalletsData.material_name}}
+        </view>
+        <view class="modal-box">
+          物料规格：{{modalPalletsData.material_spec}}
+        </view>
+        <view class="modal-box">
+          <text>物料数量：</text>
+          <input class="input" type="number" placeholder="请输入数量" bindinput="getInPalletsNumInput" value="{{inPalletsNumber}}"/>
+        </view>
+      </view>
+    </scroll-view>
   </modal>
 </view>
