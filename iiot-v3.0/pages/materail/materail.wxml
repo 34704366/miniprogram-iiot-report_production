@@ -52,8 +52,6 @@
           物料数量：{{item.material_num}}
         </view>
       </view>
-
-      <button bindtap="inPop">弹出来</button>
       
       <view class="show" bindtap="foldWarehouse" data-index="{{index}}">
         收起
@@ -156,39 +154,7 @@
 
   </view>
 
-
-
-  <!-- <view class="popModal">
-    <input type="text" placeholder="在这里输入" />
-    <button>提交</button>
-  </view> -->
-  <modal show="{{showModal}}" height="60%" bind:cancel="modalCancel" bind:confirm="modalConfirm" title="{{title}}" index="{{warehouseListIndex}}" showCode="{{showCode}}">
-    <!-- <view class='modal-content'>自己的布局</view> -->
-    <view class="main-content">
-      <view class="modal-box">
-        <text>来源：</text>
-        <picker mode="selector" range="{{sourceArray}}" value="{{sourceIndex}}" bindchange="sourceChange">
-          <view class="picker">{{sourceArray[sourceIndex]}}</view>
-        </picker>
-      </view>
-      <view class="modal-box">
-        <text>物料：</text>
-        <picker mode="selector" range="{{materialArray}}" value="{{materialIndex}}" bindchange="materialChange">
-          <view class="picker">{{materialArray[materialIndex]}}</view>
-        </picker>
-      </view>
-      <view class="modal-box">
-        <text>库存：</text>
-        {{material_num}}
-      </view>
-      <view class="modal-box">
-        <text>入库：</text>
-        <input class="input" type="number" placeholder="请输入数量" bindinput="getInWarehouseNumInput" value="{{inWarehouseNumber}}"/>
-      </view>
-
-    </view>
-  </modal>
-
+  <!-- 设备扫码卡板后弹出的modal框 -->
   <modal show="{{showWarehouseModal}}" height="70%" bind:cancel="modalCancel" bind:confirm="postWarehouse"  title="{{title}}" index="{{warehouseListIndex}}" showCode="{{showCode}}">
     <scroll-view scroll-y="true" style="height: 75%">
       <view class="main-content">
@@ -214,6 +180,7 @@
     </scroll-view>
   </modal>
 
+  <!-- 卡板扫描物料后弹出的modal框 -->
   <modal show="{{showPalletsModal}}" height="70%" bind:cancel="modalCancel" bind:confirm="postPallets" title="{{title}}" index="{{palletsListIndex}}" showCode="{{showCode}}">
     <scroll-view scroll-y="true" style="height: 75%">
       <view class="main-content">

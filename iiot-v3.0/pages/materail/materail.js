@@ -225,24 +225,6 @@ Page({
     })
   },
 
-  // 点击入库按钮的动作
-  inPop(event) {
-    // console.log(event)
-    const warehouseListIndex = event.currentTarget.dataset.index;
-    // console.log(warehouseListIndex)
-    this.setData({
-      showModal: true,
-      warehouseListIndex: warehouseListIndex,
-      // title: this.data.warehouseList[warehouseListIndex].repo_name,
-      // showCode: this.data.warehouseList[warehouseListIndex].repo_code
-    });
-
-    // 调用函数获取入库信息
-    let repo_code = this.data.warehouseList[warehouseListIndex].repo_code
-    this.getInWarehouseInfo(repo_code);
-    
-  },
-
   // 仓库中点击入库按钮的动作
   inWarehouse(event) {
     const index = event.currentTarget.dataset.index;    
@@ -542,69 +524,6 @@ Page({
     })
   },
 
-  getInWarehouseInfo(repo_code) {
-    
-    let that = this;
-    wx.request({
-      url: app.globalData.serverUrl + '/pda/suz/repo',
-      header: {
-        "content-type" : "application/json",
-        "Authorization" : wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token')
-      },
-      data: {
-        repo_code: repo_code
-      },
-      method: "GET",
-      dataType: 'json',
-      success: (result) => {
-
-        // http码
-        if(result.statusCode == normalHttpCode) {
-          // 业务状态码
-          if (result.data.code == normalBusinessCode) {
-            // app.showSuccessToast("成功");
-
-            let sourceArray = [];
-            let materialArray = [];
-            // 修改sourceArray
-            let list = result.data.data;
-            for (const key in list) {
-              sourceArray.push(list[key].source);
-            }
-            // 修改materialArray （修改默认为第一项）
-            list = result.data.data[0].material;
-            for (const key in list) {
-              materialArray.push(list[key].material_name);
-            }
-            // 修改material_num （修改默认为第一项）
-            let material_num = result.data.data[0].material[0].material_num;
-            // 物料码
-            let material_code = result.data.data[0].material[0].material_code;
-            that.setData({
-              InWarehouseInfoArray: result.data.data,
-              sourceArray: sourceArray,
-              sourceIndex: 0,
-              materialArray: materialArray,
-              materialIndex: 0,
-              material_num: material_num,
-              material_code: material_code,
-            });
-
-          } else {
-            // 业务码判断打印错误
-            app.processPostRequestConcreteCode(result.data.code, result.data.message);
-          }
-        } else {
-          // 对code码进行校验并且处理
-          app.processPostRequestStatusCode(result.statusCode);
-        }
-      },
-      fail: (res) => {
-        // app.requestSendError(res);
-      },
-      complete: (res) => {},
-    })
-  },
 
   getInWarehouseNumInput(event) {
     this.setData({
