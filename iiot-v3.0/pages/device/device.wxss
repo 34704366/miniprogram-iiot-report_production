@@ -76,7 +76,6 @@
   top: 300rpx;
   width: 600rpx;
 }
-
 .main-content{
   flex: 1;
   /* height: 100%; */
@@ -85,15 +84,18 @@
   flex-direction: column;
   align-items: flex-start;
   font-size: 38rpx;
+
+  height: 100%;
 }
-.picker{
+
+/* main-content */
+.main-content .picker{
   padding: 5rpx;
   /* background-color: #FFFFFF; */
   background-color: rgb(236, 236, 236);
-  width: 430rpx;
+  width: 400rpx;
   height: 60rpx;
   border-radius: 12rpx;
-  padding-left: 10rpx;
 }
 .modal-box{
   display: flex;
@@ -106,9 +108,16 @@
   background-color: rgb(236, 236, 236);
   border-radius: 12rpx;
   height: 60rpx;
-  width: 430rpx;
-  padding-left: 10rpx;
+}
 
+.picker{
+  padding: 5rpx;
+  /* background-color: #FFFFFF; */
+  background-color: rgb(236, 236, 236);
+  width: 430rpx;
+  height: 60rpx;
+  border-radius: 12rpx;
+  padding-left: 10rpx;
 }
 .container .info .stock-number {
   height: 60rpx;

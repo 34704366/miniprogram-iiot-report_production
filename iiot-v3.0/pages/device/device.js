@@ -9,6 +9,13 @@ const REPORT_PASS = 1;
 const REPORT_DEFECT = 2;
 // 修改员工状态的函数控制标志位
 const CHANGE_OPREATOR_STATUS = 3;
+
+// 报产标志位
+const TEST_REPORT = 300;    // 调机报产
+const PASS_REPORT = 301;    // 良品报产
+const DEFECT_REPORT = 302;  // 次品报产
+
+
 Page({
 
   data: {
@@ -31,14 +38,20 @@ Page({
     },
     statusIndex: 0,
     inWarehouseNumber: 0,
-    selected_machine_code: ''
+    selected_machine_code: '',
+
+    modalInOutWarehouseData: {},    // 出/入库数据存放
+
+    reprtNumber: 0,   // 报产数量
+    showReportModal: false,   // 报产modal控制位
+
   },
 
   
   onShow: function (options) {
     // 获取设备列表
-    this.getTaskList();
-    this.getFixList();
+    this.refreshData();
+
     const that = this;
     // this.judgeOpreatorStatus();
 
@@ -70,6 +83,15 @@ Page({
     
   },
 
+
+  // 刷新页面重新拉取数据
+  refreshData() {
+    // 获取设备列表
+    this.getTaskList();
+    this.getFixList();
+  },
+
+  // 获取task列表
   getTaskList() {
     let that = this;
     wx.request({
@@ -85,7 +107,6 @@ Page({
       method: "GET",
       dataType: 'json',
       success: (result) => {
-        console.log(result);
 
         // http码
         if(result.statusCode == normalHttpCode) {
@@ -328,7 +349,7 @@ Page({
         "content-type": "application/json",
         "Authorization": wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token'),
       },
-      method: 'post',
+      method: 'POST',
       success: (result) => {
         this.setData({
           inWarehouseNumber: 0,
@@ -440,6 +461,185 @@ Page({
     
   },
   
+  testReportClick(event) {
+    const index = event.currentTarget.dataset.index;
+    const type = TEST_REPORT;   // 报产标志位--调机
+    const machine_code = event.currentTarget.dataset.machine_code;
+    const work_order = event.currentTarget.dataset.work_order;
+    const task_code = event.currentTarget.dataset.task_code;
+
+    const title = event.currentTarget.dataset.title;   // 显示在modal上的title
+    const showCode = event.currentTarget.dataset.showCode;  // 显示在modal上的code
+
+    this.setData({
+      showReportModal: true,
+      reportModalText: '调机报数',
+      reportType: type,
+      taskListIndex: index,
+      machine_code: machine_code,    // post-data
+      work_order: work_order ,      // post-data
+      task_code: task_code,      // post-data
+
+      title: title,
+      showCode: showCode,
+    })
+  },
+
+  // 点击良品报产事件回调函数
+  passReportClick(event) {
+    const index = event.currentTarget.dataset.index;
+    const type = PASS_REPORT;  // 报产标志位--调机
+    const machine_code = event.currentTarget.dataset.machine_code;
+    const work_order = event.currentTarget.dataset.work_order;
+    const task_code = event.currentTarget.dataset.task_code;
+
+    const title = event.currentTarget.dataset.title;   // 显示在modal上的title
+    const showCode = event.currentTarget.dataset.showCode;  // 显示在modal上的code
+
+    this.setData({
+      showReportModal: true,
+      reportModalText: '良品报数',
+      reportType: type,
+      taskListIndex: index,
+
+      machine_code: machine_code,    // post-data
+      work_order: work_order ,      // post-data
+      task_code: task_code,      // post-data
+
+      title: title,
+      showCode: showCode,
+    })
+  },
+
+  // 点击次品报产事件回调函数
+  defectReportClick(event) {
+    const index = event.currentTarget.dataset.index;
+    const type = DEFECT_REPORT;   // 报产标志位--调机
+    const machine_code = event.currentTarget.dataset.machine_code;
+    const work_order = event.currentTarget.dataset.work_order;
+    const task_code = event.currentTarget.dataset.task_code;
+
+    const title = event.currentTarget.dataset.title;   // 显示在modal上的title
+    const showCode = event.currentTarget.dataset.showCode;  // 显示在modal上的code
+
+    this.setData({
+      showReportModal: true,
+      reportModalText: '次品报数',
+      reportType: type,
+      taskListIndex: index,
+
+      machine_code: machine_code,    // post-data
+      work_order: work_order ,      // post-data
+      task_code: task_code,      // post-data
+
+      isDefectFlag: true,     // 负责让次品报产modal多一行信息的控制位
+      title: title,
+      showCode: showCode,
+    })
+  },
+
+  // 报产post请求
+  postReport(event) {
+    const type = this.data.reportType;
+    const machine_code = this.data.machine_code;
+    const work_order = this.data.work_order;
+    const task_code = this.data.task_code;
+    const quantity = this.data.passNumber;
+    const index = this.data.taskListIndex;
+
+    let url = '';
+    let data = {};
+    if (type == TEST_REPORT) {
+      url = '/pda/suz/production/test';
+      data = {
+        machine_code: machine_code,
+        work_order: work_order,
+        task_code: task_code,
+        quantity: quantity
+      }
+    } else if (type == PASS_REPORT) {
+      url = '/pda/suz/production/pass';
+      data = {
+        machine_code: machine_code,
+        work_order: work_order,
+        task_code: task_code,
+        quantity: quantity
+      }
+    } else if (type == DEFECT_REPORT) {
+      url = '/pda/suz/production/defect';
+
+    } else {
+      app.showErrorToast('客服端错误504');
+      return;
+    }
+
+    console.log('report data:::',data);
+    this.postReportInterface(url, data, type, index)
+  },
+
+  // 入库出库的统一post请求接口
+  postReportInterface(url, data, type, index) {
+    
+    // 返回值
+    const that = this;
+    wx.request({
+      url: app.globalData.serverUrl + url,
+      data: data,
+      dataType: 'json',
+      header: {
+        "content-type" : "application/json",
+        "Authorization" : wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token')
+      },
+      method: 'POST',
+      success: (result) => {
+        app.processPostRequestStatusCode(result.statusCode);
+        if(result.statusCode == normalHttpCode) {
+          console.log(type)
+          
+          // 如果是调机报产
+          if(type == TEST_REPORT) {
+            // 刷新页面数据
+            that.refreshData();
+            app.showSuccessToast('提交入库成功');
+          }
+          // 如果是良品报产
+          else if (type == PASS_REPORT) {
+            // 刷新页面数据
+            that.refreshData();
+            app.showSuccessToast('提交出库成功');
+
+          }
+          // 如果是次品报产
+          else if (type == DEFECT_REPORT) {
+
+
+          }
+          // 异常
+          else {
+            app.showErrorToast('505客户端错误');
+          }
+        } else {
+          app.showErrorToast(result.errMsg);
+        }
+        
+      },
+      fail: (result) => {
+        app.showErrorToast("发送request请求失败");
+        console.log(result)
+        
+        // return -1;
+        that.result = -1;
+      },
+      complete: (res) => {
+        wx.hideLoading({
+          success: (res) => {},
+        }) 
+      },
+    });
+
+  },
+
+
   // 良品报数
   passSubmit(e) {
     // 如果数量为0，不发送请求
@@ -496,6 +696,7 @@ Page({
     }
     this.deivcePostRequest(url, data, "报数成功", REPORT_DEFECT, index);
   },
+
 
   // 统一post请求
   deivcePostRequest(url, data, showTitle, flag, index) {
@@ -558,6 +759,8 @@ Page({
       },
     });
   },
+
+
 
   // 获取到入库信息
   getInWarehouseInfo(repo_code) {
@@ -759,7 +962,7 @@ Page({
         "content-type" : "application/json",
         "Authorization" : wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token')
       },
-      method: "post",
+      method: "POST",
       dataType: 'json',
       success: (result) => {
         // console.log(result);
@@ -790,49 +993,125 @@ Page({
   },
 
   // 入库事件回调函数
-  inWarehouse(event) {
+  inWarehouseClick(event) {
     const index = event.currentTarget.dataset.index;
+    const machine_code = event.currentTarget.dataset.machine_code;
+    const work_code = event.currentTarget.dataset.work_code;
+    const task_code = event.currentTarget.dataset.task_code;
+    const action = 'checkin'   // 入库标志位
+    const title = event.currentTarget.dataset.title;   // 显示在modal上的title
+    const showCode = event.currentTarget.dataset.showCode;  // 显示在modal上的code
 
-    this.scanCode();
+    this.setData({
+      taskListIndex: index,
+    })
+
+    this.scanCode(action, machine_code, work_code, task_code, title, showCode);
 
   },
 
   // 出库事件回调函数
-  outWarehouse(event) {
+  outWarehouseClick(event) {
     const index = event.currentTarget.dataset.index;
+    const machine_code = event.currentTarget.dataset.machine_code;
+    const work_code = event.currentTarget.dataset.work_code;
+    const task_code = event.currentTarget.dataset.task_code;
+    const action = 'checkout'   // 出库标志位
+    const title = event.currentTarget.dataset.title;   // 显示在modal上的title
+    const showCode = event.currentTarget.dataset.showCode;  // 显示在modal上的code
 
-    this.scanCode();
+    this.setData({
+      taskListIndex: index,
+    });
+
+    this.scanCode(action, machine_code, work_code, task_code, title, showCode);
   },
 
-  scanCode() {
+  // 出入库扫码的统一函数
+  scanCode(action, machine_code, work_code, task_code, title, showCode) {
     const that = this;
     wx.scanCode({
       success: (res) => {
-        app.showErrorToast("未识别的信息");
+        
+        const resultCode = res.result;   // 扫码结果
+        const qr_code = resultCode;    // 要传递的参数
+        let url = '';
+        let data = {
+          machine_code : machine_code,
+          qr_code: qr_code
+        };
 
-        // // console.log(res.result);
-        // const result = res.result;
-        // that.setData({
-        //   scanResult: res.result
-        // })
-        // if(result=='material') {
-        //   wx.navigateTo({
-        //     url: `/pages/materail/materail?name=${this.data.scanResult}`,
-        //     success: (result) => {},
-        //     fail: (res) => {},
-        //   })
-        // }
-        // else if(result=='device') {
-        //   wx.navigateTo({
-        //     url: `/pages/warehouse/warehouse?name=${this.data.scanResult}`,
-        //   })
-        // }
-        // else {
-        //   wx.showToast({
-        //     title: '找不到该二维码的信息！',
-        //     icon: 'error'
-        //   })
-        // }
+        // 判断是仓库信息框中扫码还是卡板信息扫码
+        if (action == 'checkin') {
+          url = '/pda/suz/machine/checkin/scan';
+        } else if (action == 'checkout') {
+          url = '/pda/suz/machine/checkout/scan';
+        } else {
+          app.showErrorToast('客户端错误：502');
+          return;
+        }
+
+        wx.request({
+          url: app.globalData.serverUrl + url,
+          header: {
+            "content-type" : "application/json",
+            "Authorization" : wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token')
+          },
+          method: "GET",
+          dataType: 'json',
+          data: data,
+          success: (result) => {
+            // http码
+            if(result.statusCode == normalHttpCode) {
+              // 业务状态码
+              if (result.data.code == normalBusinessCode) {
+                const data = result.data.data;
+                console.log(data);
+                  // 更新数据值
+                  that.setData(  {
+                    modalInOutWarehouseData: data,
+                    title: title,
+                    showCode: showCode,
+
+                    // showInWarehouseModal: true,
+                    postInWarehouseData: {
+                      machine_code: machine_code,
+                      pallet_code: data.pallet_code,
+                      work_code: work_code,
+                      task_code: task_code
+
+                    },
+                    warehouseInOutNum: data.material_num,
+                  });
+                  // 判断是仓库信息框中扫码还是卡板信息扫码
+                  if (action == 'checkin') {
+                    that.setData({
+                      showInWarehouseModal: true
+                    });
+                  } else if (action == 'checkout') {
+                    that.setData({
+                      showOutWarehouseModal: true
+                    });
+                  } else {
+                    app.showErrorToast('客户端错误：502');
+                    return;
+                  }
+
+              } else {
+                // 业务码判断打印错误
+                app.processPostRequestConcreteCode(result.data.code, result.data.message);
+              }
+            } else {
+              // 对code码进行校验并且处理
+              app.processPostRequestStatusCode(result.statusCode);
+            }
+          },
+          fail: (res) => {
+            // app.requestSendError(res);
+          },
+          complete: (res) => {},
+        })
+
       },
       fail: (res) => {
         console.log(`扫描失败`)
@@ -844,6 +1123,104 @@ Page({
     })
     
   },
+
+
+  // modal框提交入库的操作
+  postInWarehouse() {
+    const url = '/pda/suz/machine/checkin';
+    const data = this.data.postInWarehouseData;
+    const type = 'inWarehouse';
+    const index = this.data.taskListIndex;
+    this.postInOutInterface(url, data, type, index);
+  },
+
+  // modal框提交出库的操作
+  postOutWarehouse() {
+    const url = '/pda/suz/machine/checkout';
+    const data = this.data.postInWarehouseData;
+    const type = 'outWarehouse';
+    const index = this.data.taskListIndex;
+    this.postInOutInterface(url, data, type, index);
+  },
+
+  // 入库出库的统一post请求接口
+  postInOutInterface(url, data, type, index) {
+    
+    // 返回值
+    const that = this;
+    wx.request({
+      url: app.globalData.serverUrl + url,
+      data: data,
+      dataType: 'json',
+      header: {
+        "content-type" : "application/json",
+        "Authorization" : wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token')
+      },
+      method: 'POST',
+      success: (result) => {
+        app.processPostRequestStatusCode(result.statusCode);
+        if(result.statusCode == normalHttpCode) {
+          console.log(type)
+          
+          // 如果是A库入库
+          if(type == 'inWarehouse') {
+            let list = this.data.taskList;
+            list[index].repo_A = parseInt(that.data.taskList[index].repo_A) + parseInt(that.data.warehouseInOutNum);
+            // 添加到已报良品数量上
+            that.setData({
+              taskList: list,
+            });
+            // console.log("修改后良品数量:",this.data.repo_A);
+            app.showSuccessToast('入库成功');
+          }
+          // 如果是B库出库
+          else if (type == 'outWarehouse') {
+            let list = this.data.taskList;
+            list[index].repo_B = parseInt(that.data.taskList[index].repo_B) - parseInt(that.data.warehouseInOutNum);
+            // 添加
+            that.setData({
+              taskList: list,
+            });
+            app.showSuccessToast('出库成功');
+
+          }
+          // 如果是修改人员状态
+          else if (type == CHANGE_OPREATOR_STATUS) {
+
+
+          }
+          // 异常
+          else {
+            app.showErrorToast('503客户端错误');
+          }
+        } else {
+          app.showErrorToast(result.errMsg);
+        }
+        
+      },
+      fail: (result) => {
+        app.showErrorToast("发送request请求失败");
+        console.log(result)
+        
+        // return -1;
+        that.result = -1;
+      },
+      complete: (res) => {
+        wx.hideLoading({
+          success: (res) => {},
+        }) 
+      },
+    });
+
+  },
+
+  // 获取输入框内容
+  getReportNumInput(event) {
+    this.setData({
+      reprtNumber: Number(event.detail.value)
+    });
+  }
+  
 
 
 })

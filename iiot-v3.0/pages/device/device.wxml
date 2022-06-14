@@ -22,7 +22,7 @@
     <view wx:if="{{item.onHide == 0}}">
       <view class="col-box">
         <text class="title" decode="{{true}}">
-        {{item.machine_name}}&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{{item.machine_id}}
+        {{item.machine_name}}&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{{item.machine_code}}
         </text>
 
         <view style="width: 150px"></view>
@@ -41,7 +41,7 @@
             {{item.repo_A_num}}
           </view> -->
           <view class="stock-number">{{item.repo_A}}</view> 
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="inWarehouse" data-index="{{index}}">入库</button>
+          <button class="submitButton" size="mini" plain="true" data-title="{{item.machine_name}}" type="primary" bindtap="inWarehouseClick" data-index="{{index}}" data-machine_code="{{item.machine_code}}" data-showCode="{{item.machine_code}}" data-work_code="{{item.work_code}}" data-task_code="{{item.task_code}}">入库</button>
         </view>
 
         <view class="input-row-box">
@@ -52,7 +52,7 @@
               {{item.repo_B_num}}
             </view> -->
           <view class="stock-number">{{item.repo_B}}</view> 
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="outWarehouse" data-index="{{index}}">出库</button>
+          <button class="submitButton" size="mini" plain="true"  data-title="{{item.machine_name}}" type="primary" bindtap="outWarehouseClick" data-index="{{index}}" data-machine_code="{{item.machine_code}}" data-showCode="{{item.machine_code}}"  data-work_code="{{item.work_code}}" data-task_code="{{item.task_code}}">出库</button>
         </view>
 
         <view class="input-row-box">
@@ -60,7 +60,7 @@
             已报调机数：
           </view>
           <view class="stock-number">{{item.test_reported}}</view> 
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="testReportClick" data-index="{{index}}">调机报产</button>
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="testReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_order}}" data-task_code="{{item.task_code}}">调机报产</button>
         </view>
 
         <view class="input-row-box">
@@ -68,7 +68,7 @@
             已报良品数：
           </view>
           <view class="stock-number">{{item.pass_reported}}</view> 
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="passReportClick" data-index="{{index}}">良品报产</button>
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="passReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_order}}" data-task_code="{{item.task_code}}">良品报产</button>
         </view>
 
         <view class="input-row-box">
@@ -76,7 +76,7 @@
             已报次品数：
           </view>
           <view class="stock-number">{{item.defect_reported}}</view> 
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="defectReportClick" data-index="{{index}}">次品报产</button>
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="defectReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_order}}" data-task_code="{{item.task_code}}">次品报产</button>
         </view>
 
         <view class="input-row-box">
@@ -153,7 +153,7 @@
             {{item.machine_name}}
           </view>
         <view class="text">
-          单号：{{item.work_code}}
+          单号：{{item.task_code}}
         </view>
       </view>
       <view class="col-box">
@@ -230,4 +230,66 @@
     </view>
   </modal>
 
+  <!-- 设备扫码卡板后弹出的modal框 -->
+  <modal show="{{showInWarehouseModal}}" height="70%" bind:cancel="modalCancel" bind:confirm="postInWarehouse"  title="{{title}}" index="{{taskListIndex}}" showCode="{{showCode}}">
+    <scroll-view scroll-y="true" style="height: 75%">
+      <view class="main-content">
+        <view class="modal-box">
+          卡板编号：{{modalInOutWarehouseData.pallet_code}}
+        </view>
+        <view class="modal-box">
+          物料编号：{{modalInOutWarehouseData.material_code}}
+        </view>
+        <view class="modal-box">
+          物料名称：{{modalInOutWarehouseData.material_name}}
+        </view>
+        <view class="modal-box">
+          物料规格：{{modalInOutWarehouseData.material_spec}}
+        </view>
+        <view class="modal-box">
+          物料数量：{{modalInOutWarehouseData.material_num}}
+        </view>
+      </view>
+    </scroll-view>
+  </modal>
+
+
+  <!-- 设备扫码卡板后弹出的modal框 -->
+  <modal show="{{showOutWarehouseModal}}" height="70%" bind:cancel="modalCancel" bind:confirm="postOutWarehouse"  title="{{title}}" index="{{taskListIndex}}" showCode="{{showCode}}">
+    <scroll-view scroll-y="true" style="height: 75%">
+      <view class="main-content">
+        <view class="modal-box">
+          卡板编号：{{modalInOutWarehouseData.pallet_code}}
+        </view>
+        <view class="modal-box">
+          物料编号：{{modalInOutWarehouseData.material_code}}
+        </view>
+        <view class="modal-box">
+          物料名称：{{modalInOutWarehouseData.material_name}}
+        </view>
+        <view class="modal-box">
+          物料规格：{{modalInOutWarehouseData.material_spec}}
+        </view>
+        <view class="modal-box">
+          物料数量：{{modalInOutWarehouseData.material_num}}
+        </view>
+      </view>
+    </scroll-view>
+  </modal>
+
+
+  <!-- 产品报数的modal框 -->
+  <modal show="{{showReportModal}}" height="70%" bind:cancel="modalCancel" bind:confirm="postReport"  title="{{title}}" index="{{taskListIndex}}" showCode="{{showCode}}">
+    <scroll-view scroll-y="true" style="height: 75%">
+      <view class="main-content">
+        <view class="modal-box">
+          <text>
+            {{reportModalText}}：
+          </text>
+          <input class="input" type="number" placeholder="请输入数量" bindinput="getReportNumInput" value="{{reportNumber}}"/>
+        </view>
+        
+      </view>
+    </scroll-view>
+  </modal>
 </view>
