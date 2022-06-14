@@ -65,14 +65,6 @@
   color: chartreuse;
  
 }
-.popModal {
-  overflow: hidden;
-  background: #fff;
-  position: absolute;
-  left: 200rpx;
-  top: 300rpx;
-  width: 600rpx;
-}
 
 .main-content{
   flex: 1;
