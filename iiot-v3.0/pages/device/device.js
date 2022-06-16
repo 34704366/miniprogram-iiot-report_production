@@ -42,9 +42,15 @@ Page({
 
     modalInOutWarehouseData: {},    // 出/入库数据存放
 
-    reprtNumber: 0,   // 报产数量
+    reportNumber: 0,   // 报产数量
     showReportModal: false,   // 报产modal控制位
+    isDefectReportFlag: false,   // 控制是否是次品报产的控制位
 
+    defectReasonArray: [],   // 次品原因，从后台拉取
+    defectReasonIndex: 0,   // 
+    defectReasonValueArray: [],   // 次品原因对应的int值
+    defectReasonValueIndex: 0,  
+    defectReasonText: ''   // 手写项原因
   },
 
   
@@ -480,6 +486,7 @@ Page({
       work_order: work_order ,      // post-data
       task_code: task_code,      // post-data
 
+      isDefectReportFlag: false,     // 负责让次品报产modal多一行信息的控制位
       title: title,
       showCode: showCode,
     })
@@ -506,6 +513,7 @@ Page({
       work_order: work_order ,      // post-data
       task_code: task_code,      // post-data
 
+      isDefectReportFlag: false,     // 负责让次品报产modal多一行信息的控制位
       title: title,
       showCode: showCode,
     })
@@ -513,7 +521,7 @@ Page({
 
   // 点击次品报产事件回调函数
   defectReportClick(event) {
-    const index = event.currentTarget.dataset.index;
+    const index = event.currentTarget.dataset.index;   // index
     const type = DEFECT_REPORT;   // 报产标志位--调机
     const machine_code = event.currentTarget.dataset.machine_code;
     const work_order = event.currentTarget.dataset.work_order;
@@ -521,7 +529,7 @@ Page({
 
     const title = event.currentTarget.dataset.title;   // 显示在modal上的title
     const showCode = event.currentTarget.dataset.showCode;  // 显示在modal上的code
-
+    console.log(`click: data: ${machine_code, work_order, task_code}`)
     this.setData({
       showReportModal: true,
       reportModalText: '次品报数',
@@ -532,9 +540,32 @@ Page({
       work_order: work_order ,      // post-data
       task_code: task_code,      // post-data
 
-      isDefectFlag: true,     // 负责让次品报产modal多一行信息的控制位
+      isDefectReportFlag: true,     // 负责让次品报产modal多一行信息的控制位
       title: title,
       showCode: showCode,
+    })
+    
+    // 提取出该任务对应的次品原因
+    const defect_reason = this.data.taskList[index].machine_status_obj.defect_reason_obj;
+    let keyList = [];
+    let valueList = [];
+    for (const index in defect_reason) {
+      keyList.push(index);
+      valueList.push(defect_reason[index]);
+    }
+    console.log(keyList);
+    console.log(valueList);
+    this.setData({
+      defectReasonArray: keyList,
+      defectReasonValueArray: valueList
+    })
+  },
+
+  defectReasonChange(e) {
+    const index = e.detail.value;
+    this.setData({
+      defectReasonIndex: index,
+      defectReasonValueIndex: index,
     })
   },
 
@@ -544,7 +575,7 @@ Page({
     const machine_code = this.data.machine_code;
     const work_order = this.data.work_order;
     const task_code = this.data.task_code;
-    const quantity = this.data.passNumber;
+    const quantity = this.data.reportNumber;
     const index = this.data.taskListIndex;
 
     let url = '';
@@ -567,7 +598,16 @@ Page({
       }
     } else if (type == DEFECT_REPORT) {
       url = '/pda/suz/production/defect';
-
+      const reason = this.data.defectReasonValueArray[this.data.defectReasonValueIndex];    // 原因的value 
+      const param = this.data.defectReasonText;
+      data = {
+        machine_code: machine_code,
+        work_order: work_order,
+        task_code: task_code,
+        quantity: quantity,
+        reason: reason,
+        param: param
+      }
     } else {
       app.showErrorToast('客服端错误504');
       return;
@@ -1217,9 +1257,17 @@ Page({
   // 获取输入框内容
   getReportNumInput(event) {
     this.setData({
-      reprtNumber: Number(event.detail.value)
+      reportNumber: Number(event.detail.value),
     });
-  }
+  },
+
+  getDefectReasonInput(event) {
+    this.setData({
+      defectReasonText: event.detail.value,
+    })
+  },
+
+
   
 
 

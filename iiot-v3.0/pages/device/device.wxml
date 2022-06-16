@@ -60,7 +60,7 @@
             已报调机数：
           </view>
           <view class="stock-number">{{item.test_reported}}</view> 
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="testReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_order}}" data-task_code="{{item.task_code}}">调机报产</button>
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="testReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}">调机报产</button>
         </view>
 
         <view class="input-row-box">
@@ -68,7 +68,7 @@
             已报良品数：
           </view>
           <view class="stock-number">{{item.pass_reported}}</view> 
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="passReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_order}}" data-task_code="{{item.task_code}}">良品报产</button>
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="passReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}">良品报产</button>
         </view>
 
         <view class="input-row-box">
@@ -76,7 +76,7 @@
             已报次品数：
           </view>
           <view class="stock-number">{{item.defect_reported}}</view> 
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="defectReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_order}}" data-task_code="{{item.task_code}}">次品报产</button>
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="defectReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}">次品报产</button>
         </view>
 
         <view class="input-row-box">
@@ -288,8 +288,18 @@
           </text>
           <input class="input" type="number" placeholder="请输入数量" bindinput="getReportNumInput" value="{{reportNumber}}"/>
         </view>
-        
+
+        <view class="modal-box" wx:if="{{isDefectReportFlag}}">
+          <text>次品原因：</text>
+          <picker mode="selector" range="{{defectReasonArray}}" value="{{defectReasonIndex}}" bindchange="defectReasonChange">
+            <view class="picker">{{defectReasonArray[defectReasonIndex]}}</view>
+          </picker>
+        </view>
+        <view class="modal-box">
+          <textarea type="text" class="area-input" 	bindinput="" placeholder="如需手写说明在此处填写" />
+        </view>
       </view>
+  
     </scroll-view>
   </modal>
 </view>
