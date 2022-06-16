@@ -41,7 +41,7 @@
             {{item.repo_A_num}}
           </view> -->
           <view class="stock-number">{{item.repo_A}}</view> 
-          <button class="submitButton" size="mini" plain="true" data-title="{{item.machine_name}}" type="primary" bindtap="inWarehouseClick" data-index="{{index}}" data-machine_code="{{item.machine_code}}" data-showCode="{{item.machine_code}}" data-work_code="{{item.work_code}}" data-task_code="{{item.task_code}}">入库</button>
+          <button class="submitButton" size="mini" plain="true" data-title="{{item.machine_name}}" type="primary" bindtap="inWarehouseClick" data-index="{{index}}" data-machine_code="{{item.machine_code}}" data-showCode="{{item.machine_code}}" data-work_code="{{item.work_code}}" data-task_code="{{item.task_code}}">领料</button>
         </view>
 
         <view class="input-row-box">
@@ -52,7 +52,7 @@
               {{item.repo_B_num}}
             </view> -->
           <view class="stock-number">{{item.repo_B}}</view> 
-          <button class="submitButton" size="mini" plain="true"  data-title="{{item.machine_name}}" type="primary" bindtap="outWarehouseClick" data-index="{{index}}" data-machine_code="{{item.machine_code}}" data-showCode="{{item.machine_code}}"  data-work_code="{{item.work_code}}" data-task_code="{{item.task_code}}">出库</button>
+          <button class="submitButton" size="mini" plain="true"  data-title="{{item.machine_name}}" type="primary" bindtap="outWarehouseClick" data-index="{{index}}" data-machine_code="{{item.machine_code}}" data-showCode="{{item.machine_code}}"  data-work_code="{{item.work_code}}" data-task_code="{{item.task_code}}">交接</button>
         </view>
 
         <view class="input-row-box">
@@ -78,15 +78,16 @@
           <view class="stock-number">{{item.defect_reported}}</view> 
           <button class="submitButton" size="mini" plain="true" type="primary" bindtap="defectReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}">次品报产</button>
         </view>
-
-        <view class="input-row-box">
+        <view class="row-box">
           <view class="text">
-            故障上报
+            设备状态：
           </view>
-
-          <view style="width: 150px"></view>
-          
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="faultReportClick" data-index="{{index}}">故障上报</button>
+          <picker mode="selector" range="{{item.machine_status_array}}" value="{{item.statusIndex}}" bindchange="statusChange" data-index="{{index}}">
+            <view class="picker">{{item.machine_status_array[item.statusIndex]}}</view>
+          </picker>
+          <!-- <picker mode="selector" range="{{machine_status_obj}}" value="{{statusIndex}}" bindchange="statusChange">
+            <view class="picker">{{machine_status_obj[statusIndex]}}</view>
+          </picker> -->
         </view>
 <!-- 
         <view class="text">
@@ -122,16 +123,14 @@
             </label>
           </radio-group>
         </view>
-        <view class="row-box">
+        <view class="input-row-box">
           <view class="text">
-            设备状态：
+            故障上报
           </view>
-          <picker mode="selector" range="{{item.machine_status_array}}" value="{{item.statusIndex}}" bindchange="statusChange" data-index="{{index}}">
-            <view class="picker">{{item.machine_status_array[item.statusIndex]}}</view>
-          </picker>
-          <!-- <picker mode="selector" range="{{machine_status_obj}}" value="{{statusIndex}}" bindchange="statusChange">
-            <view class="picker">{{machine_status_obj[statusIndex]}}</view>
-          </picker> -->
+
+          <view style="width: 150px"></view>
+          
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="faultReportClick" data-index="{{index}}">故障上报</button>
         </view>
         <button class="task-button" type="primary" plain="true" bindtap="taskStartOrEnd" data-index="{{index}}" data-type="production" disabled="{{item.button_disabled}}">任务{{item.task_button_text}}</button>
 
@@ -297,6 +296,18 @@
         </view>
         <view class="modal-box">
           <textarea type="text" class="area-input" 	bindinput="" placeholder="如需手写说明在此处填写" />
+        </view>
+      </view>
+  
+    </scroll-view>
+  </modal>
+
+  <!-- 故障上报的modal框 -->
+  <modal show="{{showFaultReportModal}}" height="70%" bind:cancel="modalCancel" bind:confirm="postFaultReport"  title="{{title}}" index="{{taskListIndex}}" showCode="{{showCode}}">
+    <scroll-view scroll-y="true" style="height: 75%">
+      <view class="main-content">
+        <view class="modal-box">
+          
         </view>
       </view>
   

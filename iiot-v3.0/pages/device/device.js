@@ -434,15 +434,52 @@ Page({
     // console.log(e.detail.value);
     const index = e.currentTarget.dataset.index;
     const status = e.detail.value;
+    const that = this;
     const url = app.globalData.serverUrl + "/pda/suz/production/operator";
     const data = {
       machine_code: this.data.taskList[index].machine_code,
       work_order: this.data.taskList[index].work_code,
-      operator_status: status,
+      status: status,
       task_code: this.data.taskList[index].task_code,
     }
-    // console.log(e);
-    this.deivcePostRequest(url, data, "修改成功", CHANGE_OPREATOR_STATUS, index);
+    console.log(data);
+
+    wx.request({
+      url: url,
+      data: data,
+      dataType: 'json',
+      header: {
+        "content-type" : "application/json",
+        "Authorization" : wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token')
+      },
+      method: 'POST',
+      success: (result) => {
+        app.processPostRequestStatusCode(result.statusCode);
+        if(result.statusCode == normalHttpCode) {
+          if (result.data.code == normalBusinessCode) {
+            app.showSuccessToast('上报成功');
+            that.refreshData();
+          }
+          else {
+            app.showErrorToast('后台错误：',result.data.message);
+          }
+        
+        }
+        
+      },
+      fail: (res) => {
+        app.showErrorToast("发送request请求失败");
+        
+        // return -1;
+        that.result = -1;
+      },
+      complete: (res) => {
+        wx.hideLoading({
+          success: (res) => {},
+        }) 
+      },
+    });
+
   },
 
   // 修改设备状态
@@ -635,23 +672,23 @@ Page({
         app.processPostRequestStatusCode(result.statusCode);
         if(result.statusCode == normalHttpCode) {
           console.log(type)
-          
+
+          // 刷新数据
+          that.refreshData();
+          // 将几种情况分开，以防止之后有新改动
+
           // 如果是调机报产
           if(type == TEST_REPORT) {
-            // 刷新页面数据
-            that.refreshData();
-            app.showSuccessToast('提交入库成功');
+            app.showSuccessToast('调机报产成功');
           }
           // 如果是良品报产
           else if (type == PASS_REPORT) {
-            // 刷新页面数据
-            that.refreshData();
-            app.showSuccessToast('提交出库成功');
+            app.showSuccessToast('良品报产成功');
 
           }
           // 如果是次品报产
           else if (type == DEFECT_REPORT) {
-
+            app.showSuccessToast('次品报产成功');
 
           }
           // 异常
@@ -676,6 +713,21 @@ Page({
         }) 
       },
     });
+
+  },
+
+  // 故障上报按钮的点击回调函数
+  faultReportClick(e) {
+    this.setData({
+      showFaultReportModal: true,
+
+    })
+
+  },
+
+
+  // modal框提交fault report
+  postFaultReport(e) {
 
   },
 
@@ -958,6 +1010,9 @@ Page({
       // console.log(data);
       // 发送post请求
       this.taskRequest(url, data);
+    } else {
+      console.log('后端传来的任务状态既不是未启动也不是进行中，可能又换词了');
+      app.showErrorToast('客户端错误505');
     }
 
   },
@@ -1005,7 +1060,7 @@ Page({
       method: "POST",
       dataType: 'json',
       success: (result) => {
-        // console.log(result);
+        console.log(result);
 
         // http码
         if(result.statusCode == normalHttpCode) {
@@ -1013,7 +1068,7 @@ Page({
           if (result.data.code == normalBusinessCode) {
             app.showSuccessToast("成功");
             // 页面重新渲染
-            that.onShow();
+            that.refreshData();
           } else {
             // 业务码判断打印错误
             app.processPostRequestConcreteCode(result.data.code, result.data.message);
@@ -1261,6 +1316,8 @@ Page({
     });
   },
 
+
+  // 获取次品原因手写项的输入内容
   getDefectReasonInput(event) {
     this.setData({
       defectReasonText: event.detail.value,
