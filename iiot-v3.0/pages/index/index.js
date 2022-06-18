@@ -52,7 +52,7 @@ Page(check_login.checkLogin({
         const code_info = res.result;
 
         wx.request({
-          url: app.globalData.serverUrl + '/pda/suz/index/scancode',
+          url: app.globalData.serverUrl + '/pda/suz/index/scan',
           header: {
             "content-type" : "application/json",
             "Authorization" : wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token')
@@ -127,7 +127,7 @@ Page(check_login.checkLogin({
               }
               else {
                 // 业务码判断打印错误
-                app.processPostRequestConcreteCode(result.data.code, result.data.message);
+                app.processPostRequestConcreteCode(result.data.message);
               }
             
             }
