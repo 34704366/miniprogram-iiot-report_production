@@ -110,7 +110,7 @@ Page({
 
   // 获取task列表
   getTaskList() {
-    let that = this;
+    let that = this; 
     wx.request({
       // url: app.globalData.serverUrl + '/pda/suz/tasks'+ '/' +wx.getStorageSync('emp_code'),
 
@@ -160,14 +160,19 @@ Page({
               // 判断任务状态
               if (item.task_status == "未启动") {
                 item.task_button_text = "启动";
-                item.button_disabled = false;
+                // 按钮是否禁用
+                item.button_disabled = true;
+                // 启动任务按钮是否禁用
+                item.task_button_disabled = false;
               } else if (item.task_status == "进行中") {
                 item.task_button_text = "完成"
                 item.button_disabled = false;
+                item.task_button_disabled = false;
               } 
               else {
                 item.task_button_text = item.task_status;
                 item.button_disabled = true;
+                item.task_button_disabled = true;
               }
               
               
@@ -250,14 +255,17 @@ Page({
               // 判断任务状态
               if (item.task_status == "未启动") {
                 item.task_button_text = "启动";
-                item.button_disabled = false;
+                item.button_disabled = true;
+                item.task_button_disabled = false;
               } else if (item.task_status == "进行中") {
                 item.task_button_text = "完成"
                 item.button_disabled = false;
+                item.task_button_disabled = false;
               } 
               else {
                 item.task_button_text = item.task_status;
                 item.button_disabled = true;
+                item.task_button_disabled = true;
               }
 
               list.push(item);
@@ -442,6 +450,7 @@ Page({
       machine_code: machine_code,    // post-data
       work_order: work_order ,      // post-data
       task_code: task_code,      // post-data
+      reportNumber: 0,
 
       isDefectReportFlag: false,     // 负责让次品报产modal多一行信息的控制位
       title: title,
@@ -469,6 +478,7 @@ Page({
       machine_code: machine_code,    // post-data
       work_order: work_order ,      // post-data
       task_code: task_code,      // post-data
+      reportNumber: 0,
 
       isDefectReportFlag: false,     // 负责让次品报产modal多一行信息的控制位
       title: title,
@@ -496,6 +506,7 @@ Page({
       machine_code: machine_code,    // post-data
       work_order: work_order ,      // post-data
       task_code: task_code,      // post-data
+      reportNumber: 0,
 
       isDefectReportFlag: true,     // 负责让次品报产modal多一行信息的控制位
       title: title,
@@ -844,6 +855,8 @@ Page({
 
     let objectList = [];
 
+    let task_type = '';
+
     if (type == 'production') {
       objectList = this.data.taskList;
 
@@ -862,6 +875,7 @@ Page({
       // console.log(url);
       const data = {
         task_code: objectList[index].task_code,
+        task_type: type,
       }
 
 
@@ -885,39 +899,11 @@ Page({
 
   },
 
-  // 维修计划启动或者结束
-  fixStartOrEnd(e) {
-
-    const index = e.currentTarget.dataset.index;
-    // 判断任务状态
-    const taskStatus = this.data.fixList[index].task_status;
-    if (taskStatus == "未启动") {
-      const url = app.globalData.serverUrl + "/pda/suz/task/start";
-      // console.log(url);
-      const data = {
-        task_code: this.data.fixList[index].task_code,
-      }
-
-
-      console.log(data)
-      // 发送post请求
-      this.taskRequest(url, data);
-      
-    } else if (taskStatus == "进行中") {
-      const url = app.globalData.serverUrl + "/pda/suz/task/end";
-      const data = {
-        task_code: this.data.taskList[index].task_code,
-      }
-      console.log(data);
-      // 发送post请求
-      this.taskRequest(url, data);
-    }
-
-  },
 
   // 任务开始或者任务结束的request请求
   taskRequest(url, data) {
     let that = this;
+    console.log(data)
     wx.request({
       url: url,
       data: data,
@@ -1122,38 +1108,41 @@ Page({
       success: (result) => {
         app.processPostRequestStatusCode(result.statusCode);
         if(result.statusCode == normalHttpCode) {
-          console.log(type)
-          
-          // 如果是A库入库
-          if(type == 'inWarehouse') {
-            let list = this.data.taskList;
-            list[index].repo_A = parseInt(that.data.taskList[index].repo_A) + parseInt(that.data.warehouseInOutNum);
-            // 添加到已报良品数量上
-            that.setData({
-              taskList: list,
-            });
-            // console.log("修改后良品数量:",this.data.repo_A);
-            app.showSuccessToast('入库成功');
-          }
-          // 如果是B库出库
-          else if (type == 'outWarehouse') {
-            let list = this.data.taskList;
-            list[index].repo_B = parseInt(that.data.taskList[index].repo_B) - parseInt(that.data.warehouseInOutNum);
-            // 添加
-            that.setData({
-              taskList: list,
-            });
-            app.showSuccessToast('出库成功');
+          // 业务状态码
+          if (result.data.code == normalBusinessCode) {
+            console.log(type)
+            
+            // 如果是A库入库
+            if(type == 'inWarehouse') {
+              let list = this.data.taskList;
+              list[index].repo_A = parseInt(that.data.taskList[index].repo_A) + parseInt(that.data.warehouseInOutNum);
+              // 添加到已报良品数量上
+              that.setData({
+                taskList: list,
+              });
+              // console.log("修改后良品数量:",this.data.repo_A);
+              app.showSuccessToast('入库成功');
+            }
+            // 如果是B库出库
+            else if (type == 'outWarehouse') {
+              let list = this.data.taskList;
+              list[index].repo_B = parseInt(that.data.taskList[index].repo_B) - parseInt(that.data.warehouseInOutNum);
+              // 添加
+              that.setData({
+                taskList: list,
+              });
+              app.showSuccessToast('出库成功');
 
-          }
-          // 如果是修改人员状态
-          else if (type == CHANGE_OPREATOR_STATUS) {
+            }
+            // 如果是修改人员状态
+            else if (type == CHANGE_OPREATOR_STATUS) {
 
 
-          }
-          // 异常
-          else {
-            app.showErrorToast('503客户端错误');
+            }
+            // 异常
+            else {
+              app.showErrorToast('503客户端错误');
+            }
           }
         } else {
           app.showErrorToast(result.errMsg);

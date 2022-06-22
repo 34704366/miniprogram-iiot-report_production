@@ -41,7 +41,7 @@
             {{item.repo_A_num}}
           </view> -->
           <view class="stock-number">{{item.repo_A}}</view> 
-          <button class="submitButton" size="mini" plain="true" data-title="{{item.machine_name}}" type="primary" bindtap="inWarehouseClick" data-index="{{index}}" data-machine_code="{{item.machine_code}}" data-showCode="{{item.machine_code}}" data-work_code="{{item.work_code}}" data-task_code="{{item.task_code}}">领料</button>
+          <button class="submitButton" size="mini" plain="true" data-title="{{item.machine_name}}" type="primary" bindtap="inWarehouseClick" data-index="{{index}}" data-machine_code="{{item.machine_code}}" data-showCode="{{item.machine_code}}" data-work_code="{{item.work_code}}" data-task_code="{{item.task_code}}" disabled="{{item.button_disabled}}">领料</button>
         </view>
 
         <view class="input-row-box">
@@ -52,7 +52,7 @@
               {{item.repo_B_num}}
             </view> -->
           <view class="stock-number">{{item.repo_B}}</view> 
-          <button class="submitButton" size="mini" plain="true"  data-title="{{item.machine_name}}" type="primary" bindtap="outWarehouseClick" data-index="{{index}}" data-machine_code="{{item.machine_code}}" data-showCode="{{item.machine_code}}"  data-work_code="{{item.work_code}}" data-task_code="{{item.task_code}}">交接</button>
+          <button class="submitButton" size="mini" plain="true"  data-title="{{item.machine_name}}" type="primary" bindtap="outWarehouseClick" data-index="{{index}}" data-machine_code="{{item.machine_code}}" data-showCode="{{item.machine_code}}"  data-work_code="{{item.work_code}}" data-task_code="{{item.task_code}}" disabled="{{item.button_disabled}}">交接</button>
         </view>
 
         <view class="input-row-box">
@@ -60,7 +60,7 @@
             已报调机数：
           </view>
           <view class="stock-number">{{item.test_reported}}</view> 
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="testReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}">调机报产</button>
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="testReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}" disabled="{{item.button_disabled}}">调机报产</button>
         </view>
 
         <view class="input-row-box">
@@ -68,7 +68,7 @@
             已报良品数：
           </view>
           <view class="stock-number">{{item.pass_reported}}</view> 
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="passReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}">良品报产</button>
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="passReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}" disabled="{{item.button_disabled}}">良品报产</button>
         </view>
 
         <view class="input-row-box">
@@ -76,13 +76,13 @@
             已报次品数：
           </view>
           <view class="stock-number">{{item.defect_reported}}</view> 
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="defectReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}">次品报产</button>
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="defectReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}" disabled="{{item.button_disabled}}">次品报产</button>
         </view>
         <view class="row-box">
           <view class="text">
             设备状态：
           </view>
-          <button class="submitButton" plain="true" type="primary" bindtap="changeDeviceStatusClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}">
+          <button class="submitButton" plain="true" type="primary" bindtap="changeDeviceStatusClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}" disabled="{{item.button_disabled}}">
             {{item.deviceNowStatus}}
           </button>
         </view>
@@ -107,9 +107,9 @@
 
           <view style="width: 150px"></view>
           
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="faultReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}">故障上报</button>
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="faultReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}" disabled="{{item.button_disabled}}">故障上报</button>
         </view>
-        <button class="task-button" type="primary" plain="true" bindtap="taskStartOrEnd" data-index="{{index}}" data-type="production" disabled="{{item.button_disabled}}">任务{{item.task_button_text}}</button>
+        <button class="task-button" type="primary" plain="true" bindtap="taskStartOrEnd" data-index="{{index}}" data-type="production" disabled="{{item.task_button_disabled}}">任务{{item.task_button_text}}</button>
 
       </view>
       
@@ -171,7 +171,7 @@
         <view class="devide-line"></view>
       </view>
 
-      <button class="task-button" type="primary" plain="true" bindtap="taskStartOrEnd" data-index="{{index}}" data-type="fix" disabled="{{item.button_disabled}}">任务{{item.task_button_text}}</button>
+      <button class="task-button" type="primary" plain="true" bindtap="taskStartOrEnd" data-index="{{index}}" data-type="fix" disabled="{{item.task_button_disabled}}">任务{{item.task_button_text}}</button>
 
       <view class="show" bindtap="flodFix" data-index="{{index}}">
         收起
