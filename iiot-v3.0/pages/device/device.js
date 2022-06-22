@@ -15,6 +15,9 @@ const TEST_REPORT = 300;    // 调机报产
 const PASS_REPORT = 301;    // 良品报产
 const DEFECT_REPORT = 302;  // 次品报产
 
+const FAULT_REPORT = 304;   // 故障上报
+const CHANGE_DEVICE_STATUS_REPORT = 305;   // 修改设备状态
+
 
 Page({
 
@@ -50,7 +53,15 @@ Page({
     defectReasonIndex: 0,   // 
     defectReasonValueArray: [],   // 次品原因对应的int值
     defectReasonValueIndex: 0,  
-    defectReasonText: ''   // 手写项原因
+    defectReasonText: '',   // 手写项原因
+    changeDeviceStatusReasonText: '',    // reason
+    faultReportStatusReasonText: '',   // reason
+
+    showChangeDeviceStatusModal: false,
+    machineStatusModalData: {},
+    postDeviceStatusValue: 0,
+
+    showFaultReportModal: false,
   },
 
   
@@ -157,6 +168,20 @@ Page({
               else {
                 item.task_button_text = item.task_status;
                 item.button_disabled = true;
+              }
+              
+              
+              // 判断设备状态
+              item.deviceNowStatus = '修改设备状态'   // 如果出现异常（找不到设备当前状态对应的全部状态中的值），则显示该文字
+              const deivceStatusCode = item.machine_status;
+              const deviceStatusObject = item.machine_status_obj
+              for (const index in deviceStatusObject) {
+                for (const key in deviceStatusObject[index].status) {
+                  // console.log(key);
+                  if (deviceStatusObject[index].status[key] == deivceStatusCode) {
+                    item.deviceNowStatus = key;
+                  }
+                }
               }
 
               list.push(item);
@@ -307,95 +332,12 @@ Page({
     })
   },
 
-  // 弹出modal框
-  popModal(event) {
-    // console.log(event)
-    const taskListIndex = event.currentTarget.dataset.index;
-    const id = event.currentTarget.dataset.id;
-    // console.log(taskListIndex)
-    this.setData({
-      showModal: true,
-      taskListIndex: taskListIndex,
-      title: this.data.taskList[taskListIndex].machine_name,
-      machine_code: this.data.taskList[taskListIndex].machine_code
-    });
-    if (id == '1' || id == 1) {  
-      // 调用函数获取入库信息
-      let repo_code = this.data.taskList[taskListIndex].repo_A_code
-      this.getInWarehouseInfo(repo_code);
-    }
-    else if (id == '2' || id == 2) {
-      // 调用函数获取入库信息
-      let repo_code = this.data.taskList[taskListIndex].repo_B_code
-      this.getInWarehouseInfo(repo_code);
-    }
-
-  },
 
   // modal层传来的cancel事件
   modalCancel() {
     console.log('material cancel');
   },
 
-  // modal层传来的confirm事件
-  modalConfirm() {
-    console.log('material confirm');
-    const that = this;
-    wx.request({
-      url: app.globalData.serverUrl + '/pda/suz/repo/checkin',
-      data: {
-        repo_code: this.data.repo_code,
-        source: this.data.sourceArray[this.data.sourceIndex],
-        material_code: this.data.material_code,
-        material_num: this.data.material_num,
-        work_code: '',
-      },
-      dataType: 'json',
-      header: {
-        "content-type": "application/json",
-        "Authorization": wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token'),
-      },
-      method: 'POST',
-      success: (result) => {
-        this.setData({
-          inWarehouseNumber: 0,
-        });
-        app.processPostRequestStatusCode(result.statusCode);
-        if (result.statusCode == normalHttpCode) {
-          app.showSuccessToast("提交成功");
-          that.onShow();
-        }
-      },
-      fail: (res) => {
-        app.showErrorToast("request请求发送失败");
-      },
-      complete: (res) => {},
-    })
-  },
-
-  // 获取输入框内数字
-  getPassNumInput(event) {
-    // console.log(event);
-    const number = Number(event.detail.value)
-    const taskListIndex = event.currentTarget.dataset.index;
-    let list = this.data.taskList;
-    list[taskListIndex].passNumber = number;
-    this.setData({
-      taskList: list,
-    });
-  },
-
-  // 获取输入框输入
-  getDefectNumInput(event) {
-    // console.log(event);
-    const number = Number(event.detail.value)
-    const taskListIndex = event.currentTarget.dataset.index;
-    let list = this.data.taskList;
-    list[taskListIndex].defectNumber = number;
-    this.setData({
-      taskList: list,
-    });
-  },
 
   // 判断员工状态
   judgeOpreatorStatus(status) {
@@ -481,28 +423,6 @@ Page({
     });
 
   },
-
-  // 修改设备状态
-  statusChange(e) {
-    const index = e.currentTarget.dataset.index;
-    let list = this.data.taskList;
-    list[index].statusIndex = e.detail.value;
-    this.setData({
-      taskList: list,
-    });
-    
-    // 发送修改设备状态的请求
-    const url = app.globalData.serverUrl + "/pda/suz/task/machine";
-    console.log(url)
-    const data = {
-      machine_code: this.data.taskList[index].machine_code,
-      work_order: this.data.taskList[index].work_code,
-      machine_status: this.data.taskList[index].machine_status_index[e.detail.value],
-      task_code: this.data.taskList[index].task_code,
-    }
-    this.taskRequest(url, data);
-    
-  },
   
   testReportClick(event) {
     const index = event.currentTarget.dataset.index;
@@ -583,7 +503,7 @@ Page({
     })
     
     // 提取出该任务对应的次品原因
-    const defect_reason = this.data.taskList[index].machine_status_obj.defect_reason_obj;
+    const defect_reason = this.data.taskList[index].defect_reason_obj;
     let keyList = [];
     let valueList = [];
     for (const index in defect_reason) {
@@ -654,7 +574,7 @@ Page({
     this.postReportInterface(url, data, type, index)
   },
 
-  // 入库出库的统一post请求接口
+  // 报产统一post请求接口
   postReportInterface(url, data, type, index) {
     
     // 返回值
@@ -671,29 +591,39 @@ Page({
       success: (result) => {
         app.processPostRequestStatusCode(result.statusCode);
         if(result.statusCode == normalHttpCode) {
-          console.log(type)
-
-          // 刷新数据
-          that.refreshData();
-          // 将几种情况分开，以防止之后有新改动
-
-          // 如果是调机报产
-          if(type == TEST_REPORT) {
-            app.showSuccessToast('调机报产成功');
-          }
-          // 如果是良品报产
-          else if (type == PASS_REPORT) {
-            app.showSuccessToast('良品报产成功');
-
-          }
-          // 如果是次品报产
-          else if (type == DEFECT_REPORT) {
-            app.showSuccessToast('次品报产成功');
-
-          }
-          // 异常
-          else {
-            app.showErrorToast('505客户端错误');
+          if(result.data.code == normalBusinessCode) {
+            
+            // 刷新数据
+            that.refreshData();
+            // 将几种情况分开，以防止之后有新改动
+            
+            // 如果是调机报产
+            if(type == TEST_REPORT) {
+              app.showSuccessToast('调机报产成功');
+            }
+            // 如果是良品报产
+            else if (type == PASS_REPORT) {
+              app.showSuccessToast('良品报产成功');
+              
+            }
+            // 如果是次品报产
+            else if (type == DEFECT_REPORT) {
+              app.showSuccessToast('次品报产成功');
+              
+            }
+            else if (type == FAULT_REPORT) {
+              app.showSuccessToast('故障上报成功');
+            }
+            // 如果是设备状态修改
+            else if (type == CHANGE_DEVICE_STATUS_REPORT) {
+              app.showSuccessToast('修改状态成功');
+            }
+            // 异常
+            else {
+              app.showErrorToast('505客户端错误');
+            }
+          } else {
+            app.showErrorToast(result.data.message);
           }
         } else {
           app.showErrorToast(result.errMsg);
@@ -717,210 +647,148 @@ Page({
   },
 
   // 故障上报按钮的点击回调函数
-  faultReportClick(e) {
+  faultReportClick(event) {
+    const index = event.currentTarget.dataset.index;   // index
+
+    const machine_code = event.currentTarget.dataset.machine_code;
+    const work_order = event.currentTarget.dataset.work_order;
+    const task_code = event.currentTarget.dataset.task_code;
+
+    const title = event.currentTarget.dataset.title;   // 显示在modal上的title
+    const showCode = event.currentTarget.dataset.showCode;  // 显示在modal上的code
+    
+    const machine_status = this.data.taskList[index].machine_status_obj;
+    let fault_status = [];
+    // 取得设备的全部故障信息
+    for(let key in machine_status) {
+      // 如果是故障类型，设备全部状态中该项的is_fault的值为1
+      if (machine_status[key].is_fault == 1 || machine_status[key].is_fault == '1') {
+        fault_status.push(machine_status[key]);
+        
+      }
+    }
+
     this.setData({
       showFaultReportModal: true,
+      taskListIndex: index,
 
+      machine_code: machine_code,    // post-data
+      work_order: work_order ,      // post-data
+      task_code: task_code,      // post-data
+
+      // 显示在modal框上的信息
+      title: title,
+      showCode: showCode,
+
+      // 显示在modal框上的故障类型信息
+      faultStatusModalData: fault_status
     })
 
+  },
+
+  // 修改设备状态的radio按钮修改的事件回调
+  changeFaultStatusRadioClick(event) {
+    // 获取状态的value
+    const status_value = event.detail.value;
+
+    this.setData({
+      postFaultStatusValue: status_value
+    })
   },
 
 
   // modal框提交fault report
-  postFaultReport(e) {
+  postFaultReport(event) {
+    const status = this.data.postFaultStatusValue;
 
+    // post-data
+    const machine_code = this.data.machine_code;
+    const work_order = this.data.work_order;
+    const task_code = this.data.task_code;
+
+    const param = this.data.faultReportStatusReasonText;
+    const start_time = this.data.faultReportStartTime;
+    const end_time = this.data.faultReportEndTime;
+
+    // 提交的数据
+    const data = {
+      machine_code: machine_code,
+      work_order: work_order,
+      task_code: task_code,
+      status: status,
+      param: param,
+      start_time: start_time,
+      end_time: end_time
+    }
+    const url = '/pda/suz/production/fault';
+    const type = FAULT_REPORT;
+    console.log(data)
+    this.postReportInterface(url, data, type);
   },
 
+  // 设备状态调整的点击回调函数
+  changeDeviceStatusClick(event) {
+    const index = event.currentTarget.dataset.index;   // index
 
-  // 良品报数
-  passSubmit(e) {
-    // 如果数量为0，不发送请求
-    const index = e.currentTarget.dataset.index;
-    const number = this.data.taskList[index].passNumber;
-    const url = app.globalData.serverUrl + "/pda/suz/task/pass";
-    if (number <= 0) {
-      app.showErrorToast('请输入大于0的整数');
-      return
-    }
+    const machine_code = event.currentTarget.dataset.machine_code;
+    const work_order = event.currentTarget.dataset.work_order;
+    const task_code = event.currentTarget.dataset.task_code;
 
-    // 添加蒙层阻止连续点击
-    wx.showLoading({
-      title: '数据加载中',
-      mask: true,
-      complete(res) {
-        console.log(res);
-      }
+    const title = event.currentTarget.dataset.title;   // 显示在modal上的title
+    const showCode = event.currentTarget.dataset.showCode;  // 显示在modal上的code
+
+
+    // 设备的全部状态
+    const machineStatusModalData = this.data.taskList[index].machine_status_obj;
+
+    this.setData({
+      showChangeDeviceStatusModal: true,
+      taskListIndex: index,
+
+      machine_code: machine_code,    // post-data
+      work_order: work_order ,      // post-data
+      task_code: task_code,      // post-data
+
+      title: title,
+      showCode: showCode,
+
+      machineStatusModalData: machineStatusModalData,
     })
+  },
+
+  // 修改设备状态的radio按钮修改的事件回调
+  changeDeviceStatusRadioClick(event) {
+    // 获取状态的value
+    const status_value = event.detail.value;
+
+    this.setData({
+      postDeviceStatusValue: status_value
+    })
+  },
+
+  // 修改设备状态modal框提交
+  postDeviceStatusChange(event) {
+    const status = this.data.postDeviceStatusValue;
+
+    // post-data
+    const machine_code = this.data.machine_code;
+    const work_order = this.data.work_order;
+    const task_code = this.data.task_code;
+
+    const param = this.data.changeDeviceStatusReasonText;
+
     const data = {
-      machine_code: this.data.taskList[index].machine_code,
-      work_order: this.data.taskList[index].work_code,
-      quantity: number,
-      task_code: this.data.taskList[index].task_code,
+      status: status,
+      machine_code: machine_code,
+      work_order: work_order,
+      task_code: task_code,
+      param: param
     }
-    this.deivcePostRequest(url, data, "报数成功", REPORT_PASS, index);
-
-    // // 检验数据合法性
-
-    // if (this.isAllowed(this.data.passReportNumber)) {
-      // this.deivcePostRequest(url, data, "报数成功", REPORT_PASS, index);
-    // }
-    // else {
-    //   this.setData({
-    //     passReportNumber: '',
-    //   });
-    // }
-  },
-
-  // 次品报数
-  defectSubmit(e) {
-    const index = e.currentTarget.dataset.index;
-    const number = this.data.taskList[index].defectNumber;
-    const url = app.globalData.serverUrl + "/pda/suz/task/defect";
-    if (number <= 0) {
-      app.showErrorToast('请输入大于0的整数');
-      return
-    }
-    const data = {
-      machine_code: this.data.taskList[index].machine_code,
-      work_order: this.data.taskList[index].work_code,
-      quantity: number,
-      task_code: this.data.taskList[index].task_code,
-    }
-    this.deivcePostRequest(url, data, "报数成功", REPORT_DEFECT, index);
-  },
-
-
-  // 统一post请求
-  deivcePostRequest(url, data, showTitle, flag, index) {
-    // 返回值
-    const that = this;
-    wx.request({
-      url: url,
-      data: data,
-      dataType: 'json',
-      header: {
-        "content-type" : "application/json",
-        "Authorization" : wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token')
-      },
-      method: 'POST',
-      success: (result) => {
-        // console.log(result);
-        // console.log(data);
-        app.processPostRequestStatusCode(result.statusCode);
-        if(result.statusCode == normalHttpCode) {
-          app.showSuccessToast(showTitle);
-          
-          // 如果是良品报数
-          if(flag == REPORT_PASS) {
-            let list = this.data.taskList;
-            list[index].pass_reported = parseInt(that.data.taskList[index].pass_reported) + parseInt(that.data.taskList[index].passNumber);
-            list[index].passNumber = 0;
-            // 添加到已报良品数量上
-            that.setData({
-              taskList: list,
-            });
-            // console.log("修改后良品数量:",this.data.pass_reported);
-          }
-          // 如果是残次品报数
-          else if (flag == REPORT_DEFECT) {
-            let list = this.data.taskList;
-            list[index].defect_reported = parseInt(that.data.taskList[index].defect_reported) + parseInt(that.data.taskList[index].defectNumber);
-            list[index].defectNumber = 0;
-            // 添加
-            that.setData({
-              taskList: list,
-            });
-          }
-          // 如果是修改人员状态
-          else if (flag == CHANGE_OPREATOR_STATUS) {}
-          // 异常
-          else {}
-        }
-        
-      },
-      fail: (res) => {
-        app.showErrorToast("发送request请求失败");
-        
-        // return -1;
-        that.result = -1;
-      },
-      complete: (res) => {
-        wx.hideLoading({
-          success: (res) => {},
-        }) 
-      },
-    });
-  },
-
-
-
-  // 获取到入库信息
-  getInWarehouseInfo(repo_code) {
     
-    let that = this;
-    wx.request({
-      url: app.globalData.serverUrl + '/pda/suz/repo',
-      header: {
-        "content-type" : "application/json",
-        "Authorization" : wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token')
-      },
-      data: {
-        repo_code: repo_code
-      },
-      method: "GET",
-      dataType: 'json',
-      success: (result) => {
-        // console.log(result);
+    const url = '/pda/suz/production/machine';
+    const type = CHANGE_DEVICE_STATUS_REPORT;
 
-        // http码
-        if(result.statusCode == normalHttpCode) {
-          // 业务状态码
-          if (result.data.code == normalBusinessCode) {
-            // app.showSuccessToast("成功");
-
-            // console.log(result.data.data)
-            let sourceArray = [];
-            let materialArray = [];
-            // 修改sourceArray
-            let list = result.data.data;
-            for (const key in list) {
-              // console.log(list[key].source);
-              sourceArray.push(list[key].source);
-            }
-            // 修改materialArray （修改默认为第一项）
-            list = result.data.data[0].material;
-            for (const key in list) {
-              materialArray.push(list[key].material_name);
-            }
-                // console.log(this.data.materialArray);
-            // 修改material_num （修改默认为第一项）
-            let material_num = result.data.data[0].material[0].material_num;
-            // 物料码
-            let material_code = result.data.data[0].material[0].material_code;
-            that.setData({
-              InWarehouseInfoArray: result.data.data,
-              sourceArray: sourceArray,
-              sourceIndex: 0,
-              materialArray: materialArray,
-              materialIndex: 0,
-              material_num: material_num,
-              material_code: material_code,
-            });
-
-          } else {
-            // 业务码判断打印错误
-            app.processPostRequestConcreteCode(result.data.code, result.data.message);
-          }
-        } else {
-          // 对code码进行校验并且处理
-          app.processPostRequestStatusCode(result.statusCode);
-        }
-      },
-      fail: (res) => {
-        app.requestSendError(res);
-      },
-      complete: (res) => {},
-    })
+    this.postReportInterface(url, data, type);
   },
 
   getInWarehouseNumInput(event) {
@@ -1017,7 +885,7 @@ Page({
 
   },
 
-  // 任务启动或者结束
+  // 维修计划启动或者结束
   fixStartOrEnd(e) {
 
     const index = e.currentTarget.dataset.index;
@@ -1240,7 +1108,6 @@ Page({
 
   // 入库出库的统一post请求接口
   postInOutInterface(url, data, type, index) {
-    
     // 返回值
     const that = this;
     wx.request({
@@ -1325,7 +1192,33 @@ Page({
   },
 
 
-  
+  // 获取修改设备状态原因手写项的输入内容
+  getChangeDeviceStatusReasonInput(event) {
+    this.setData({
+      changeDeviceStatusReasonText: event.detail.value,
+    })
+  },
+
+  getFaultReportStatusReasonInput(evnet) {
+    this.setData({
+      faultReportStatusReasonText: evnet.detail.value,
+    })
+  },
+
+  changeFaultReportStartTime(event) {
+    this.setData({
+      faultReportStartTime: event.detail.value,
+    })
+  },
+
+  changeFaultReportEndTime(event) {
+    this.setData({
+      faultReportEndTime: event.detail.value,
+    })
+  }
+
+
+
 
 
 })

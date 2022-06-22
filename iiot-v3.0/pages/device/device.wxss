@@ -97,13 +97,33 @@
   height: 60rpx;
   border-radius: 12rpx;
 }
+
+/* 在设备状态modal框中配合modal-box 来使用 */
+.main-content .device-space-between {
+  justify-content: space-between;
+}
+
+.main-content .bottom_border {
+  border-bottom: 1rpx solid black;
+}
+
 .modal-box{
   display: flex;
   flex-direction: row;
   width: auto;
   justify-content: flex-start;
   margin: 20rpx 30rpx;
+
 }
+
+.modal-box .title_desc {
+  width: 200rpx;
+}
+
+.modal-box .radio_radio {
+  margin: 10rpx 5rpx
+}
+
 .modal-box .input{
   background-color: rgb(236, 236, 236);
   border-radius: 12rpx;
@@ -116,9 +136,22 @@
   height: 200rpx;
   width: 400rpx;
   
-  margin-left: 190rpx;
+  /* margin-left: 190rpx; */
+}
+.modal-box .col-radio-group {
+  display: flex;
+  flex-direction: column;
+  width: 400rpx;
+  justify-content: space-between;
 }
 
+
+
+
+.modal-box .row-box {
+  display: flex;
+  flex-direction: row;
+}
 .picker{
   padding: 5rpx;
   /* background-color: #FFFFFF; */

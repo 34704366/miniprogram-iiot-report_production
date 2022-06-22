@@ -82,34 +82,11 @@
           <view class="text">
             设备状态：
           </view>
-          <picker mode="selector" range="{{item.machine_status_array}}" value="{{item.statusIndex}}" bindchange="statusChange" data-index="{{index}}">
-            <view class="picker">{{item.machine_status_array[item.statusIndex]}}</view>
-          </picker>
-          <!-- <picker mode="selector" range="{{machine_status_obj}}" value="{{statusIndex}}" bindchange="statusChange">
-            <view class="picker">{{machine_status_obj[statusIndex]}}</view>
-          </picker> -->
+          <button class="submitButton" plain="true" type="primary" bindtap="changeDeviceStatusClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}">
+            {{item.deviceNowStatus}}
+          </button>
         </view>
-<!-- 
-        <view class="text">
-          已报良品数：{{item.pass_reported}}
-        </view>
-        <view class="text">
-          已报次品数：{{item.defect_reported}}
-        </view>
-        <view class="input-row-box">
-          <view class="text">
-            良品报数：
-          </view>
-          <input class="prodNumberInput" type="number" placeholder="请输入数量" bindinput="getPassNumInput" value="{{item.passNumber}}" data-index="{{index}}"  /> 
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="passSubmit" data-index="{{index}}">提交</button>
-        </view>
-        <view class="input-row-box">
-          <view class="text">
-            次品报数：
-          </view>
-          <input class="prodNumberInput" type="number" placeholder="请输入数量" bindinput="getDefectNumInput" value="{{item.defectNumber}}" data-index="{{index}}"  /> 
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="defectSubmit" data-index="{{index}}">提交</button>
-        </view> -->
+
         <view class="row-box">
           <view class="text">
             人员状态：
@@ -130,11 +107,12 @@
 
           <view style="width: 150px"></view>
           
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="faultReportClick" data-index="{{index}}">故障上报</button>
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="faultReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}">故障上报</button>
         </view>
         <button class="task-button" type="primary" plain="true" bindtap="taskStartOrEnd" data-index="{{index}}" data-type="production" disabled="{{item.button_disabled}}">任务{{item.task_button_text}}</button>
 
       </view>
+      
       
 
       <view class="show" bindtap="flodTask" data-index="{{index}}">
@@ -202,33 +180,6 @@
     
   </view>
 
-  <modal show="{{showModal}}" height="60%" bind:cancel="modalCancel" bind:confirm="modalConfirm" title="{{title}}" index="{{taskListIndex}}" repo_code="{{machine_code}}">
-    <view class="main-content">
-      <view class="modal-box">
-        <text>来源：</text>
-        <picker mode="selector" range="{{sourceArray}}" value="{{sourceIndex}}" bindchange="sourceChange">
-          <view class="picker">{{sourceArray[sourceIndex]}}</view>
-        </picker>
-      </view>
-      <view class="modal-box">
-        <text>物料：</text>
-        <picker mode="selector" range="{{materialArray}}" value="{{materialIndex}}" bindchange="materialChange">
-          <view class="picker">{{materialArray[materialIndex]}}</view>
-        </picker>
-      </view>
-      <view class="modal-box">
-        <text>库存：</text>
-        {{material_num}}
-      </view>
-      <view class="modal-box">
-        <text>入库：</text>
-        <input class="input" type="number" placeholder="请输入数量" bindinput="getInWarehouseNumInput" value="{{inWarehouseNumber}}"/>
-      </view>
-
-
-    </view>
-  </modal>
-
   <!-- 设备扫码卡板后弹出的modal框 -->
   <modal show="{{showInWarehouseModal}}" height="70%" bind:cancel="modalCancel" bind:confirm="postInWarehouse"  title="{{title}}" index="{{taskListIndex}}" showCode="{{showCode}}">
     <scroll-view scroll-y="true" style="height: 75%">
@@ -282,20 +233,26 @@
     <scroll-view scroll-y="true" style="height: 75%">
       <view class="main-content">
         <view class="modal-box">
-          <text>
+          <view class="title_desc">
             {{reportModalText}}：
-          </text>
+          </view>
+          
           <input class="input" type="number" placeholder="请输入数量" bindinput="getReportNumInput" value="{{reportNumber}}"/>
         </view>
 
         <view class="modal-box" wx:if="{{isDefectReportFlag}}">
-          <text>次品原因：</text>
+          <view class="title_desc">
+            次品原因：
+          </view>
           <picker mode="selector" range="{{defectReasonArray}}" value="{{defectReasonIndex}}" bindchange="defectReasonChange">
             <view class="picker">{{defectReasonArray[defectReasonIndex]}}</view>
           </picker>
         </view>
         <view class="modal-box">
-          <textarea type="text" class="area-input" 	bindinput="" placeholder="如需手写说明在此处填写" />
+          <view class="title_desc">
+            附加说明
+          </view>
+          <textarea type="text" class="area-input" 	bindinput="getDefectReasonInput" placeholder="如需手写说明在此处填写" />
         </view>
       </view>
   
@@ -307,10 +264,88 @@
     <scroll-view scroll-y="true" style="height: 75%">
       <view class="main-content">
         <view class="modal-box">
-          
+          <radio-group bindchange="changeFaultStatusRadioClick" data-index="{{index}}">
+            <view class="bottom_border row-box" wx:for="{{faultStatusModalData}}">
+              <view class="title_desc">
+              {{item.status_desc}}
+              </view>
+              <view class="col-radio-group">
+                <label class="radio_radio" wx:for="{{item.status}}">
+                  <radio value="{{item}}" class="text">
+                    {{index}}
+                  </radio>
+                </label>
+              </view>
+            </view>
+          </radio-group>
+        </view>
+        <view class="modal-box">
+          <view class="title_desc">
+            附加说明
+          </view>
+          <textarea type="text" class="area-input" 	bindinput="getFaultReportStatusReasonInput" placeholder="如需手写说明在此处填写" />
+        </view>
+        <view class="modal-box">
+          <view class="title_desc">
+            开始时间
+          </view>
+          <picker mode="time" value="{{faultReportStartTime}}" bindchange="changeFaultReportStartTime">
+            <view class="picker">
+              选择时间：{{faultReportStartTime}}
+            </view>
+          </picker>
+        </view>
+        <view class="modal-box">
+          <view class="title_desc">
+            结束时间
+          </view>
+          <picker mode="time" value="{{faultReportEndTime}}" bindchange="changeFaultReportEndTime">
+            <view class="picker">
+              选择时间：{{faultReportEndTime}}
+            </view>
+          </picker>
         </view>
       </view>
   
     </scroll-view>
   </modal>
+
+
+  <!-- 设备状态修改的modal框 -->
+  <modal show="{{showChangeDeviceStatusModal}}" height="70%" bind:cancel="modalCancel" bind:confirm="postDeviceStatusChange"  title="{{title}}" index="{{taskListIndex}}" showCode="{{showCode}}">
+    <scroll-view scroll-y="true" style="height: 75%">
+      <view class="main-content">
+        <view class="modal-box">
+          <radio-group bindchange="changeDeviceStatusRadioClick" data-index="{{index}}">
+            <view class="bottom_border" wx:for="{{machineStatusModalData}}">
+              <view class="row-box">
+                <view class="title_desc">
+                {{item.status_desc}}
+                </view>
+                <view class="col-radio-group">
+                  <label class="radio_radio" wx:for="{{item.status}}">
+                    <radio value="{{item}}" class="text">
+                      {{index}}
+                    </radio>
+                  </label>
+                </view>
+              </view>
+
+                <!-- <view wx:for="{{item.status}}">
+                  {{index}}:{{item}}
+                </view> -->
+            </view>
+          </radio-group>
+        </view>
+        <view class="modal-box">
+          <view class="title_desc">
+            附加说明
+          </view>
+          <textarea type="text" class="area-input" 	bindinput="getChangeDeviceStatusReasonInput" placeholder="如需手写说明在此处填写" />
+        </view>
+      </view>
+  
+    </scroll-view>
+  </modal>
+  
 </view>
