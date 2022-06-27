@@ -294,7 +294,7 @@ Page({
               // 业务状态码
               if (result.data.code == normalBusinessCode) {
                 const data = result.data.data;
-                // console.log(data);
+                console.log(data);
                 if (type == 'repo') {
                   // 更新数据值
                   that.setData({

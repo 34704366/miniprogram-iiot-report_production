@@ -58,7 +58,7 @@ Page(check_login.checkLogin({
             "Authorization" : wx.getStorageSync('token_type')+" "+wx.getStorageSync('access_token')
           },
           data: {
-            code_info: code_info
+            qr_code: code_info
           },
           method: "GET",
           dataType: 'json',
