@@ -8,7 +8,7 @@
             {{item.machine_name}}
           </view>
         <view class="text">
-          工单：{{item.work_code}}
+          工单：{{item.task_code}}
         </view>
       </view>
       <view class="col-box">
@@ -22,7 +22,10 @@
     <view wx:if="{{item.onHide == 0}}">
       <view class="col-box">
         <text class="title" decode="{{true}}">
-        {{item.machine_name}}&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{{item.machine_code}}
+        {{item.machine_name}}
+        </text>
+        <text class="title">
+        任务编号：{{item.task_code}}
         </text>
 
         <view style="width: 150px"></view>

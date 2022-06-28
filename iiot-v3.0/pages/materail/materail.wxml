@@ -18,7 +18,7 @@
         </view>
         <view class="col-box">
         
-          <button bindtap="inWarehouse" data-index="{{index}}" data-code="{{item.repo_code}}" data-title="{{item.repo_name}}" data-showCode="{{item.repo_code}}" size="mini" type="primary" plain="true" class="button">入库</button>
+          <button bindtap="inWarehouse" data-index="{{index}}" data-code="{{item.repo_code}}" data-title="{{item.repo_name}}" data-showCode="{{item.repo_code}}" size="mini" type="primary" plain="true" class="button">扫码</button>
         </view>
       </view>
       
@@ -122,7 +122,7 @@
         </view>
         <view class="col-box">
         
-          <button bindtap="inPallets" data-index="{{index}}" size="mini" data-code="{{item.pallet_code}}" data-title="{{item.pallet_name}}" data-showCode="{{item.pallet_code}}"  type="primary" plain="true" class="button">入库</button>
+          <button bindtap="inPallets" data-index="{{index}}" size="mini" data-code="{{item.pallet_code}}" data-title="{{item.pallet_name}}" data-showCode="{{item.pallet_code}}"  type="primary" plain="true" class="button">扫码</button>
         </view>
       </view>
 

@@ -1,11 +1,11 @@
 {
   "pages": [
+    "pages/index/index",
     "pages/home/home",
     "pages/login/login",
     "pages/logs/logs",
     "pages/device/device",
-    "pages/materail/materail",
-    "pages/index/index"
+    "pages/materail/materail"
   ],
   "window": {
     "backgroundTextStyle": "light",

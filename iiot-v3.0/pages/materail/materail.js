@@ -36,10 +36,18 @@ Page({
     modalPalletsData: {},     // 卡板扫描物料得到的需要展示的信息      
   },
 
-  
-  onShow: function (options) {
+  // 刷新页面重新拉取数据
+  refreshData() {
+    // 获取设备列表
     this.getWarehouseList();
     this.getpalletsList();
+  },
+  onLoad: function (options) {
+    this.refreshData();
+  },
+
+  onShow: function (options) {
+    // this.refreshData();
     const that = this;
 
 
@@ -293,8 +301,9 @@ Page({
             if(result.statusCode == normalHttpCode) {
               // 业务状态码
               if (result.data.code == normalBusinessCode) {
-                const data = result.data.data;
-                console.log(data);
+                let data = result.data.data;
+                // 把仓库编号加进去
+                data.repo_code = code;
                 if (type == 'repo') {
                   // 更新数据值
                   that.setData({
@@ -338,10 +347,6 @@ Page({
       },
       fail: (res) => {
         console.log(`扫描失败`)
-        wx.showToast({
-          title: '扫描失败',
-          icon: 'error'
-        })
       }
     })
     
@@ -349,13 +354,14 @@ Page({
 
   // 仓库扫描卡板 的提交动作
   postWarehouse(e) {
-    // console.log(e);
+    console.log(this.data.modalWarehouseData);
     const action = this.data.modalWarehouseData.action;
     const repo_code = this.data.modalWarehouseData.repo_code;
     const pallet_code = this.data.modalWarehouseData.pallet_code;
 
     let url = ''
     let toastMsg = ''
+    const that = this;
     // 判断是出库还是入库
     if (action == 'checkin') {
       url = '/pda/suz/repo/checkin';     // 入库的uri
@@ -367,13 +373,15 @@ Page({
       app.showErrorToast('后台错误，出入库类型错误')
       return;
     }
+    const data = {
+      repo_code: repo_code,
+      pallet_code: pallet_code
+    };
+    console.log(data)
     // 发送请求提交
     wx.request({
       url: app.globalData.serverUrl + url,
-      data: {
-        repo_code: repo_code,
-        pallet_code: pallet_code
-      },
+      data: data,
       dataType: 'json',
       header: {
         "content-type": "application/json",
@@ -387,6 +395,7 @@ Page({
         });
         app.processPostRequestStatusCode(result.statusCode);
         if (result.statusCode == normalHttpCode) {
+          that.refreshData();
           app.showSuccessToast(toastMsg);
         }
       },
@@ -409,6 +418,7 @@ Page({
     
     let url = ''
     let toastMsg = ''
+    const that = this;
     // 判断是出库还是入库
     if (action == 'bind') {
       url = '/pda/suz/pallet/bind';     // 入库的uri
@@ -420,14 +430,16 @@ Page({
       app.showErrorToast('后台错误，出入库类型错误')
       return;
     }
+    const data= {
+      pallet_code: pallet_code,
+      material_code: material_code,
+      material_num: material_num
+    };
+    console.log(data);
     // 发送请求提交
     wx.request({
       url: app.globalData.serverUrl + url,
-      data: {
-        pallet_code: pallet_code,
-        material_code: material_code,
-        material_num: material_num
-      },
+      data: data,
       dataType: 'json',
       header: {
         "content-type": "application/json",
@@ -438,6 +450,7 @@ Page({
         // console.log(result);
         app.processPostRequestStatusCode(result.statusCode);
         if (result.statusCode == normalHttpCode) {
+          that.refreshData();
           app.showSuccessToast(toastMsg);
         }
       },

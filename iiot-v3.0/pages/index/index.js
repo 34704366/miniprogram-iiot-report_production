@@ -146,10 +146,6 @@ Page(check_login.checkLogin({
       },
       fail: (res) => {
         console.log(`扫描失败`)
-        wx.showToast({
-          title: '扫描失败',
-          icon: 'error'
-        })
       }
     })
     

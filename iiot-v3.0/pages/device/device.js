@@ -45,7 +45,7 @@ Page({
 
     modalInOutWarehouseData: {},    // 出/入库数据存放
 
-    reportNumber: 0,   // 报产数量
+    reportNumber: "",   // 报产数量
     showReportModal: false,   // 报产modal控制位
     isDefectReportFlag: false,   // 控制是否是次品报产的控制位
 
@@ -63,7 +63,9 @@ Page({
 
     showFaultReportModal: false,
   },
-
+  onLoad: function (options) {
+    this.refreshData();
+  },
   
   onShow: function (options) {
     // 获取设备列表
@@ -220,7 +222,7 @@ Page({
         }
       },
       fail: (res) => {
-        app.requestSendError(res);
+        // app.requestSendError(res);
       },
       complete: (res) => {},
     })
@@ -285,7 +287,7 @@ Page({
         }
       },
       fail: (res) => {
-        app.requestSendError(res);
+        // app.requestSendError(res);
       },
       complete: (res) => {},
     })
@@ -450,7 +452,7 @@ Page({
       machine_code: machine_code,    // post-data
       work_order: work_order ,      // post-data
       task_code: task_code,      // post-data
-      reportNumber: 0,
+      reportNumber: '',
 
       isDefectReportFlag: false,     // 负责让次品报产modal多一行信息的控制位
       title: title,
@@ -478,7 +480,7 @@ Page({
       machine_code: machine_code,    // post-data
       work_order: work_order ,      // post-data
       task_code: task_code,      // post-data
-      reportNumber: 0,
+      reportNumber: '',
 
       isDefectReportFlag: false,     // 负责让次品报产modal多一行信息的控制位
       title: title,
@@ -506,7 +508,7 @@ Page({
       machine_code: machine_code,    // post-data
       work_order: work_order ,      // post-data
       task_code: task_code,      // post-data
-      reportNumber: 0,
+      reportNumber: '',
 
       isDefectReportFlag: true,     // 负责让次品报产modal多一行信息的控制位
       title: title,
@@ -545,6 +547,13 @@ Page({
     const task_code = this.data.task_code;
     const quantity = this.data.reportNumber;
     const index = this.data.taskListIndex;
+
+
+    // 判断数量是否合法
+    if (quantity <= 0) {
+      app.showErrorToast('请输入大于0的数量');
+      return '-1';
+    }
 
     let url = '';
     let data = {};
@@ -718,8 +727,21 @@ Page({
     const task_code = this.data.task_code;
 
     const param = this.data.faultReportStatusReasonText;
-    const start_time = this.data.faultReportStartTime;
-    const end_time = this.data.faultReportEndTime;
+    let start_time = this.data.faultReportStartTime;
+    let end_time = this.data.faultReportEndTime;
+    
+    // 日期不能为空
+    if (!start_time || !end_time) {
+      app.showErrorToast('日期不能为空');
+      console.log('日期为空')
+      return;
+    } 
+
+    // 拼接上日期
+    let date = new Date(new Date()).toLocaleDateString();
+    date = date.replace(/\//g , '-');   // 日期中/替换成-
+    start_time = date + ' ' + start_time + ':00';
+    end_time = date + ' ' + end_time + ':00';
 
     // 提交的数据
     const data = {
@@ -1063,11 +1085,7 @@ Page({
 
       },
       fail: (res) => {
-        console.log(`扫描失败`)
-        wx.showToast({
-          title: '扫描失败',
-          icon: 'error'
-        })
+        console.log(`扫描失败`);
       }
     })
     
