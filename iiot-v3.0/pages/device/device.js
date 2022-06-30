@@ -786,7 +786,7 @@ Page({
     const work_order = this.data.work_order;
     const task_code = this.data.task_code;
 
-    const param = this.data.changeDeviceStatusReasonText;
+    const param = this.data.faultReportStatusReasonText;
 
     const data = {
       status: status,
