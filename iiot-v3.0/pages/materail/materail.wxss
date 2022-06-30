@@ -25,6 +25,16 @@
   flex-direction: column;
   width: 50%;
 }
+.container .info .col-box-left {
+  display: flex;
+  flex-direction: column;
+  width: 65%;
+}
+.container .info .col-box-right {
+  display: flex;
+  flex-direction: column;
+  width: 35%;
+}
 .sub-title {
   font-size: 25px;
   color: green;

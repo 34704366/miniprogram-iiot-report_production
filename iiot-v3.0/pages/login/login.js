@@ -107,7 +107,7 @@ Page({
       },
       fail(res) {
         console.log(res.errMsg)
-        app.showErrorToast("request请求失败，原因：",res.errMsg);
+        app.showErrorToast("本地网络故障");
 
       }
     })

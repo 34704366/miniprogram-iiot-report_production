@@ -2,7 +2,8 @@
  <view class='modal-content' style='height:{{height}}'>
   <scroll-view scroll-y class='main-content'>
     <view class="main-content">
-      <text class="title" decode="{{true}}">{{title}}&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{{repo_code}}</text>
+      <!-- <text class="title" decode="{{true}}">{{title}}&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{{repo_code}}</text> -->
+      <text class="title" decode="{{true}}">{{title}}</text>
     </view>
     <!-- <view class="main-content">{{repo_code}}</view> -->
    <slot></slot>

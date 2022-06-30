@@ -62,7 +62,7 @@ Page({
         }
       },
       fail: (res) => {
-        app.showErrorToast("request请求发送失败");
+        app.showErrorToast("本地网络故障");
       },
       complete: (res) => {},
     })

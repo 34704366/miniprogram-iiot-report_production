@@ -161,12 +161,6 @@
   border-radius: 12rpx;
   padding-left: 10rpx;
 }
-.container .info .stock-number {
-  height: 60rpx;
-  width: 230rpx;
-  padding-left: 10rpx;
-  padding-top: 10rpx;
-}
 .container .info .prodNumberInput {
   background-color: rgb(236, 236, 236);
   border-radius: 12rpx;
@@ -179,6 +173,20 @@
   flex-direction: row;
   justify-content: flex-start;
   padding: 10rpx 0rpx;
+}
+.container .info .input-row-box .text {
+  font-size: 30rpx;
+  width: 200rpx;
+}
+
+.container .info .input-row-box .stock-number {
+  height: 60rpx;
+  width: 150rpx;
+  padding-left: 10rpx;
+  padding-top: 10rpx;
+}
+.container .info .input-row-box .submitButton {
+  width: 250rpx;
 }
 .container .info .row-box .submitButton{
   margin: 0rpx 0rpx;

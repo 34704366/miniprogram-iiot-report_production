@@ -40,7 +40,6 @@ Page({
       "4": "设备清洗",
     },
     statusIndex: 0,
-    inWarehouseNumber: 0,
     selected_machine_code: '',
 
     modalInOutWarehouseData: {},    // 出/入库数据存放
@@ -69,7 +68,7 @@ Page({
   
   onShow: function (options) {
     // 获取设备列表
-    this.refreshData();
+    // this.refreshData();
 
     const that = this;
     // this.judgeOpreatorStatus();
@@ -132,7 +131,7 @@ Page({
           // 业务状态码
           if (result.data.code == normalBusinessCode) {
             // app.showSuccessToast("成功");
-
+            console.log(result.data.data)
             let list = [];
             // let inDuty = false;
             // let offDuty = false;
@@ -147,17 +146,36 @@ Page({
               item.inDuty = inDuty;
               item.offDuty = offDuty;
 
-              // item.machine_status_obj = machine_status_obj;
+              // 对机器状态数据进行清洗
+
               let machine_status_array = [];
               let machine_status_index = [];
+              item.deviceNowStatus = '修改设备状态'   // 如果出现异常（找不到设备当前状态对应的全部状态中的值），则显示该文字
               for (const index in item.machine_status_obj) {
+                for (const i in item.machine_status_obj[index].status) {
+                  // 取得具体某一项的状态
+                  const status = item.machine_status_obj[index].status;
+                  // 取得value
+                  const value = status[i];
+                  // radio是否选中的标志位
+                  let isChecked = false;
+                  // 判断是不是现在机器的状态
+                  if (String(value) == String(item.machine_status)) {
+                    // 如果是当前机器的状态，那么radio选中
+                    isChecked = true;
+                    // 将设备状态显示文字换为索引值（传来的索引是文字）
+                    item.deviceNowStatus = i;
+                  }
+                  // 修改数据的结构
+                  status[i] = {
+                    'value': value,
+                    'isChecked': isChecked
+                  }
+                  // console.log(item.machine_status_obj[index].status[i])
+                }
                 // console.log(machine_status_obj[index]);
-                machine_status_array.push(item.machine_status_obj[index]);
-                machine_status_index.push(index);
               }
-              item.machine_status_array = machine_status_array;
-              item.machine_status_index = machine_status_index;
-              item.statusIndex = 0;
+
 
               // 判断任务状态
               if (item.task_status == "未启动") {
@@ -176,20 +194,7 @@ Page({
                 item.button_disabled = true;
                 item.task_button_disabled = true;
               }
-              
-              
-              // 判断设备状态
-              item.deviceNowStatus = '修改设备状态'   // 如果出现异常（找不到设备当前状态对应的全部状态中的值），则显示该文字
-              const deivceStatusCode = item.machine_status;
-              const deviceStatusObject = item.machine_status_obj
-              for (const index in deviceStatusObject) {
-                for (const key in deviceStatusObject[index].status) {
-                  // console.log(key);
-                  if (deviceStatusObject[index].status[key] == deivceStatusCode) {
-                    item.deviceNowStatus = key;
-                  }
-                }
-              }
+          
 
               list.push(item);
             }
@@ -272,7 +277,7 @@ Page({
 
               list.push(item);
             }
-            console.log(list);
+            // console.log(list);
             that.setData({
               fixList: list,
             })
@@ -420,7 +425,7 @@ Page({
         
       },
       fail: (res) => {
-        app.showErrorToast("发送request请求失败");
+        app.showErrorToast("本地网络故障");
         
         // return -1;
         that.result = -1;
@@ -485,6 +490,8 @@ Page({
       isDefectReportFlag: false,     // 负责让次品报产modal多一行信息的控制位
       title: title,
       showCode: showCode,
+
+      defectReasonText: ''
     })
   },
 
@@ -513,6 +520,8 @@ Page({
       isDefectReportFlag: true,     // 负责让次品报产modal多一行信息的控制位
       title: title,
       showCode: showCode,
+
+      defectReasonText: '',
     })
     
     // 提取出该任务对应的次品原因
@@ -651,7 +660,7 @@ Page({
         
       },
       fail: (result) => {
-        app.showErrorToast("发送request请求失败");
+        app.showErrorToast("本地网络故障");
         console.log(result)
         
         // return -1;
@@ -701,7 +710,8 @@ Page({
       showCode: showCode,
 
       // 显示在modal框上的故障类型信息
-      faultStatusModalData: fault_status
+      faultStatusModalData: fault_status,
+      faultReportStatusReasonText: ''
     })
 
   },
@@ -786,6 +796,7 @@ Page({
       showCode: showCode,
 
       machineStatusModalData: machineStatusModalData,
+      changeDeviceStatusReasonText: '',
     })
   },
 
@@ -797,6 +808,7 @@ Page({
     this.setData({
       postDeviceStatusValue: status_value
     })
+    console.log(status_value)
   },
 
   // 修改设备状态modal框提交
@@ -822,13 +834,6 @@ Page({
     const type = CHANGE_DEVICE_STATUS_REPORT;
 
     this.postReportInterface(url, data, type);
-  },
-
-  getInWarehouseNumInput(event) {
-    // console.log(event.detail.value);
-    this.setData({
-      inWarehouseNumber: Number(event.detail.value)
-    });
   },
 
   // 修改来源
@@ -1168,7 +1173,7 @@ Page({
         
       },
       fail: (result) => {
-        app.showErrorToast("发送request请求失败");
+        app.showErrorToast("本地网络故障");
         console.log(result)
         
         // return -1;

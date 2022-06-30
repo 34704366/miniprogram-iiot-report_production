@@ -13,6 +13,9 @@
       </view>
       <view class="col-box">
         <view class="title">
+          类型：生产
+        </view>
+        <view class="title">
           状态：{{item.task_status}}
         </view>
       </view>
@@ -21,12 +24,13 @@
     <!-- 展开状态 -->
     <view wx:if="{{item.onHide == 0}}">
       <view class="col-box">
-        <text class="title" decode="{{true}}">
+        <view class="title" decode="{{true}}">
         {{item.machine_name}}
-        </text>
-        <text class="title">
+        </view>
+        <view class="devide-line"></view>
+        <view class="small-text">
         任务编号：{{item.task_code}}
-        </text>
+        </view>
 
         <view style="width: 150px"></view>
         
@@ -55,7 +59,7 @@
               {{item.repo_B_num}}
             </view> -->
           <view class="stock-number">{{item.repo_B}}</view> 
-          <button class="submitButton" size="mini" plain="true"  data-title="{{item.machine_name}}" type="primary" bindtap="outWarehouseClick" data-index="{{index}}" data-machine_code="{{item.machine_code}}" data-showCode="{{item.machine_code}}"  data-work_code="{{item.work_code}}" data-task_code="{{item.task_code}}" disabled="{{item.button_disabled}}">交接</button>
+          <button class="submitButton" size="mini" plain="true"  data-title="{{item.machine_name}}" type="primary" bindtap="outWarehouseClick" data-index="{{index}}" data-machine_code="{{item.machine_code}}" data-showCode="{{item.machine_code}}"  data-work_code="{{item.work_code}}" data-task_code="{{item.task_code}}" disabled="{{item.button_disabled}}">移交</button>
         </view>
 
         <view class="input-row-box">
@@ -81,15 +85,25 @@
           <view class="stock-number">{{item.defect_reported}}</view> 
           <button class="submitButton" size="mini" plain="true" type="primary" bindtap="defectReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}" disabled="{{item.button_disabled}}">次品报产</button>
         </view>
-        <view class="row-box">
+        <view class="input-row-box">
           <view class="text">
             设备状态：
           </view>
+          <view style="width:150rpx"></view>
           <button class="submitButton" plain="true" type="primary" bindtap="changeDeviceStatusClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}" disabled="{{item.button_disabled}}">
             {{item.deviceNowStatus}}
           </button>
         </view>
 
+        <view class="input-row-box">
+          <view class="text">
+            故障上报：
+          </view>
+
+          <view style="width: 150rpx"></view>
+          
+          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="faultReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}" disabled="{{item.button_disabled}}">故障上报</button>
+        </view>
         <view class="row-box">
           <view class="text">
             人员状态：
@@ -102,15 +116,6 @@
               <radio value='2' class="text" checked="{{item.offDuty}}" disabled="{{item.button_disabled}}" >离岗</radio>
             </label>
           </radio-group>
-        </view>
-        <view class="input-row-box">
-          <view class="text">
-            故障上报
-          </view>
-
-          <view style="width: 150px"></view>
-          
-          <button class="submitButton" size="mini" plain="true" type="primary" bindtap="faultReportClick" data-index="{{index}}" data-title="{{item.machine_name}}" data-showCode="{{item.machine_code}}" data-work_order="{{item.work_code}}" data-task_code="{{item.task_code}}" data-machine_code="{{item.machine_code}}" disabled="{{item.button_disabled}}">故障上报</button>
         </view>
         <button class="task-button" type="primary" plain="true" bindtap="taskStartOrEnd" data-index="{{index}}" data-type="production" disabled="{{item.task_button_disabled}}">任务{{item.task_button_text}}</button>
 
@@ -137,6 +142,9 @@
         </view>
       </view>
       <view class="col-box">
+        <view class="title">
+          类型：维修
+        </view>
         <view class="title">
           状态：{{item.task_status}}
         </view>
@@ -251,7 +259,7 @@
             <view class="picker">{{defectReasonArray[defectReasonIndex]}}</view>
           </picker>
         </view>
-        <view class="modal-box">
+        <view class="modal-box" wx:if="{{isDefectReportFlag}}">
           <view class="title_desc">
             附加说明
           </view>
@@ -327,7 +335,7 @@
                 </view>
                 <view class="col-radio-group">
                   <label class="radio_radio" wx:for="{{item.status}}">
-                    <radio value="{{item}}" class="text">
+                    <radio value="{{item.value}}" class="text" checked="{{item.isChecked}}">
                       {{index}}
                     </radio>
                   </label>

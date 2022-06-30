@@ -286,7 +286,7 @@ Page({
         } else {
           app.showErrorToast('只能扫卡板或仓库，客户端错误');
         }
-
+        console.log(data)
         wx.request({
           url: app.globalData.serverUrl + url,
           header: {
@@ -297,6 +297,7 @@ Page({
           dataType: 'json',
           data: data,
           success: (result) => {
+            console.log(result)
             // http码
             if(result.statusCode == normalHttpCode) {
               // 业务状态码
@@ -414,27 +415,34 @@ Page({
     const action = this.data.modalPalletsData.action;
     const pallet_code = this.data.modalPalletsData.pallet_code;
     const material_code = this.data.modalPalletsData.material_code;
-    const material_num = this.data.modalPalletsData.material_num;
+    let material_num = this.data.modalPalletsData.material_num;
     
     let url = ''
     let toastMsg = ''
+    let data = {};
     const that = this;
     // 判断是出库还是入库
     if (action == 'bind') {
       url = '/pda/suz/pallet/bind';     // 入库的uri
       toastMsg = '绑定成功'     // 入库的成功提示语
+      // 绑定物料可以手动输入数量
+      data= {
+        pallet_code: pallet_code,
+        material_code: material_code,
+        material_num: this.data.inPalletsNumber,
+      };
     } else if (action == 'unbind') {
       url = '/pda/suz/pallet/unbind';
-      toastMsg = '解绑成功'
+      toastMsg = '解绑成功';
+      data= {
+        pallet_code: pallet_code,
+        material_code: material_code,
+        material_num: material_num
+      };
     } else {
-      app.showErrorToast('后台错误，出入库类型错误')
+      app.showErrorToast("仅查看");
       return;
     }
-    const data= {
-      pallet_code: pallet_code,
-      material_code: material_code,
-      material_num: material_num
-    };
     console.log(data);
     // 发送请求提交
     wx.request({
