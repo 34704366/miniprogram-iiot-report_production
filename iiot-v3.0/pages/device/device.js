@@ -1152,7 +1152,7 @@ Page({
         if(result.statusCode == normalHttpCode) {
           // 业务状态码
           if (result.data.code == normalBusinessCode) {
-            console.log(type)
+            console.log(result.data.data)
             
             // 如果是A库入库
             if(type == 'inWarehouse') {
@@ -1168,7 +1168,9 @@ Page({
             // 如果是B库出库
             else if (type == 'outWarehouse') {
               let list = this.data.taskList;
-              list[index].repo_B = parseInt(that.data.taskList[index].repo_B) - parseInt(that.data.warehouseInOutNum);
+              if (that.data.warehouseInOutNum) {
+                list[index].repo_B = parseInt(that.data.taskList[index].repo_B) - parseInt(that.data.warehouseInOutNum);
+              }
               // 添加
               that.setData({
                 taskList: list,

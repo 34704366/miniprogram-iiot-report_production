@@ -161,7 +161,7 @@
           卡板名称：{{modalWarehouseData.pallet_name}}
         </view>
         <view class="modal-box">
-          卡板编号：{{modalWarehouseData.material_code}}
+          卡板编号：{{modalWarehouseData.pallet_code}}
         </view>
         <view class="modal-box">
           物料编号：{{modalWarehouseData.material_code}}
@@ -185,7 +185,7 @@
             动作：出库
           </view>          
         </view>
-        <view class="modal-box" wx:if="{{modalWarehouseData.action == 'checkout'}}">
+        <view class="modal-box" wx:else>
           <view style="color: blue">
             仅查看
           </view>          
