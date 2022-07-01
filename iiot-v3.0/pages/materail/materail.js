@@ -95,10 +95,21 @@ Page({
           // 业务状态码
           if (result.data.code == normalBusinessCode) {
             // app.showSuccessToast("成功");
-
+            // 获取旧的仓库列表
+            const oldWarehouseList = that.data.warehouseList;
+            // console.log(oldWarehouseList);
             let list = [];
             for (const item of result.data.data) {
-              item.onHide = 1;
+              item.onHide = 1;  // 添加标志位
+              // 判断是否折叠
+              for (const oldItem of oldWarehouseList) {
+                if (oldItem.repo_code == item.repo_code) {
+                  if (oldItem.onHide == 0) {
+                    item.onHide = oldItem.onHide;
+                  }
+                }
+              }
+
               list.push(item);
             }
 
@@ -154,11 +165,20 @@ Page({
         if(result.statusCode == normalHttpCode) {
           // 业务状态码
           if (result.data.code == normalBusinessCode) {
+            const oldPalletsList = that.data.palletsList;
             const data = result.data.data;
             // console.log(data);
             let list = [];
             for (let item of data) {
-              item.onHide = 1;
+              item.onHide = 1;  // 添加标志位
+              // 判断是否折叠
+              for (const oldItem of oldPalletsList) {
+                if (oldItem.pallet_code == item.pallet_code) {
+                  if (oldItem.onHide == 0) {
+                    item.onHide = oldItem.onHide;
+                  }
+                }
+              }
 
               list.push(item);
             }

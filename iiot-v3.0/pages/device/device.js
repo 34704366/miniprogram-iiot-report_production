@@ -130,15 +130,25 @@ Page({
         if(result.statusCode == normalHttpCode) {
           // 业务状态码
           if (result.data.code == normalBusinessCode) {
+            const oldTaskList = that.data.taskList;
+            // console.log(oldTaskList);
             // app.showSuccessToast("成功");
-            console.log(result.data.data)
+            console.log(result.data.data);
             let list = [];
             // let inDuty = false;
             // let offDuty = false;
             for (const item of result.data.data) {
+
+              // 判断是否折叠
               item.onHide = 1;  // 添加标志位
-              item.passNumber = 0;    // 添加用户输入的良品报数数量
-              item.defectNumber = 0;    // 添加用户输入的次品报数数量、
+              for (const oldItem of oldTaskList) {
+                if (oldItem.task_code == item.task_code) {
+                  if (oldItem.onHide == 0) {
+                    item.onHide = oldItem.onHide;
+                  }
+                }
+              }
+
               // 判断员工状态
               // let inDuty = false;
               let {inDuty,offDuty} = this.judgeOpreatorStatus(item.operator_status);
@@ -248,16 +258,25 @@ Page({
       dataType: 'json',
       success: (result) => {
         // console.log(result);
-
         // http码
         if(result.statusCode == normalHttpCode) {
           // 业务状态码
           if (result.data.code == normalBusinessCode) {
-            
+            // 获取刷新之前的维修计划列表
+            const oldFixList = that.data.fixList;
             const data = result.data.data;
             let list = [];
             for (let item of data) {
-              item.onHide = 1;
+
+              item.onHide = 1;  // 添加标志位
+              // 判断是否折叠
+              for (const oldItem of oldFixList) {
+                if (oldItem.task_code == item.task_code) {
+                  if (oldItem.onHide == 0) {
+                    item.onHide = oldItem.onHide;
+                  }
+                }
+              }
 
               // 判断任务状态
               if (item.task_status == "未启动") {
