@@ -579,7 +579,7 @@ Page({
 
     // 判断数量是否合法
     if (quantity <= 0) {
-      app.showErrorToast('请输入大于0的数量1231231313123131313');
+      app.showErrorToast('请输入大于0的数量');
       return '-1';
     }
 
