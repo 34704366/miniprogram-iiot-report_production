@@ -180,7 +180,7 @@
             动作：入库
           </view>          
         </view>
-        <view class="modal-box" wx:if="{{modalWarehouseData.action == 'checkout'}}">
+        <view class="modal-box" wx:elif="{{modalWarehouseData.action == 'checkout'}}">
           <view style="color: blue">
             动作：出库
           </view>          
@@ -227,7 +227,7 @@
             绑定物料
           </view>
         </view>
-        <view class="modal-box" wx:if="{{modalPalletsData.action == 'unbind'}}">
+        <view class="modal-box" wx:elif="{{modalPalletsData.action == 'unbind'}}">
           <view style="color:blue">
             解绑物料
           </view>
