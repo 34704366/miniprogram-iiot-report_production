@@ -6,6 +6,33 @@ App({
     logs.unshift(Date.now())
     wx.setStorageSync('logs', logs)
 
+    if (!wx.cloud) {
+      console.error('请使用2.2.3 或以上的基础库以使用云能力');
+    } else {
+      wx.cloud.init({
+        traceUser: true
+      })
+    }
+
+    // 调用云函数以获取openid
+    wx.cloud.callFunction({
+      // 云函数名称
+      name: 'get_openid',
+      // 传给云函数的参数
+      data: {
+
+      },
+    }).then(res => {
+      const openid = res.result.openid;
+      if (openid) { 
+        wx.setStorageSync('openid', openid);
+        // console.log(openid)
+      } else {
+        console.error('openid获取失败');
+      }
+    }).catch(console.error);
+
+
     // 登录
     wx.login({
       success: res => {

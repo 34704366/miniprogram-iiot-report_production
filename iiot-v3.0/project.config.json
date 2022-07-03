@@ -70,5 +70,6 @@
     "miniprogram": {
       "list": []
     }
-  }
+  },
+  "cloudfunctionRoot": "./cloudfunction/"
 }

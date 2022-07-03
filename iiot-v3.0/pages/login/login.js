@@ -6,18 +6,22 @@ const app =  getApp();
 const normalHttpCode  = app.globalData.normalHttpCode;
 const normalBusinessCode = app.globalData.normalBusinessCode;
 
+// const cloud = require('wx-server-sdk')
+
 Page({
 
   data: {
     username: '', 
     password: '',
     serverUrl: '',
+    code: '',
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    const that = this;
     // 从全局数据中取出服务器地址
     this.setData({
       serverUrl: app.globalData.serverUrl,
@@ -30,6 +34,7 @@ Page({
       username: preUsername,
       password: prePassword
     })
+
   },
 
   // 发送登录请求（传递账户名和密码信息）
@@ -44,6 +49,11 @@ Page({
       return;
     }
     console.log(this.data.serverUrl + '/pda/suz/login')
+
+    // 获取openid
+    const openid = wx.getStorageSync('openid');
+    console.log(openid);
+
     // 向后台发送用户名和密码
     wx.request({ 
       // url: 'http://202.116.3.50:8001/WeChatpro/getUserInfo',
@@ -53,6 +63,7 @@ Page({
       data: {
           username: username,
           password: password,
+          openid: openid
       },
       header: {
         "Content-Type": "application/x-www-form-urlencoded"
