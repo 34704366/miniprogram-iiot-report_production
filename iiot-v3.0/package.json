@@ -7,5 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "wang chenhao",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "tdesign-miniprogram": "^0.14.0"
+  }
 }
