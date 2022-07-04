@@ -24,8 +24,10 @@ App({
       },
     }).then(res => {
       const openid = res.result.openid;
-      if (openid) { 
+      const unionid = res.result.unionid;
+      if (openid && unionid) { 
         wx.setStorageSync('openid', openid);
+        wx.setStorageSync('unionid', unionid);
         // console.log(openid)
       } else {
         console.error('openid获取失败');

@@ -52,23 +52,27 @@ Page({
 
     // 获取openid
     const openid = wx.getStorageSync('openid');
+    const unionid = wx.getStorageSync('unionid');
     console.log(openid);
 
+    let data = {
+      username: username,
+      password: password,
+      openid: openid,
+      unionid: unionid
+    };
+    console.log(data)
     // 向后台发送用户名和密码
     wx.request({ 
       // url: 'http://202.116.3.50:8001/WeChatpro/getUserInfo',
       // url: 'http://202.116.3.50:8300/pda/suz/LoginForToken',
       url: this.data.serverUrl + '/pda/suz/login',
-      
-      data: {
-          username: username,
-          password: password,
-          openid: openid
-      },
+      data: data,
       header: {
         "Content-Type": "application/x-www-form-urlencoded"
       },
       method: 'POST',
+      timeout: 3000,
       dataType: 'json',
       success: (result) => {
         console.log('post请求发送成功',result)
