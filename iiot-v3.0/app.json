@@ -56,6 +56,11 @@
 
   },
 
+  "usingComponents": {
+    "t-loading": "tdesign-miniprogram/loading/loading"
+    
+  },
+
   "style": "v2",
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents"

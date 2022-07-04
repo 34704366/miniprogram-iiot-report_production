@@ -39,6 +39,13 @@ Page({
 
   // 发送登录请求（传递账户名和密码信息）
   login() {
+
+    // 添加蒙层等待
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
+
     // console.log('locallogin');
     let username = this.data.username;
     let password = this.data.password ;
@@ -62,6 +69,8 @@ Page({
       unionid: unionid
     };
     console.log(data)
+
+
     // 向后台发送用户名和密码
     wx.request({ 
       // url: 'http://202.116.3.50:8001/WeChatpro/getUserInfo',
@@ -72,7 +81,7 @@ Page({
         "Content-Type": "application/x-www-form-urlencoded"
       },
       method: 'POST',
-      timeout: 3000,
+      timeout: 5000,
       dataType: 'json',
       success: (result) => {
         console.log('post请求发送成功',result)
@@ -124,6 +133,11 @@ Page({
         console.log(res.errMsg)
         app.showErrorToast("本地网络故障");
 
+      },
+      complete(res) {
+        wx.hideLoading({
+          success: (res) => {},
+        })
       }
     })
   },
