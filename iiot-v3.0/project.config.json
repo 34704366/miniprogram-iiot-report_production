@@ -51,6 +51,7 @@
     "servePath": ""
   },
   "isGameTourist": false,
+  "cloudfunctionRoot": "cloudfunction/",
   "condition": {
     "search": {
       "list": []
@@ -70,6 +71,5 @@
     "miniprogram": {
       "list": []
     }
-  },
-  "cloudfunctionRoot": "./cloudfunction/"
+  }
 }
