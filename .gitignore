@@ -3,3 +3,4 @@ package-lock.json
 node_modules/
 .DS_Store
 project.private.config.json
+miniprogram_npm
