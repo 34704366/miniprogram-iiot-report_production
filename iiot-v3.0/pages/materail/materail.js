@@ -36,6 +36,21 @@ Page({
     modalPalletsData: {},     // 卡板扫描物料得到的需要展示的信息      
   },
 
+  handleRefresh() {
+    // 延迟动画加载
+    setTimeout(() => {
+      this.refreshData();
+      console.log('handle refresh');
+      //停止下拉刷新
+      wx.stopPullDownRefresh();
+    }, 300)
+  },
+
+  onPullDownRefresh:function(){
+    
+    this.handleRefresh()
+  },
+
   // 刷新页面重新拉取数据
   refreshData() {
     // 获取设备列表
@@ -43,6 +58,7 @@ Page({
     this.getpalletsList();
   },
   onLoad: function (options) {
+    console.log('material onLoad')
     this.refreshData();
   },
 

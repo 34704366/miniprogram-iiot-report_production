@@ -1,12 +1,23 @@
-
+Page {
+  background-color: rgb(255, 255, 255);
+  
+  /* 让字体渲染更精细 */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
 
 .container {
   /* padding: 10rpx 10rpx; */
   margin: 10rpx 10rpx;
-  
 }
+.container .collapse-box {
+  background-color: rgb(177, 112, 112);
+}
+
+
 .container .info {
   /* margin: 20rpx 30rpx; */
+  margin: 10px 0px;
   padding: 20rpx 20rpx;
   border: rgb(196, 189, 189) 1rpx solid;
   border-radius: 20rpx;

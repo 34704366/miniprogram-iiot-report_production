@@ -9,6 +9,7 @@
   "author": "wang chenhao",
   "license": "MIT",
   "dependencies": {
-    "tdesign-miniprogram": "^0.14.0"
+    "tdesign-miniprogram": "^0.14.0",
+    "t-pull-down-refresh": "tdesign-miniprogram/pull-down-refresh/pull-down-refresh"
   }
 }

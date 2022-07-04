@@ -19,6 +19,19 @@ Page(check_login.checkLogin({
     // console.log("我的token"+wx.getStorageSync('access_token'));
   
   }, 
+  handleRefresh() {
+    // 延迟动画加载
+    setTimeout(() => {
+      console.log('handle refresh');
+      //停止下拉刷新
+      wx.stopPullDownRefresh();
+    }, 300)
+  },
+
+  onPullDownRefresh:function(){
+    
+    this.handleRefresh()
+  },
   scanCode() {
     const that = this;
     wx.scanCode({

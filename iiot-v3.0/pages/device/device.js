@@ -61,9 +61,32 @@ Page({
     postDeviceStatusValue: 0,
 
     showFaultReportModal: false,
+
+    // loading: true,  // 下拉刷新动画的标志位
+
+    // 折叠面板头部右侧展示的内容
+    taskListHeaderText: '',
+    fixListHeaderText: ''
   },
+  
+  handleRefresh() {
+    // 延迟动画加载
+    setTimeout(() => {
+      this.refreshData();
+      console.log('handle refresh');
+      //停止下拉刷新
+      wx.stopPullDownRefresh();
+    }, 300)
+  },
+
+  onPullDownRefresh:function(){
+    
+    this.handleRefresh()
+  },
+
   onLoad: function (options) {
     this.refreshData();
+    console.log('device onLoad');
   },
   
   onShow: function (options) {

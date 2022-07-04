@@ -32,6 +32,21 @@ Page({
     // console.log("123");
     // console.log("456");
   },
+
+  handleRefresh() {
+    // 延迟动画加载
+    setTimeout(() => {
+      console.log('handle refresh');
+      //停止下拉刷新
+      wx.stopPullDownRefresh();
+    }, 300)
+  },
+
+  onPullDownRefresh:function(){
+    
+    this.handleRefresh()
+  },
+
   onDuty() {
     console.log("一键在岗");
     
