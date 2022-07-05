@@ -33,12 +33,17 @@ Page({
     jump_data: '',
 
     modalWarehouseData: {},    // 仓库扫描卡板得到需要展示的信息
-    modalPalletsData: {},     // 卡板扫描物料得到的需要展示的信息      
+    modalPalletsData: {},     // 卡板扫描物料得到的需要展示的信息  
 
-    warehouseInfoIsFold: 0,    // 控制仓库列表栏是否折叠
-    palletsInfoIsFold: 0,      // 控制卡板列表栏是否折叠
+    collapse_unfoldFlag: [0,1],
   },
 
+  // 处理分栏面板的点击事件
+  handleCollapseChange(event) {
+    this.setData({
+      collapse_unfoldFlag: event.detail.value,
+    });
+  },
 
   // 刷新动作事件
   handleRefresh() {
@@ -62,6 +67,7 @@ Page({
     this.getWarehouseList();
     this.getpalletsList();
   },
+
   onLoad: function (options) {
     console.log('material onLoad')
     this.refreshData();
@@ -75,6 +81,11 @@ Page({
       key: 'jump_data',
       success(res) {
         
+        // 展开分栏
+        that.setData({
+          // 展开分栏
+          collapse_unfoldFlag: [0,1],  
+        })
 
         const info_data = res.data;
         console.log(info_data)
@@ -112,25 +123,23 @@ Page({
               item.onHide = 1;
             }
             that.setData({
-              warehouseInfoIsFold: 0,   // 展开仓库信息列表
               warehouseList: warehouseList,
               
               palletsList: palletsList,
-              // palletsInfoIsFold: 0,
             });
           },300);
           setTimeout(function(){
             // 滑动到指定位置
             wx.pageScrollTo({
-              duration: 150,
+              duration: 100,
               // 偏移距离
               offsetTop: -150,
-              selector: '#'+info_data.pallet_code,
+              selector: '#'+info_data.repo_code,
               success: (res) => {},
               fail: (res) => {},
               complete: (res) => {},
             })
-          },200);
+          },300);
 
         } else if (info_data.pallet_code) {
           setTimeout(function(){
@@ -159,18 +168,16 @@ Page({
                 item.onHide = 1;
               }
               that.setData({
-                palletsInfoIsFold: 0,   // 展开仓库信息列表
                 palletsList: palletsList,
 
                 warehouseList: warehouseList,
-                // palletsInfoIsFold: 0,
               })
             };
 
             setTimeout(function(){
               // 滑动到指定位置
               wx.pageScrollTo({
-                duration: 150,
+                duration: 100,
                 // 偏移距离
                 offsetTop: -150,
                 selector: '#'+info_data.pallet_code,
@@ -178,7 +185,7 @@ Page({
                 fail: (res) => {},
                 complete: (res) => {},
               })
-            },200);
+            },300);
           },300);
 
             

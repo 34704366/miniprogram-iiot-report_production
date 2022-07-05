@@ -66,9 +66,18 @@ Page({
 
     // 折叠面板头部右侧展示的内容
     taskListHeaderText: '',
-    fixListHeaderText: ''
+    fixListHeaderText: '',
+
+    collapse_unfoldFlag: [0,1],   // 控制分栏面板的展开折叠
   },
   
+   // 处理分栏面板的点击事件
+   handleCollapseChange(event) {
+    this.setData({
+      collapse_unfoldFlag: event.detail.value,
+    });
+  },
+
   handleRefresh() {
     // 延迟动画加载
     setTimeout(() => {
@@ -100,7 +109,10 @@ Page({
     wx.getStorage({
       key: 'jump_task_data',
       success(res) {
-        
+        that.setData({
+          // 展开分栏
+          collapse_unfoldFlag: [0,1],  
+        })
         const info_data = res.data;
         // console.log(info_data)
         setTimeout(function () {
@@ -147,7 +159,8 @@ Page({
 
           that.setData({
             taskList: taskList,
-            fixList: fixList
+            fixList: fixList,
+
           })
 
 
@@ -158,7 +171,7 @@ Page({
           console.log(info_data.task_code)
           // 滑动到指定位置
           wx.pageScrollTo({
-            duration: 150,
+            duration: 100,
             // 偏移距离
             offsetTop: -100,
             selector: '#'+info_data.task_code,
