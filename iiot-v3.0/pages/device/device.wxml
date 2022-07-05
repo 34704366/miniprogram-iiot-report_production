@@ -3,7 +3,7 @@
   <t-collapse class="collapse-box" defaultValue="{{[0]}}">
     <t-collapse-panel class="collapse-box" header="生产任务" header-right-content="{{taskListHeaderText}}" value="{{0}}">
     
-      <view class="info" wx:for="{{taskList}}">
+      <view class="info" wx:for="{{taskList}}" id="{{item.task_code}}">
 
         <!-- 折叠状态 -->
         <view wx:if="{{item.onHide==1}}" bindtap="unfoldTask" data-index="{{index}}" class="fold-row-box">
@@ -139,7 +139,7 @@
   <t-collapse defaultValue="{{[0]}}">
     <t-collapse-panel header="维修任务" header-right-content="{{fixListHeaderText}}" value="{{0}}">
 
-      <view class="info" wx:for="{{fixList}}">
+      <view class="info" wx:for="{{fixList}}" id="{{item.task_code}}">
 
         <!-- 折叠状态 -->
         <view wx:if="{{item.onHide==1}}" bindtap="unfoldFix" data-index="{{index}}" class="fold-row-box">

@@ -1,7 +1,7 @@
 <view class="container">
   <t-collapse class="collapse-box" defaultValue="{{[0]}}" bind:change="handleChange" data-flag="ture">
     <t-collapse-panel class="collapse-box" header="仓库列表" header-right-content="{{warehouseListHeaderText}}" value="{{0}}">
-      <view class="info" wx:for="{{warehouseList}}">
+      <view class="info" wx:for="{{warehouseList}}" id="{{item.repo_code}}">
         
         <!-- 展开状态 -->
         <view wx:if="{{item.onHide == 0}}">
@@ -87,7 +87,7 @@
   </t-collapse>
 
 
-  <t-collapse class="collapse-box" defaultValue="{{[0]}}">
+  <t-collapse class="collapse-box" defaultValue="{{[0]}}" id="{{item.pallet_code}}">
     <t-collapse-panel class="collapse-box" header="卡板列表" header-right-content="{{warehouseListHeaderText}}" value="{{1}}">
       <view class="info" wx:for="{{palletsList}}">
         <!-- 折叠状态 -->
