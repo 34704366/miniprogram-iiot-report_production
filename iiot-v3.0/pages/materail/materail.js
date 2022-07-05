@@ -30,12 +30,17 @@ Page({
     inWarehouseNumber: 0,
     inPalletsNumber: 0,
 
-    selected_repo_code: '',
+    jump_data: '',
 
     modalWarehouseData: {},    // 仓库扫描卡板得到需要展示的信息
     modalPalletsData: {},     // 卡板扫描物料得到的需要展示的信息      
+
+    warehouseInfoIsFold: 0,    // 控制仓库列表栏是否折叠
+    palletsInfoIsFold: 0,      // 控制卡板列表栏是否折叠
   },
 
+
+  // 刷新动作事件
   handleRefresh() {
     // 延迟动画加载
     setTimeout(() => {
@@ -66,32 +71,140 @@ Page({
     // this.refreshData();
     const that = this;
 
-
     wx.getStorage({
-      key: 'repo_code',
+      key: 'jump_data',
       success(res) {
-        if (res.data != '') {
-          // 放入appData中,然后请求设备列表的回调函数会去判断这个字段是否为空
-          // 如果不为空，就将该信息展开
-          that.setData({
-            selected_repo_code: res.data
-          })
+        
 
+        const info_data = res.data;
+        console.log(info_data)
 
-          // 拿到repo_code以后删除掉
-          wx.removeStorage({
-            key: 'repo_code',
-          })
+        // 判断列表是否为空
+
+        let flag = 0;
+        // 判断是仓库还是卡板
+        if (info_data.repo_code) {   // 仓库
+          // console.log('yes')
+          setTimeout(function(){
+            //ajax do something
+            let warehouseList = that.data.warehouseList;
+            for (let item of warehouseList) {
+              if (item.repo_code == info_data.repo_code) {
+                // console.log(item.repo_code);
+                // 展开指定的info框
+                item.onHide = 0;
+                
+                // 更新信息
+                for (let key in info_data) {
+                  if (item[key]) {
+                    item[key] = info_data[key];
+                  }
+                }
+              } else {
+                // 折叠其他的信息
+                item.onHide = 1;
+              }
+            }
+
+            // 收起卡板信息框
+            let palletsList = that.data.palletsList;
+            for (let item of palletsList) {
+              item.onHide = 1;
+            }
+            that.setData({
+              warehouseInfoIsFold: 0,   // 展开仓库信息列表
+              warehouseList: warehouseList,
+              
+              palletsList: palletsList,
+              // palletsInfoIsFold: 0,
+            });
+          },300);
+          setTimeout(function(){
+            // 滑动到指定位置
+            wx.pageScrollTo({
+              duration: 150,
+              // 偏移距离
+              offsetTop: -150,
+              selector: '#'+info_data.pallet_code,
+              success: (res) => {},
+              fail: (res) => {},
+              complete: (res) => {},
+            })
+          },200);
+
+        } else if (info_data.pallet_code) {
+          setTimeout(function(){
+            let palletsList = that.data.palletsList;
+            for (let item of palletsList) {
+              if (item.pallet_code == info_data.pallet_code) {
+                // 展开指定的info框
+                item.onHide = 0;
+
+                // 更新信息
+                for (let key in info_data) {
+                  // console.log(key, info_data[key]);
+                  // 如果存在
+                  if (item[key]) {
+                    item[key] = info_data[key];
+                  }
+                }
+              } else {
+                // 折叠其他的信息
+                item.onHide = 1;
+              }
+
+              // 收起仓库信息框
+              let warehouseList = that.data.warehouseList;
+              for (let item of warehouseList) {
+                item.onHide = 1;
+              }
+              that.setData({
+                palletsInfoIsFold: 0,   // 展开仓库信息列表
+                palletsList: palletsList,
+
+                warehouseList: warehouseList,
+                // palletsInfoIsFold: 0,
+              })
+            };
+
+            setTimeout(function(){
+              // 滑动到指定位置
+              wx.pageScrollTo({
+                duration: 150,
+                // 偏移距离
+                offsetTop: -150,
+                selector: '#'+info_data.pallet_code,
+                success: (res) => {},
+                fail: (res) => {},
+                complete: (res) => {},
+              })
+            },200);
+          },300);
+
+            
+
+        } else {
+            app.showErrorToast('repo_code为空');
         }
+          
+          
+
+
+          // 拿到jump_data以后删除掉
+          wx.removeStorage({
+            key: 'jump_data',
+          })
+        
       },
       fail(res) {
-        // console.log('repo_code缓存为空')
-        that.setData({
-          selected_repo_code: '',
+        console.log('repo_code缓存为空')
+        wx.removeStorage({
+          key: 'jump_data',
         })
       }
     })
   },
+
   getWarehouseList() {
     
     let that = this;
@@ -133,21 +246,21 @@ Page({
               warehouseList: list,
             });
             
-            // 判断是否是由扫码跳转而来
-            const selected_repo_code = that.data.selected_repo_code;
+            // // 判断是否是由扫码跳转而来
+            // const jump_data = that.data.jump_data;
 
-            if (selected_repo_code != '') {
-              let newList = list;
-              for (const item of newList) {
-                // 如果扫码的结果是该库
-                if (selected_repo_code == item.repo_code) {
-                  item.onHide = 0;
-                }
-              }
-              that.setData({
-                warehouseList: newList
-              })
-            }
+            // if (jump_data != '') {
+            //   let newList = list;
+            //   for (const item of newList) {
+            //     // 如果扫码的结果是该库
+            //     if (jump_data == item.repo_code) {
+            //       item.onHide = 0;
+            //     }
+            //   }
+            //   that.setData({
+            //     warehouseList: newList
+            //   })
+            // }
 
           } else {
             // 业务码判断打印错误

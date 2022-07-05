@@ -82,16 +82,17 @@ Page(check_login.checkLogin({
             if(result.statusCode == normalHttpCode) {
               // 业务状态码
               if (result.data.code == normalBusinessCode) {
-                const data = result.data.data;
+                const data = result.data;
+                console.log(data)
                 // 如果扫到的是仓库
-                if (data.type == 'repo') {
+                if (data.qr_type == 'repo' || data.qr_type == 'pallet') {
                   // 如果repo_code不为空
-                  if (data.repo_code) {
+                  if (data.data) {
                     console.log('跳转');
-                    // 由于switchTab无法传参，所以用set/getStorage来传参
+                    // 由于switchTab无法传参，所以用set/getStorageSync来传参
                     wx.setStorage({
-                      key: 'repo_code',
-                      data: data.repo_code
+                      key: 'jump_data',
+                      data: data.data,
                     })
                     // 跳转到仓库
                     wx.switchTab({
@@ -101,21 +102,21 @@ Page(check_login.checkLogin({
                       fail: (res) => {
                         console.log(res)
                         wx.removeStorage({
-                          key: 'repo_code',
+                          key: 'jump_data',
                         })
                       },
                       complete: (res) => {},
                     })
                   }
                   else {
-                    app.showErrorToast('后台错误，传回的repo_code为空');
+                    app.showErrorToast('后台错误，传回的数据为空');
                   }
-                } else if (data.type == 'machine') {
-                  // 如果machine_code不为空
-                  if (data.machine_code) {
+                } else if (data.qr_type == 'machine') {
+                  // 如果task_code不为空 （以task_code为准）
+                  if (data.data) {
                     wx.setStorage({
-                      key: 'machine_code',
-                      data: data.machine_code
+                      key: 'jump_task_data',
+                      data: data.data
                     })
                     // 跳转到设备页面
                     wx.switchTab({
@@ -125,13 +126,13 @@ Page(check_login.checkLogin({
                       fail: (res) => {
                         console.log(res)
                         wx.removeStorage({
-                          key: 'repo_code',
+                          key: 'jump_task_data',
                         })
                       },
                       complete: (res) => {},
                     })
                   } else {
-                    app.showErrorToast('后台错误，传回的repo_code为空');
+                    app.showErrorToast('后台错误，传回的jump_task_data为空');
                   }
                 } else {
                   app.showErrorToast('未识别的二维码');

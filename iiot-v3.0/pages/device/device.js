@@ -98,26 +98,90 @@ Page({
 
 
     wx.getStorage({
-      key: 'machine_code',
+      key: 'jump_task_data',
       success(res) {
-        if (res.data) {
-          // 放入appData中,然后请求设备列表的回调函数会去判断这个字段是否为空
-          // 如果不为空，就将该信息展开
+        
+        const info_data = res.data;
+        // console.log(info_data)
+        setTimeout(function () {
+          let taskList = that.data.taskList;
+          let fixList = that.data.fixList;
+
+          // task_list
+          for (let item of taskList) {
+            if (item.task_code == info_data.task_code) {
+              console.log('yes')
+              // 展开
+              item.onHide = 0;
+
+              // 更新信息
+              for (let key in info_data) {
+                if (item[key]) {
+                  item[key] = info_data[key];
+                }
+              }
+            } else {
+              // 折叠
+              item.onHide = 1;
+            }
+          }
+
+          for (let item of fixList) {
+            if (item.task_code == info_data.task_code) {
+              console.log('fix yes');
+              // 展开
+              item.onHide = 0;
+
+              // 更新信息
+              for (let key in info_data) {
+                if (item[key]) {
+                  item[key] = info_data[key];
+                  // console.log(info_data[key]);
+                }
+              }
+            } else {
+              // 折叠
+              item.onHide = 1;
+            }
+          }
+
           that.setData({
-            selected_machine_code: res.data
+            taskList: taskList,
+            fixList: fixList
           })
-          console.log(res.data)
 
 
-          // 拿到machine_code以后从缓存删除掉
-          wx.removeStorage({
-            key: 'machine_code',
+
+        }, 300);
+
+        setTimeout(function(){
+          console.log(info_data.task_code)
+          // 滑动到指定位置
+          wx.pageScrollTo({
+            duration: 150,
+            // 偏移距离
+            offsetTop: -100,
+            selector: '#'+info_data.task_code,
+            success: (res) => {
+              // console.log(res)
+            },
+            fail: (res) => {},
+            complete: (res) => {},
           })
-        } 
+        },300);
+
+
+
+
+        // 拿到machine_code以后从缓存删除掉
+        wx.removeStorage({
+          key: 'jump_task_data',
+        })
+        
       },
       fail(res) {
-        that.setData({
-          selected_machine_code: '',
+        wx.removeStorage({
+          key: 'jump_task_data',
         })
       }
     })
@@ -236,20 +300,6 @@ Page({
               taskList: list,
             });
             
-
-            // 判断是否有machine_code(是否是由扫码跳转而来)
-            const machine_code = that.data.selected_machine_code;
-            if (machine_code != '') {
-              // 判断列表里面有没有
-              for (const item of list) {
-                if (item.machine_code == machine_code) {
-                  item.onHide = 0;
-                }
-              }
-              that.setData({
-                taskList: list,
-              })
-            }
           } else {
             // 业务码判断打印错误
             app.processPostRequestConcreteCode(result.data.code, result.data.message);
