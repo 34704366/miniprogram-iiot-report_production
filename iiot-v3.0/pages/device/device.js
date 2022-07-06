@@ -825,6 +825,7 @@ Page({
   changeFaultStatusRadioClick(event) {
     // 获取状态的value
     const status_value = event.detail.value;
+    console.log(status_value);
 
     this.setData({
       postFaultStatusValue: status_value

@@ -290,7 +290,7 @@
               </view>
               <view class="col-radio-group">
                 <label class="radio_radio" wx:for="{{item.status}}">
-                  <radio value="{{item}}" class="text">
+                  <radio value="{{item.value}}" class="text">
                     {{index}}
                   </radio>
                 </label>
