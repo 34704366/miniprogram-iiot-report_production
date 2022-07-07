@@ -132,6 +132,9 @@
           </view>
         </view>
       </view>
+      <view class="info" wx:if="{{taskList.length == 0}}">
+        暂无生产任务
+      </view>
     </t-collapse-panel>
     <t-collapse-panel header="维修任务" header-right-content="{{fixListHeaderText}}" value="{{1}}">
 
@@ -195,6 +198,9 @@
           </view>
         </view>
         
+      </view>
+      <view class="info" wx:if="{{fixList.length == 0}}">
+        暂无维修任务
       </view>
     </t-collapse-panel>
   </t-collapse>

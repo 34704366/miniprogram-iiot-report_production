@@ -83,6 +83,9 @@
           </view> -->
         </view>
       </view>
+      <view class="info" wx:if="{{warehouseList.length == 0}}">
+        暂无仓库信息
+      </view>
     </t-collapse-panel>
     <t-collapse-panel class="collapse-box" header="卡板列表" header-right-content="{{warehouseListHeaderText}}" value="{{1}}">
       <view class="info" wx:for="{{palletsList}}" id="{{item.pallet_code}}">
@@ -154,6 +157,9 @@
           </view>
         </view>
 
+      </view>
+      <view class="info" wx:if="{{palletsList.length == 0}}">
+        暂无卡板信息
       </view>
     </t-collapse-panel>
 
