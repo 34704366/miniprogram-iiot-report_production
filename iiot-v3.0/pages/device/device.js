@@ -662,9 +662,8 @@ Page({
     const quantity = this.data.reportNumber;
     const index = this.data.taskListIndex;
 
-
     // 判断数量是否合法
-    if (quantity < 0 || quantity == '') {
+    if (quantity < 0 || quantity === '') {
       app.showErrorToast('请输入大于0的数量');
       return '-1';
     }
