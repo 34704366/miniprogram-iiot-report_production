@@ -664,7 +664,7 @@ Page({
 
 
     // 判断数量是否合法
-    if (quantity < 0) {
+    if (quantity < 0 || quantity == '') {
       app.showErrorToast('请输入大于0的数量');
       return '-1';
     }
