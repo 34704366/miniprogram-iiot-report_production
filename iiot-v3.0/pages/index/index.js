@@ -7,7 +7,8 @@ let check_login = require("../../utils/util");
 const normalHttpCode  = app.globalData.normalHttpCode;
 const normalBusinessCode = app.globalData.normalBusinessCode;
 
-Page(check_login.checkLogin({
+
+Page({
   data: {
     serverUrl: '',  // 服务器地址
     task: '暂无',  // 当前任务名，默认是暂无 
@@ -170,4 +171,4 @@ Page(check_login.checkLogin({
   onShow: function () {
     
   },
-}))
+})

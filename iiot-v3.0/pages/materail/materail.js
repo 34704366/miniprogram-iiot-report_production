@@ -108,17 +108,17 @@ Page({
               
               palletsList: palletsList,
             });
-          },300);
+          },200);
           setTimeout(function(){
             wx.pageScrollTo({
-              duration: 100,
+              duration: 300,
               offsetTop: -150,
               selector: '#'+info_data.repo_code,
               success: (res) => {},
               fail: (res) => {},
               complete: (res) => {},
             })
-          },300);
+          },150);
 
         } else if (info_data.pallet_code) {
           setTimeout(function(){
@@ -157,7 +157,7 @@ Page({
                 complete: (res) => {},
               })
             },150);
-          },300);
+          },2000);
 
             
 

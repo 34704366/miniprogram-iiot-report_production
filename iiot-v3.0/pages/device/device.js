@@ -76,7 +76,6 @@ Page({
   },
 
   onPullDownRefresh:function(){
-    
     this.handleRefresh()
   },
 
@@ -152,13 +151,13 @@ Page({
 
 
 
-        }, 300);
+        }, 200);
 
         setTimeout(function(){
           console.log(info_data.task_code)
           // 滑动到指定位置
           wx.pageScrollTo({
-            duration: 300,
+            duration: 800,
             // 偏移距离
             offsetTop: -100,
             selector: '#'+info_data.task_code,
@@ -168,7 +167,7 @@ Page({
             fail: (res) => {},
             complete: (res) => {},
           })
-        },200);
+        },150);
 
 
 
@@ -635,6 +634,18 @@ Page({
 
     let url = '';
     let data = {};
+    // if(result=='material') {
+    //   wx.navigateTo({
+    //     url: `/pages/materail/materail?name=${this.data.scanResult}`,
+    //     success: (result) => {},
+    //     fail: (res) => {},
+    //   })
+    // }
+    // else if(result=='device') {
+    //   wx.navigateTo({
+    //     url: `/pages/warehouse/warehouse?name=${this.data.scanResult}`,
+    //   })
+    // }
     if (type == TEST_REPORT) {
       url = '/pda/suz/production/test';
       data = {
@@ -691,10 +702,8 @@ Page({
         if(result.statusCode == normalHttpCode) {
           if(result.data.code == normalBusinessCode) {
             
-            // 刷新数据
             that.refreshData();
             
-            // 如果是调机报产
             if(type == TEST_REPORT) {
               app.showSuccessToast('调机报产成功');
             }
@@ -713,7 +722,6 @@ Page({
             else if (type == CHANGE_DEVICE_STATUS_REPORT) {
               app.showSuccessToast('修改状态成功');
             }
-            // 异常
             else {
               app.showErrorToast('505客户端错误');
             }

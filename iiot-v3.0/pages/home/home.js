@@ -10,7 +10,6 @@ let check_login = require("../../utils/util");
 const ON_DUTY_STATUS = 3;
 const OFF_DUTY_STATUS = 2;
 
-// Page(check_login.checkLogin({
 Page({
 
   data: {
@@ -22,22 +21,17 @@ Page({
       userId: wx.getStorageSync('emp_code'),
       userName: wx.getStorageSync('emp_name')
     });
-    // console.log("123");
   },
   onShow: function () {
     this.setData({
       userId: wx.getStorageSync('emp_code'),
       userName: wx.getStorageSync('emp_name')
     });
-    // console.log("123");
-    // console.log("456");
   },
 
   handleRefresh() {
-    // 延迟动画加载
     setTimeout(() => {
       console.log('handle refresh');
-      //停止下拉刷新
       wx.stopPullDownRefresh();
     }, 300)
   },
