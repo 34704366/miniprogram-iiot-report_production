@@ -1,0 +1,15 @@
+{
+  "name": "miniprogram-iiot-report_production",
+  "version": "1.0.0",
+  "description": "报产小程序",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "wang chenhao",
+  "license": "MIT",
+  "dependencies": {
+    "tdesign-miniprogram": "^0.14.0",
+    "t-pull-down-refresh": "tdesign-miniprogram/pull-down-refresh/pull-down-refresh"
+  }
+}

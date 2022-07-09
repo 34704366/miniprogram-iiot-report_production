@@ -1,17 +1,18 @@
 {
   "pages": [
+    "pages/index/index",
     "pages/home/home",
     "pages/login/login",
     "pages/logs/logs",
     "pages/device/device",
-    "pages/materail/materail",
-    "pages/index/index"
+    "pages/materail/materail"
   ],
   "window": {
-    "backgroundTextStyle": "light",
+    "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#37BD59",
     "navigationBarTitleText": "工业PDA",
-    "navigationBarTextStyle": "black"
+    "navigationBarTextStyle": "black",
+    "enablePullDownRefresh": true
   },
 
   "tabBar": {
@@ -54,6 +55,12 @@
 
 
 
+  },
+
+  "usingComponents": {
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "t-collapse": "tdesign-miniprogram/collapse/collapse",
+    "t-collapse-panel": "tdesign-miniprogram/collapse/collapse-panel"
   },
 
   "style": "v2",

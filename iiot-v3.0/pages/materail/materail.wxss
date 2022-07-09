@@ -1,4 +1,11 @@
 /* pages/materail/materail.wxss *//* pages/task/task.wxss */
+Page {
+  background-color: rgb(255, 255, 255);
+  
+  /* 让字体渲染更精细 */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
 
 .container {
   /* padding: 10rpx 10rpx; */
@@ -7,6 +14,7 @@
 }
 .container .info {
   /* margin: 20rpx 30rpx; */
+  margin: 10px 0px;
   padding: 20rpx 20rpx;
   border: rgb(196, 189, 189) 1rpx solid;
   border-radius: 20rpx;
@@ -24,6 +32,16 @@
   display: flex;
   flex-direction: column;
   width: 50%;
+}
+.container .info .col-box-left {
+  display: flex;
+  flex-direction: column;
+  width: 65%;
+}
+.container .info .col-box-right {
+  display: flex;
+  flex-direction: column;
+  width: 35%;
 }
 .sub-title {
   font-size: 25px;
@@ -62,7 +80,8 @@
 }
 .container .info .show{ 
   font-size: 30rpx;
-  color: chartreuse;
+  color: rgb(19, 221, 53);
+  margin: 5px 5px;
  
 }
 

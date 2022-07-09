@@ -1,168 +1,179 @@
 <view class="container">
-  <view class="info" wx:for="{{warehouseList}}">
-    
-    <!-- 展开状态 -->
-    <view wx:if="{{item.onHide == 0}}">
-      <view class="row-box">
-        <view class="col-box">
+  <t-collapse class="collapse-box" value="{{collapse_unfoldFlag}}" bind:change="handleCollapseChange">
+    <t-collapse-panel class="collapse-box" header="仓库列表" header-right-content="{{warehouseListHeaderText}}" value="{{0}}">
+      <view class="info" wx:for="{{warehouseList}}" id="{{item.repo_code}}">
         
-          <view class="title">
-            {{item.repo_name}}
+        <!-- 展开状态 -->
+        <view wx:if="{{item.onHide == 0}}">
+          <view class="row-box">
+            <view class="col-box-left">
+            
+              <view class="title">
+                {{item.repo_name}}
+              </view>
+              <view class="text">
+                编号：{{item.repo_code}}
+              </view>
+              <view class="text">
+                最大容量：{{item.storage_max}}
+              </view>
+            </view>
+            <view class="col-box-right">
+            
+              <button bindtap="inWarehouse" data-index="{{index}}" data-code="{{item.repo_code}}" data-title="{{item.repo_name}}" data-showCode="{{item.repo_code}}" size="mini" type="primary" plain="true" class="button">扫码</button>
+            </view>
           </view>
-          <view class="text">
-            编号：{{item.repo_code}}
+          
+          <!-- 已弃用 -->
+          <!-- <view class="info-box" wx:for="{{item.material}}" >
+            <view class="text">
+              {{item.material_name}}
+            </view>
+            <view class="text">
+              {{item.material_spec}}
+            </view>
+            <view class="text">
+              {{item.material_num}}
+            </view>
+          </view> -->
+          <view class="info-box" wx:for="{{item.pallet}}" >
+            <view class="devide-line"></view>
+            <view class="text">
+              卡板编号：{{item.pallet_code}}
+            </view>
+            <view class="text">
+              物料编号：{{item.material_code}}
+            </view>
+            <view class="text">
+              物料名称：{{item.material_name}}
+            </view>
+            <view class="text">
+              物料规格：{{item.material_spec}}
+            </view>
+            <view class="text">
+              物料数量：{{item.material_num}}
+            </view>
           </view>
-          <view class="text">
-            最大容量：{{item.storage_max}}
+          
+          <view class="show" bindtap="foldWarehouse" data-index="{{index}}">
+            收起
           </view>
         </view>
-        <view class="col-box">
         
-          <button bindtap="inWarehouse" data-index="{{index}}" data-code="{{item.repo_code}}" data-title="{{item.repo_name}}" data-showCode="{{item.repo_code}}" size="mini" type="primary" plain="true" class="button">入库</button>
-        </view>
-      </view>
-      
-      <!-- 已弃用 -->
-      <!-- <view class="info-box" wx:for="{{item.material}}" >
-        <view class="text">
-          {{item.material_name}}
-        </view>
-        <view class="text">
-          {{item.material_spec}}
-        </view>
-        <view class="text">
-          {{item.material_num}}
-        </view>
-      </view> -->
-      <view class="info-box" wx:for="{{item.pallet}}" >
-        <view class="devide-line"></view>
-        <view class="text">
-          卡板编号：{{item.pallet_code}}
-        </view>
-        <view class="text">
-          物料编号：{{item.material_code}}
-        </view>
-        <view class="text">
-          物料名称：{{item.material_name}}
-        </view>
-        <view class="text">
-          物料规格：{{item.material_spec}}
-        </view>
-        <view class="text">
-          物料数量：{{item.material_num}}
-        </view>
-      </view>
-      
-      <view class="show" bindtap="foldWarehouse" data-index="{{index}}">
-        收起
-      </view>
-    </view>
-    
-    <!-- 折叠状态 -->
-    <view wx:if="{{item.onHide==1}}" bindtap="unfoldWarehouse" data-index="{{index}}" class="row-box">
-      <view class="col-box">
-        <view class="title">
-          {{item.repo_name}}
-        </view>
-        <view class="text">
-          编号：{{item.repo_code}}
-        </view>
-      </view>
-      <view class="col-box">
-        <view class="text">
-          状态：{{item.repo_status}}
-        </view>
-        <view class="text">
-          库存：{{item.storage_num}}
-        </view>
-      </view>
-      <!-- <view class="show" bindtap="unfold" data-index="{{index}}">
-        展开全部
-      </view> -->
-    </view>
-  </view>
-
-  <view class="info" wx:for="{{palletsList}}">
-    <!-- 折叠状态 -->
-    <view wx:if="{{item.onHide==1}}" bindtap="unfoldPallets" data-index="{{index}}" class="row-box">
-      <view class="col-box">
-        <view class="title">
-          {{item.pallet_name}}
-        </view>
-        <view class="text">
-          编号：{{item.pallet_code}}
-        </view>
-      </view>
-      <view class="col-box">
-        <view class="text">
-          状态：{{item.pallet_status}}
-        </view>
-        <view class="text">
-          库存：{{item.storage_num}}
-        </view>
-      </view>
-    </view>
-
-
-    <!-- 展开状态 -->
-    <view wx:if="{{item.onHide == 0}}">
-      
-      <view class="row-box">
-        <view class="col-box">
-        
-          <view class="title">
-            {{item.pallet_name}}
+        <!-- 折叠状态 -->
+        <view wx:if="{{item.onHide==1}}" bindtap="unfoldWarehouse" data-index="{{index}}" class="row-box">
+          <view class="col-box-left">
+            <view class="title">
+              {{item.repo_name}}
+            </view>
+            <view class="text">
+              编号：{{item.repo_code}}
+            </view>
           </view>
+          <view class="col-box-right">
+            <view class="text">
+              状态：{{item.repo_status}}
+            </view>
+            <view class="text">
+              库存：{{item.storage_num}}
+            </view>
+          </view>
+          <!-- <view class="show" bindtap="unfold" data-index="{{index}}">
+            展开全部
+          </view> -->
+        </view>
+      </view>
+      <view class="info" wx:if="{{warehouseList.length == 0}}">
+        暂无仓库信息
+      </view>
+    </t-collapse-panel>
+    <t-collapse-panel class="collapse-box" header="卡板列表" header-right-content="{{warehouseListHeaderText}}" value="{{1}}">
+      <view class="info" wx:for="{{palletsList}}" id="{{item.pallet_code}}">
+        <!-- 折叠状态 -->
+        <view wx:if="{{item.onHide==1}}" bindtap="unfoldPallets" data-index="{{index}}" class="row-box">
+          <view class="col-box-left">
+            <view class="title">
+              {{item.pallet_name}}
+            </view>
+            <view class="text">
+              编号：{{item.pallet_code}}
+            </view>
+          </view>
+          <view class="col-box-right">
+            <view class="text">
+              状态：{{item.pallet_status}}
+            </view>
+            <view class="text">
+              库存：{{item.storage_num}}
+            </view>
+          </view>
+        </view>
+
+
+        <!-- 展开状态 -->
+        <view wx:if="{{item.onHide == 0}}">
+          
+          <view class="row-box">
+            <view class="col-box-left">
+            
+              <view class="title">
+                {{item.pallet_name}}
+              </view>
+              <view class="text">
+                编号：{{item.pallet_code}}
+              </view>
+              <view class="text">
+                最大容量：{{item.storage_max}}
+              </view>
+            </view>
+            <view class="col-box-right">
+            
+              <button bindtap="inPallets" data-index="{{index}}" size="mini" data-code="{{item.pallet_code}}" data-title="{{item.pallet_name}}" data-showCode="{{item.pallet_code}}"  type="primary" plain="true" class="button">扫码</button>
+            </view>
+          </view>
+
+          <view class="devide-line"></view>
+
           <view class="text">
-            编号：{{item.pallet_code}}
+            当前位置：{{item.position}}
           </view>
-          <view class="text">
-            最大容量：{{item.storage_max}}
+          <view class="info-box" wx:for="{{item.material}}">
+            <view class="text">
+              物料编号：{{item.material_code}}
+            </view>
+            <view class="text">
+              物料名称：{{item.material_name}}
+            </view>
+            <view class="text">
+              物料规格：{{item.material_spec}}
+            </view>
+            <view class="text">
+              物料数量：{{item.material_num}}
+            </view>
+          </view>
+
+          <view class="show" bindtap="foldPallets" data-index="{{index}}">
+            收起
           </view>
         </view>
-        <view class="col-box">
-        
-          <button bindtap="inPallets" data-index="{{index}}" size="mini" data-code="{{item.pallet_code}}" data-title="{{item.pallet_name}}" data-showCode="{{item.pallet_code}}"  type="primary" plain="true" class="button">入库</button>
-        </view>
-      </view>
 
-      <view class="devide-line"></view>
-
-      <view class="text">
-        当前位置：{{item.pallet_code}}
       </view>
-      <view class="devide-line"></view>
-      <view class="info-box" wx:for="{{item.material}}">
-        <view class="text">
-          物料编号：{{item.material_code}}
-        </view>
-        <view class="text">
-          物料名称：{{item.material_name}}
-        </view>
-        <view class="text">
-          物料规格：{{item.material_spec}}
-        </view>
-        <view class="text">
-          物料数量：{{item.material_num}}
-        </view>
+      <view class="info" wx:if="{{palletsList.length == 0}}">
+        暂无卡板信息
       </view>
+    </t-collapse-panel>
 
-      <view class="show" bindtap="foldPallets" data-index="{{index}}">
-        收起
-      </view>
-    </view>
-
-  </view>
+  </t-collapse>
 
   <!-- 设备扫码卡板后弹出的modal框 -->
-  <modal show="{{showWarehouseModal}}" height="70%" bind:cancel="modalCancel" bind:confirm="postWarehouse"  title="{{title}}" index="{{warehouseListIndex}}" showCode="{{showCode}}">
+  <modal show="{{showWarehouseModal}}" height="75%" bind:cancel="modalCancel" bind:confirm="postWarehouse"  title="{{title}}" index="{{warehouseListIndex}}" showCode="{{showCode}}">
     <scroll-view scroll-y="true" style="height: 75%">
       <view class="main-content">
         <view class="modal-box">
           卡板名称：{{modalWarehouseData.pallet_name}}
         </view>
         <view class="modal-box">
-          卡板编号：{{modalWarehouseData.material_code}}
+          卡板编号：{{modalWarehouseData.pallet_code}}
         </view>
         <view class="modal-box">
           物料编号：{{modalWarehouseData.material_code}}
@@ -176,12 +187,27 @@
         <view class="modal-box">
           物料数量：{{modalWarehouseData.material_num}}
         </view>
+        <view class="modal-box" wx:if="{{modalWarehouseData.action == 'checkin'}}">
+          <view style="color: blue">
+            动作：入库
+          </view>          
+        </view>
+        <view class="modal-box" wx:elif="{{modalWarehouseData.action == 'checkout'}}">
+          <view style="color: blue">
+            动作：出库
+          </view>          
+        </view>
+        <view class="modal-box" wx:else>
+          <view style="color: blue">
+            仅查看
+          </view>          
+        </view>
       </view>
     </scroll-view>
   </modal>
 
   <!-- 卡板扫描物料后弹出的modal框 -->
-  <modal show="{{showPalletsModal}}" height="70%" bind:cancel="modalCancel" bind:confirm="postPallets" title="{{title}}" index="{{palletsListIndex}}" showCode="{{showCode}}">
+  <modal show="{{showPalletsModal}}" height="75%" bind:cancel="modalCancel" bind:confirm="postPallets" title="{{title}}" index="{{palletsListIndex}}" showCode="{{showCode}}">
     <scroll-view scroll-y="true" style="height: 75%">
       <view class="main-content">
         <view class="modal-box">
@@ -199,9 +225,29 @@
         <view class="modal-box">
           物料规格：{{modalPalletsData.material_spec}}
         </view>
-        <view class="modal-box">
+        <!-- 绑定卡板可以手动输入 -->
+        <view class="modal-box" wx:if="{{modalPalletsData.action == 'bind'}}">
           <text>物料数量：</text>
           <input class="input" type="number" placeholder="请输入数量" bindinput="getInPalletsNumInput" value="{{inPalletsNumber}}"/>
+        </view>
+        <!-- 解绑卡板不需要手动输入 -->
+        <view class="modal-box" wx:else>
+          物料数量：{{modalPalletsData.material_num}}
+        </view>
+        <view class="modal-box" wx:if="{{modalPalletsData.action == 'bind'}}">
+          <view style="color:blue">
+            绑定物料
+          </view>
+        </view>
+        <view class="modal-box" wx:elif="{{modalPalletsData.action == 'unbind'}}">
+          <view style="color:blue">
+            解绑物料
+          </view>
+        </view>
+        <view class="modal-box" wx:else>
+          <view style="color:blue">
+            仅查看
+          </view>
         </view>
       </view>
     </scroll-view>

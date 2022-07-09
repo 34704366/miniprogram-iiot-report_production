@@ -40,12 +40,11 @@ Page({
       "4": "设备清洗",
     },
     statusIndex: 0,
-    inWarehouseNumber: 0,
     selected_machine_code: '',
 
     modalInOutWarehouseData: {},    // 出/入库数据存放
 
-    reportNumber: 0,   // 报产数量
+    reportNumber: "",   // 报产数量
     showReportModal: false,   // 报产modal控制位
     isDefectReportFlag: false,   // 控制是否是次品报产的控制位
 
@@ -62,38 +61,140 @@ Page({
     postDeviceStatusValue: 0,
 
     showFaultReportModal: false,
+
+    // loading: true,  // 下拉刷新动画的标志位
+
+    // 折叠面板头部右侧展示的内容
+    taskListHeaderText: '',
+    fixListHeaderText: '',
+
+    collapse_unfoldFlag: [0,1],   // 控制分栏面板的展开折叠
+  },
+  
+   // 处理分栏面板的点击事件
+   handleCollapseChange(event) {
+    this.setData({
+      collapse_unfoldFlag: event.detail.value,
+    });
   },
 
+  handleRefresh() {
+    // 延迟动画加载
+    setTimeout(() => {
+      this.refreshData();
+      console.log('handle refresh');
+      //停止下拉刷新
+      wx.stopPullDownRefresh();
+    }, 300)
+  },
+
+  onPullDownRefresh:function(){
+    
+    this.handleRefresh()
+  },
+
+  onLoad: function (options) {
+    this.refreshData();
+    console.log('device onLoad');
+  },
   
   onShow: function (options) {
     // 获取设备列表
-    this.refreshData();
+    // this.refreshData();
 
     const that = this;
     // this.judgeOpreatorStatus();
 
 
     wx.getStorage({
-      key: 'machine_code',
+      key: 'jump_task_data',
       success(res) {
-        if (res.data) {
-          // 放入appData中,然后请求设备列表的回调函数会去判断这个字段是否为空
-          // 如果不为空，就将该信息展开
+        that.setData({
+          // 展开分栏
+          collapse_unfoldFlag: [0,1],  
+        })
+        const info_data = res.data;
+        // console.log(info_data)
+        setTimeout(function () {
+          let taskList = that.data.taskList;
+          let fixList = that.data.fixList;
+
+          // task_list
+          for (let item of taskList) {
+            if (item.task_code == info_data.task_code) {
+              console.log('yes')
+              // 展开
+              item.onHide = 0;
+
+              // 更新信息
+              for (let key in info_data) {
+                if (item[key]) {
+                  item[key] = info_data[key];
+                }
+              }
+            } else {
+              // 折叠
+              item.onHide = 1;
+            }
+          }
+
+          for (let item of fixList) {
+            if (item.task_code == info_data.task_code) {
+              console.log('fix yes');
+              // 展开
+              item.onHide = 0;
+
+              // 更新信息
+              for (let key in info_data) {
+                if (item[key]) {
+                  item[key] = info_data[key];
+                  // console.log(info_data[key]);
+                }
+              }
+            } else {
+              // 折叠
+              item.onHide = 1;
+            }
+          }
+
           that.setData({
-            selected_machine_code: res.data
+            taskList: taskList,
+            fixList: fixList,
+
           })
-          console.log(res.data)
 
 
-          // 拿到machine_code以后从缓存删除掉
-          wx.removeStorage({
-            key: 'machine_code',
+
+        }, 300);
+
+        setTimeout(function(){
+          console.log(info_data.task_code)
+          // 滑动到指定位置
+          wx.pageScrollTo({
+            duration: 100,
+            // 偏移距离
+            offsetTop: -100,
+            selector: '#'+info_data.task_code,
+            success: (res) => {
+              // console.log(res)
+            },
+            fail: (res) => {},
+            complete: (res) => {},
           })
-        } 
+        },300);
+
+
+
+
+        // 拿到machine_code以后从缓存删除掉
+        wx.removeStorage({
+          key: 'jump_task_data',
+        })
+        
       },
       fail(res) {
-        that.setData({
-          selected_machine_code: '',
+        wx.removeStorage({
+          key: 'jump_task_data',
         })
       }
     })
@@ -129,15 +230,25 @@ Page({
         if(result.statusCode == normalHttpCode) {
           // 业务状态码
           if (result.data.code == normalBusinessCode) {
+            const oldTaskList = that.data.taskList;
+            // console.log(oldTaskList);
             // app.showSuccessToast("成功");
-
+            console.log(result.data.data);
             let list = [];
             // let inDuty = false;
             // let offDuty = false;
             for (const item of result.data.data) {
+
+              // 判断是否折叠
               item.onHide = 1;  // 添加标志位
-              item.passNumber = 0;    // 添加用户输入的良品报数数量
-              item.defectNumber = 0;    // 添加用户输入的次品报数数量、
+              for (const oldItem of oldTaskList) {
+                if (oldItem.task_code == item.task_code) {
+                  if (oldItem.onHide == 0) {
+                    item.onHide = oldItem.onHide;
+                  }
+                }
+              }
+
               // 判断员工状态
               // let inDuty = false;
               let {inDuty,offDuty} = this.judgeOpreatorStatus(item.operator_status);
@@ -145,17 +256,36 @@ Page({
               item.inDuty = inDuty;
               item.offDuty = offDuty;
 
-              // item.machine_status_obj = machine_status_obj;
+              // 对机器状态数据进行清洗
+
               let machine_status_array = [];
               let machine_status_index = [];
+              item.deviceNowStatus = '修改设备状态'   // 如果出现异常（找不到设备当前状态对应的全部状态中的值），则显示该文字
               for (const index in item.machine_status_obj) {
+                for (const i in item.machine_status_obj[index].status) {
+                  // 取得具体某一项的状态
+                  const status = item.machine_status_obj[index].status;
+                  // 取得value
+                  const value = status[i];
+                  // radio是否选中的标志位
+                  let isChecked = false;
+                  // 判断是不是现在机器的状态
+                  if (String(value) == String(item.machine_status)) {
+                    // 如果是当前机器的状态，那么radio选中
+                    isChecked = true;
+                    // 将设备状态显示文字换为索引值（传来的索引是文字）
+                    item.deviceNowStatus = i;
+                  }
+                  // 修改数据的结构
+                  status[i] = {
+                    'value': value,
+                    'isChecked': isChecked
+                  }
+                  // console.log(item.machine_status_obj[index].status[i])
+                }
                 // console.log(machine_status_obj[index]);
-                machine_status_array.push(item.machine_status_obj[index]);
-                machine_status_index.push(index);
               }
-              item.machine_status_array = machine_status_array;
-              item.machine_status_index = machine_status_index;
-              item.statusIndex = 0;
+
 
               // 判断任务状态
               if (item.task_status == "未启动") {
@@ -174,20 +304,7 @@ Page({
                 item.button_disabled = true;
                 item.task_button_disabled = true;
               }
-              
-              
-              // 判断设备状态
-              item.deviceNowStatus = '修改设备状态'   // 如果出现异常（找不到设备当前状态对应的全部状态中的值），则显示该文字
-              const deivceStatusCode = item.machine_status;
-              const deviceStatusObject = item.machine_status_obj
-              for (const index in deviceStatusObject) {
-                for (const key in deviceStatusObject[index].status) {
-                  // console.log(key);
-                  if (deviceStatusObject[index].status[key] == deivceStatusCode) {
-                    item.deviceNowStatus = key;
-                  }
-                }
-              }
+          
 
               list.push(item);
             }
@@ -196,20 +313,6 @@ Page({
               taskList: list,
             });
             
-
-            // 判断是否有machine_code(是否是由扫码跳转而来)
-            const machine_code = that.data.selected_machine_code;
-            if (machine_code != '') {
-              // 判断列表里面有没有
-              for (const item of list) {
-                if (item.machine_code == machine_code) {
-                  item.onHide = 0;
-                }
-              }
-              that.setData({
-                taskList: list,
-              })
-            }
           } else {
             // 业务码判断打印错误
             app.processPostRequestConcreteCode(result.data.code, result.data.message);
@@ -220,7 +323,7 @@ Page({
         }
       },
       fail: (res) => {
-        app.requestSendError(res);
+        // app.requestSendError(res);
       },
       complete: (res) => {},
     })
@@ -241,16 +344,25 @@ Page({
       dataType: 'json',
       success: (result) => {
         // console.log(result);
-
         // http码
         if(result.statusCode == normalHttpCode) {
           // 业务状态码
           if (result.data.code == normalBusinessCode) {
-            
+            // 获取刷新之前的维修计划列表
+            const oldFixList = that.data.fixList;
             const data = result.data.data;
             let list = [];
             for (let item of data) {
-              item.onHide = 1;
+
+              item.onHide = 1;  // 添加标志位
+              // 判断是否折叠
+              for (const oldItem of oldFixList) {
+                if (oldItem.task_code == item.task_code) {
+                  if (oldItem.onHide == 0) {
+                    item.onHide = oldItem.onHide;
+                  }
+                }
+              }
 
               // 判断任务状态
               if (item.task_status == "未启动") {
@@ -270,7 +382,7 @@ Page({
 
               list.push(item);
             }
-            console.log(list);
+            // console.log(list);
             that.setData({
               fixList: list,
             })
@@ -285,7 +397,7 @@ Page({
         }
       },
       fail: (res) => {
-        app.requestSendError(res);
+        // app.requestSendError(res);
       },
       complete: (res) => {},
     })
@@ -418,7 +530,7 @@ Page({
         
       },
       fail: (res) => {
-        app.showErrorToast("发送request请求失败");
+        app.showErrorToast("本地网络故障");
         
         // return -1;
         that.result = -1;
@@ -450,7 +562,7 @@ Page({
       machine_code: machine_code,    // post-data
       work_order: work_order ,      // post-data
       task_code: task_code,      // post-data
-      reportNumber: 0,
+      reportNumber: '',
 
       isDefectReportFlag: false,     // 负责让次品报产modal多一行信息的控制位
       title: title,
@@ -478,11 +590,13 @@ Page({
       machine_code: machine_code,    // post-data
       work_order: work_order ,      // post-data
       task_code: task_code,      // post-data
-      reportNumber: 0,
+      reportNumber: '',
 
       isDefectReportFlag: false,     // 负责让次品报产modal多一行信息的控制位
       title: title,
       showCode: showCode,
+
+      defectReasonText: ''
     })
   },
 
@@ -506,11 +620,13 @@ Page({
       machine_code: machine_code,    // post-data
       work_order: work_order ,      // post-data
       task_code: task_code,      // post-data
-      reportNumber: 0,
+      reportNumber: '',
 
       isDefectReportFlag: true,     // 负责让次品报产modal多一行信息的控制位
       title: title,
       showCode: showCode,
+
+      defectReasonText: '',
     })
     
     // 提取出该任务对应的次品原因
@@ -545,6 +661,12 @@ Page({
     const task_code = this.data.task_code;
     const quantity = this.data.reportNumber;
     const index = this.data.taskListIndex;
+
+    // 判断数量是否合法
+    if (quantity < 0 || quantity === '') {
+      app.showErrorToast('请输入大于0的数量');
+      return '-1';
+    }
 
     let url = '';
     let data = {};
@@ -642,7 +764,7 @@ Page({
         
       },
       fail: (result) => {
-        app.showErrorToast("发送request请求失败");
+        app.showErrorToast("本地网络故障");
         console.log(result)
         
         // return -1;
@@ -692,7 +814,8 @@ Page({
       showCode: showCode,
 
       // 显示在modal框上的故障类型信息
-      faultStatusModalData: fault_status
+      faultStatusModalData: fault_status,
+      faultReportStatusReasonText: ''
     })
 
   },
@@ -701,6 +824,7 @@ Page({
   changeFaultStatusRadioClick(event) {
     // 获取状态的value
     const status_value = event.detail.value;
+    console.log(status_value);
 
     this.setData({
       postFaultStatusValue: status_value
@@ -718,8 +842,21 @@ Page({
     const task_code = this.data.task_code;
 
     const param = this.data.faultReportStatusReasonText;
-    const start_time = this.data.faultReportStartTime;
-    const end_time = this.data.faultReportEndTime;
+    let start_time = this.data.faultReportStartTime;
+    let end_time = this.data.faultReportEndTime;
+    
+    // 日期不能为空
+    if (!start_time || !end_time) {
+      app.showErrorToast('日期不能为空');
+      console.log('日期为空')
+      return;
+    } 
+
+    // 拼接上日期
+    let date = new Date(new Date()).toLocaleDateString();
+    date = date.replace(/\//g , '-');   // 日期中/替换成-
+    start_time = date + ' ' + start_time + ':00';
+    end_time = date + ' ' + end_time + ':00';
 
     // 提交的数据
     const data = {
@@ -764,6 +901,7 @@ Page({
       showCode: showCode,
 
       machineStatusModalData: machineStatusModalData,
+      changeDeviceStatusReasonText: '',
     })
   },
 
@@ -775,6 +913,7 @@ Page({
     this.setData({
       postDeviceStatusValue: status_value
     })
+    console.log(status_value)
   },
 
   // 修改设备状态modal框提交
@@ -800,13 +939,6 @@ Page({
     const type = CHANGE_DEVICE_STATUS_REPORT;
 
     this.postReportInterface(url, data, type);
-  },
-
-  getInWarehouseNumInput(event) {
-    // console.log(event.detail.value);
-    this.setData({
-      inWarehouseNumber: Number(event.detail.value)
-    });
   },
 
   // 修改来源
@@ -1063,11 +1195,7 @@ Page({
 
       },
       fail: (res) => {
-        console.log(`扫描失败`)
-        wx.showToast({
-          title: '扫描失败',
-          icon: 'error'
-        })
+        console.log(`扫描失败`);
       }
     })
     
@@ -1110,27 +1238,31 @@ Page({
         if(result.statusCode == normalHttpCode) {
           // 业务状态码
           if (result.data.code == normalBusinessCode) {
-            console.log(type)
+            console.log(result.data.data)
             
             // 如果是A库入库
             if(type == 'inWarehouse') {
-              let list = this.data.taskList;
-              list[index].repo_A = parseInt(that.data.taskList[index].repo_A) + parseInt(that.data.warehouseInOutNum);
-              // 添加到已报良品数量上
-              that.setData({
-                taskList: list,
-              });
+              // let list = this.data.taskList;
+              // list[index].repo_A = parseInt(that.data.taskList[index].repo_A) + parseInt(that.data.warehouseInOutNum);
+              // // 添加到已报良品数量上
+              // that.setData({
+              //   taskList: list,
+              // });
               // console.log("修改后良品数量:",this.data.repo_A);
+              that.refreshData();
               app.showSuccessToast('入库成功');
             }
             // 如果是B库出库
             else if (type == 'outWarehouse') {
-              let list = this.data.taskList;
-              list[index].repo_B = parseInt(that.data.taskList[index].repo_B) - parseInt(that.data.warehouseInOutNum);
-              // 添加
-              that.setData({
-                taskList: list,
-              });
+              // let list = this.data.taskList;
+              // if (that.data.warehouseInOutNum) {
+              //   list[index].repo_B = parseInt(that.data.taskList[index].repo_B) - parseInt(that.data.warehouseInOutNum);
+              // }
+              // // 添加
+              // that.setData({
+              //   taskList: list,
+              // });
+              that.refreshData();
               app.showSuccessToast('出库成功');
 
             }
@@ -1150,7 +1282,7 @@ Page({
         
       },
       fail: (result) => {
-        app.showErrorToast("发送request请求失败");
+        app.showErrorToast("本地网络故障");
         console.log(result)
         
         // return -1;

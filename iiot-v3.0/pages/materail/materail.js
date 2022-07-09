@@ -30,44 +30,188 @@ Page({
     inWarehouseNumber: 0,
     inPalletsNumber: 0,
 
-    selected_repo_code: '',
+    jump_data: '',
 
     modalWarehouseData: {},    // 仓库扫描卡板得到需要展示的信息
-    modalPalletsData: {},     // 卡板扫描物料得到的需要展示的信息      
+    modalPalletsData: {},     // 卡板扫描物料得到的需要展示的信息  
+
+    collapse_unfoldFlag: [0,1],
   },
 
-  
-  onShow: function (options) {
+  // 处理分栏面板的点击事件
+  handleCollapseChange(event) {
+    this.setData({
+      collapse_unfoldFlag: event.detail.value,
+    });
+  },
+
+  // 刷新动作事件
+  handleRefresh() {
+    // 延迟动画加载
+    setTimeout(() => {
+      this.refreshData();
+      console.log('handle refresh');
+      //停止下拉刷新
+      wx.stopPullDownRefresh();
+    }, 300)
+  },
+
+  onPullDownRefresh:function(){
+    
+    this.handleRefresh()
+  },
+
+  // 刷新页面重新拉取数据
+  refreshData() {
+    // 获取设备列表
     this.getWarehouseList();
     this.getpalletsList();
+  },
+
+  onLoad: function (options) {
+    console.log('material onLoad')
+    this.refreshData();
+  },
+
+  onShow: function (options) {
+    // this.refreshData();
     const that = this;
 
-
     wx.getStorage({
-      key: 'repo_code',
+      key: 'jump_data',
       success(res) {
-        if (res.data != '') {
-          // 放入appData中,然后请求设备列表的回调函数会去判断这个字段是否为空
-          // 如果不为空，就将该信息展开
-          that.setData({
-            selected_repo_code: res.data
-          })
+        
+        // 展开分栏
+        that.setData({
+          // 展开分栏
+          collapse_unfoldFlag: [0,1],  
+        })
 
+        const info_data = res.data;
+        console.log(info_data)
 
-          // 拿到repo_code以后删除掉
-          wx.removeStorage({
-            key: 'repo_code',
-          })
+        // 判断列表是否为空
+
+        let flag = 0;
+        // 判断是仓库还是卡板
+        if (info_data.repo_code) {   // 仓库
+          // console.log('yes')
+          setTimeout(function(){
+            //ajax do something
+            let warehouseList = that.data.warehouseList;
+            for (let item of warehouseList) {
+              if (item.repo_code == info_data.repo_code) {
+                // console.log(item.repo_code);
+                // 展开指定的info框
+                item.onHide = 0;
+                
+                // 更新信息
+                for (let key in info_data) {
+                  if (item[key]) {
+                    item[key] = info_data[key];
+                  }
+                }
+              } else {
+                // 折叠其他的信息
+                item.onHide = 1;
+              }
+            }
+
+            // 收起卡板信息框
+            let palletsList = that.data.palletsList;
+            for (let item of palletsList) {
+              item.onHide = 1;
+            }
+            that.setData({
+              warehouseList: warehouseList,
+              
+              palletsList: palletsList,
+            });
+          },300);
+          setTimeout(function(){
+            // 滑动到指定位置
+            wx.pageScrollTo({
+              duration: 100,
+              // 偏移距离
+              offsetTop: -150,
+              selector: '#'+info_data.repo_code,
+              success: (res) => {},
+              fail: (res) => {},
+              complete: (res) => {},
+            })
+          },300);
+
+        } else if (info_data.pallet_code) {
+          setTimeout(function(){
+            let palletsList = that.data.palletsList;
+            for (let item of palletsList) {
+              if (item.pallet_code == info_data.pallet_code) {
+                // 展开指定的info框
+                item.onHide = 0;
+
+                // 更新信息
+                for (let key in info_data) {
+                  // console.log(key, info_data[key]);
+                  // 如果存在
+                  if (item[key]) {
+                    item[key] = info_data[key];
+                  }
+                }
+              } else {
+                // 折叠其他的信息
+                item.onHide = 1;
+              }
+
+              // 收起仓库信息框
+              let warehouseList = that.data.warehouseList;
+              for (let item of warehouseList) {
+                item.onHide = 1;
+              }
+              that.setData({
+                palletsList: palletsList,
+
+                warehouseList: warehouseList,
+              })
+            };
+
+            setTimeout(function(){
+              // 滑动到指定位置
+              wx.pageScrollTo({
+                duration: 100,
+                // 偏移距离
+                offsetTop: -150,
+                selector: '#'+info_data.pallet_code,
+                success: (res) => {},
+                fail: (res) => {},
+                complete: (res) => {},
+              })
+            },300);
+          },300);
+
+            
+
+        } else {
+            app.showErrorToast('repo_code为空');
         }
+          
+          
+
+
+          // 拿到jump_data以后删除掉
+          wx.removeStorage({
+            key: 'jump_data',
+          })
+        
       },
       fail(res) {
-        // console.log('repo_code缓存为空')
-        that.setData({
-          selected_repo_code: '',
+        console.log('repo_code缓存为空')
+        wx.removeStorage({
+          key: 'jump_data',
         })
       }
     })
   },
+
   getWarehouseList() {
     
     let that = this;
@@ -87,10 +231,21 @@ Page({
           // 业务状态码
           if (result.data.code == normalBusinessCode) {
             // app.showSuccessToast("成功");
-
+            // 获取旧的仓库列表
+            const oldWarehouseList = that.data.warehouseList;
+            // console.log(oldWarehouseList);
             let list = [];
             for (const item of result.data.data) {
-              item.onHide = 1;
+              item.onHide = 1;  // 添加标志位
+              // 判断是否折叠
+              for (const oldItem of oldWarehouseList) {
+                if (oldItem.repo_code == item.repo_code) {
+                  if (oldItem.onHide == 0) {
+                    item.onHide = oldItem.onHide;
+                  }
+                }
+              }
+
               list.push(item);
             }
 
@@ -98,21 +253,21 @@ Page({
               warehouseList: list,
             });
             
-            // 判断是否是由扫码跳转而来
-            const selected_repo_code = that.data.selected_repo_code;
+            // // 判断是否是由扫码跳转而来
+            // const jump_data = that.data.jump_data;
 
-            if (selected_repo_code != '') {
-              let newList = list;
-              for (const item of newList) {
-                // 如果扫码的结果是该库
-                if (selected_repo_code == item.repo_code) {
-                  item.onHide = 0;
-                }
-              }
-              that.setData({
-                warehouseList: newList
-              })
-            }
+            // if (jump_data != '') {
+            //   let newList = list;
+            //   for (const item of newList) {
+            //     // 如果扫码的结果是该库
+            //     if (jump_data == item.repo_code) {
+            //       item.onHide = 0;
+            //     }
+            //   }
+            //   that.setData({
+            //     warehouseList: newList
+            //   })
+            // }
 
           } else {
             // 业务码判断打印错误
@@ -146,11 +301,20 @@ Page({
         if(result.statusCode == normalHttpCode) {
           // 业务状态码
           if (result.data.code == normalBusinessCode) {
+            const oldPalletsList = that.data.palletsList;
             const data = result.data.data;
             // console.log(data);
             let list = [];
             for (let item of data) {
-              item.onHide = 1;
+              item.onHide = 1;  // 添加标志位
+              // 判断是否折叠
+              for (const oldItem of oldPalletsList) {
+                if (oldItem.pallet_code == item.pallet_code) {
+                  if (oldItem.onHide == 0) {
+                    item.onHide = oldItem.onHide;
+                  }
+                }
+              }
 
               list.push(item);
             }
@@ -278,7 +442,7 @@ Page({
         } else {
           app.showErrorToast('只能扫卡板或仓库，客户端错误');
         }
-
+        console.log(data)
         wx.request({
           url: app.globalData.serverUrl + url,
           header: {
@@ -289,12 +453,14 @@ Page({
           dataType: 'json',
           data: data,
           success: (result) => {
+            console.log(result)
             // http码
             if(result.statusCode == normalHttpCode) {
               // 业务状态码
               if (result.data.code == normalBusinessCode) {
-                const data = result.data.data;
-                console.log(data);
+                let data = result.data.data;
+                // 把仓库编号加进去
+                data.repo_code = code;
                 if (type == 'repo') {
                   // 更新数据值
                   that.setData({
@@ -338,10 +504,6 @@ Page({
       },
       fail: (res) => {
         console.log(`扫描失败`)
-        wx.showToast({
-          title: '扫描失败',
-          icon: 'error'
-        })
       }
     })
     
@@ -349,13 +511,14 @@ Page({
 
   // 仓库扫描卡板 的提交动作
   postWarehouse(e) {
-    // console.log(e);
+    console.log(this.data.modalWarehouseData);
     const action = this.data.modalWarehouseData.action;
     const repo_code = this.data.modalWarehouseData.repo_code;
     const pallet_code = this.data.modalWarehouseData.pallet_code;
 
     let url = ''
     let toastMsg = ''
+    const that = this;
     // 判断是出库还是入库
     if (action == 'checkin') {
       url = '/pda/suz/repo/checkin';     // 入库的uri
@@ -367,13 +530,15 @@ Page({
       app.showErrorToast('后台错误，出入库类型错误')
       return;
     }
+    const data = {
+      repo_code: repo_code,
+      pallet_code: pallet_code
+    };
+    console.log(data)
     // 发送请求提交
     wx.request({
       url: app.globalData.serverUrl + url,
-      data: {
-        repo_code: repo_code,
-        pallet_code: pallet_code
-      },
+      data: data,
       dataType: 'json',
       header: {
         "content-type": "application/json",
@@ -387,6 +552,7 @@ Page({
         });
         app.processPostRequestStatusCode(result.statusCode);
         if (result.statusCode == normalHttpCode) {
+          that.refreshData();
           app.showSuccessToast(toastMsg);
         }
       },
@@ -405,29 +571,39 @@ Page({
     const action = this.data.modalPalletsData.action;
     const pallet_code = this.data.modalPalletsData.pallet_code;
     const material_code = this.data.modalPalletsData.material_code;
-    const material_num = this.data.modalPalletsData.material_num;
+    let material_num = this.data.modalPalletsData.material_num;
     
     let url = ''
     let toastMsg = ''
+    let data = {};
+    const that = this;
     // 判断是出库还是入库
     if (action == 'bind') {
       url = '/pda/suz/pallet/bind';     // 入库的uri
       toastMsg = '绑定成功'     // 入库的成功提示语
+      // 绑定物料可以手动输入数量
+      data= {
+        pallet_code: pallet_code,
+        material_code: material_code,
+        material_num: this.data.inPalletsNumber,
+      };
     } else if (action == 'unbind') {
       url = '/pda/suz/pallet/unbind';
-      toastMsg = '解绑成功'
-    } else {
-      app.showErrorToast('后台错误，出入库类型错误')
-      return;
-    }
-    // 发送请求提交
-    wx.request({
-      url: app.globalData.serverUrl + url,
-      data: {
+      toastMsg = '解绑成功';
+      data= {
         pallet_code: pallet_code,
         material_code: material_code,
         material_num: material_num
-      },
+      };
+    } else {
+      app.showErrorToast("仅查看");
+      return;
+    }
+    console.log(data);
+    // 发送请求提交
+    wx.request({
+      url: app.globalData.serverUrl + url,
+      data: data,
       dataType: 'json',
       header: {
         "content-type": "application/json",
@@ -438,6 +614,7 @@ Page({
         // console.log(result);
         app.processPostRequestStatusCode(result.statusCode);
         if (result.statusCode == normalHttpCode) {
+          that.refreshData();
           app.showSuccessToast(toastMsg);
         }
       },

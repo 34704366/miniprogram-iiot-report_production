@@ -1,12 +1,23 @@
-
+Page {
+  background-color: rgb(255, 255, 255);
+  
+  /* 让字体渲染更精细 */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
 
 .container {
   /* padding: 10rpx 10rpx; */
   margin: 10rpx 10rpx;
-  
 }
+.container .collapse-box {
+  background-color: rgb(177, 112, 112);
+}
+
+
 .container .info {
   /* margin: 20rpx 30rpx; */
+  margin: 10px 0px;
   padding: 20rpx 20rpx;
   border: rgb(196, 189, 189) 1rpx solid;
   border-radius: 20rpx;
@@ -46,12 +57,12 @@
 }
 .container .info .title{
   font-size: 38rpx;
-  margin: 10rpx 0rpx;
+  margin: 5rpx 0rpx;
 }
 .container .info .text{
   font-size: 30rpx;
   
-  margin: 10rpx 0rpx;
+  margin: 5rpx 0rpx;
 }
 .container .info .small-text{
   font-size: 28rpx;
@@ -161,12 +172,6 @@
   border-radius: 12rpx;
   padding-left: 10rpx;
 }
-.container .info .stock-number {
-  height: 60rpx;
-  width: 230rpx;
-  padding-left: 10rpx;
-  padding-top: 10rpx;
-}
 .container .info .prodNumberInput {
   background-color: rgb(236, 236, 236);
   border-radius: 12rpx;
@@ -179,6 +184,20 @@
   flex-direction: row;
   justify-content: flex-start;
   padding: 10rpx 0rpx;
+}
+.container .info .input-row-box .text {
+  font-size: 30rpx;
+  width: 200rpx;
+}
+
+.container .info .input-row-box .stock-number {
+  height: 60rpx;
+  width: 150rpx;
+  padding-left: 10rpx;
+  padding-top: 10rpx;
+}
+.container .info .input-row-box .submitButton {
+  width: 250rpx;
 }
 .container .info .row-box .submitButton{
   margin: 0rpx 0rpx;
