@@ -1242,25 +1242,27 @@ Page({
             
             // 如果是A库入库
             if(type == 'inWarehouse') {
-              let list = this.data.taskList;
-              list[index].repo_A = parseInt(that.data.taskList[index].repo_A) + parseInt(that.data.warehouseInOutNum);
-              // 添加到已报良品数量上
-              that.setData({
-                taskList: list,
-              });
+              // let list = this.data.taskList;
+              // list[index].repo_A = parseInt(that.data.taskList[index].repo_A) + parseInt(that.data.warehouseInOutNum);
+              // // 添加到已报良品数量上
+              // that.setData({
+              //   taskList: list,
+              // });
               // console.log("修改后良品数量:",this.data.repo_A);
+              that.refreshData();
               app.showSuccessToast('入库成功');
             }
             // 如果是B库出库
             else if (type == 'outWarehouse') {
-              let list = this.data.taskList;
-              if (that.data.warehouseInOutNum) {
-                list[index].repo_B = parseInt(that.data.taskList[index].repo_B) - parseInt(that.data.warehouseInOutNum);
-              }
-              // 添加
-              that.setData({
-                taskList: list,
-              });
+              // let list = this.data.taskList;
+              // if (that.data.warehouseInOutNum) {
+              //   list[index].repo_B = parseInt(that.data.taskList[index].repo_B) - parseInt(that.data.warehouseInOutNum);
+              // }
+              // // 添加
+              // that.setData({
+              //   taskList: list,
+              // });
+              that.refreshData();
               app.showSuccessToast('出库成功');
 
             }
