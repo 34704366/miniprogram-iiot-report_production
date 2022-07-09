@@ -80,7 +80,8 @@ Page {
 }
 .container .info .show{ 
   font-size: 30rpx;
-  color: chartreuse;
+  color: rgb(19, 221, 53);
+  margin: 5px 5px;
  
 }
 
