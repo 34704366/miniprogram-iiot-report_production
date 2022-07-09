@@ -269,8 +269,8 @@
           <view class="title_desc">
             次品原因：
           </view>
-          <picker mode="selector" range="{{defectReasonArray}}" value="{{defectReasonIndex}}" bindchange="defectReasonChange">
-            <view class="picker">{{defectReasonArray[defectReasonIndex]}}</view>
+          <picker mode="selector" range="{{defectReasonArray}}" value="{{dri}}" bindchange="defectReasonChange">
+            <view class="picker">{{defectReasonArray[dri]}}</view>
           </picker>
         </view>
         <view class="modal-box" wx:if="{{isDefectReportFlag}}">

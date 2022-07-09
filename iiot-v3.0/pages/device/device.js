@@ -42,12 +42,12 @@ Page({
     showReportModal: false,  
     isDefectReportFlag: false, 
     defectReasonArray: [], 
-    defectReasonIndex: 0,   
     defectReasonValueArray: [],  
-    defectReasonValueIndex: 0,  
-    defectReasonText: '', 
-    changeDeviceStatusReasonText: '',   
-    faultReportStatusReasonText: '',  
+    dri: 0,   
+    drvi: 0,  
+    defectRT: '', 
+    cdsrt: '',   
+    frsrt: '',  
     showChangeDeviceStatusModal: false,
     machineStatusModalData: {},
     postDeviceStatusValue: 0,
@@ -158,7 +158,7 @@ Page({
           console.log(info_data.task_code)
           // 滑动到指定位置
           wx.pageScrollTo({
-            duration: 100,
+            duration: 300,
             // 偏移距离
             offsetTop: -100,
             selector: '#'+info_data.task_code,
@@ -168,7 +168,7 @@ Page({
             fail: (res) => {},
             complete: (res) => {},
           })
-        },300);
+        },200);
 
 
 
@@ -563,7 +563,7 @@ Page({
       title: title,
       showCode: showCode,
 
-      defectReasonText: ''
+      defectRT: ''
     })
   },
 
@@ -593,7 +593,7 @@ Page({
       title: title,
       showCode: showCode,
 
-      defectReasonText: '',
+      defectRT: '',
     })
 
     const defect_reason = this.data.taskList[index].defect_reason_obj;
@@ -614,8 +614,8 @@ Page({
   defectReasonChange(e) {
     const index = e.detail.value;
     this.setData({
-      defectReasonIndex: index,
-      defectReasonValueIndex: index,
+      dri: index,
+      drvi: index,
     })
   },
 
@@ -653,8 +653,8 @@ Page({
       }
     } else if (type == DEFECT_REPORT) {
       url = '/pda/suz/production/defect';
-      const reason = this.data.defectReasonValueArray[this.data.defectReasonValueIndex];  
-      const param = this.data.defectReasonText;
+      const reason = this.data.defectReasonValueArray[this.data.drvi];  
+      const param = this.data.defectRT;
       data = {
         machine_code: machine_code,
         work_order: work_order,
@@ -776,7 +776,7 @@ Page({
 
 
       faultStatusModalData: fault_status,
-      faultReportStatusReasonText: ''
+      frsrt: ''
     })
 
   },
@@ -802,7 +802,7 @@ Page({
     const work_order = this.data.work_order;
     const task_code = this.data.task_code;
 
-    const param = this.data.faultReportStatusReasonText;
+    const param = this.data.frsrt;
     let start_time = this.data.faultReportStartTime;
     let end_time = this.data.faultReportEndTime;
     
@@ -861,7 +861,7 @@ Page({
       showCode: showCode,
 
       machineStatusModalData: machineStatusModalData,
-      changeDeviceStatusReasonText: '',
+      cdsrt: '',
     })
   },
 
@@ -885,7 +885,7 @@ Page({
     const work_order = this.data.work_order;
     const task_code = this.data.task_code;
 
-    const param = this.data.faultReportStatusReasonText;
+    const param = this.data.frsrt;
 
     const data = {
       status: status,
@@ -1244,21 +1244,21 @@ Page({
 
   getDefectReasonInput(event) {
     this.setData({
-      defectReasonText: event.detail.value,
+      defectRT: event.detail.value,
     })
   },
 
 
   getChangeDeviceStatusReasonInput(event) {
     this.setData({
-      changeDeviceStatusReasonText: event.detail.value,
+      cdsrt: event.detail.value,
     })
   },
 
 
   getFaultReportStatusReasonInput(evnet) {
     this.setData({
-      faultReportStatusReasonText: evnet.detail.value,
+      frsrt: evnet.detail.value,
     })
   },
 

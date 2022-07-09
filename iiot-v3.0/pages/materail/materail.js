@@ -6,19 +6,19 @@ const normalBusinessCode = app.globalData.normalBusinessCode;
 Page({
 
   data: {
-    warehouseList: [],      // 仓库信息列表
+    warehouseList: [],    
     warehouseListIndex: 0,      
-    palletsList:[],        // 卡板信息列表
+    palletsList:[],    
     palletsListIndex: 0,
-    showModal: false,       // modal框控制位
-    showWarehouseModal: false,  // 仓库扫描卡板的modal框的控制位
-    showPalletsModal: false,  // 卡板扫描物料的modal框的控制位
+    showModal: false,    
+    swhm: false, 
+    spm: false, 
     title: 'xxx',
     showCode: 'xxx',
     array:['123','22','33'],
     index:0,
-    sourceArray: [],
-    sourceIndex: 0,
+    sa: [],
+    si: 0,
     materialArray: [],
     materialIndex: 0,
     material_num: 0,
@@ -27,31 +27,27 @@ Page({
     InWarehouseInfoArray: [],
     InWarehouseInfoIndex: 0,
 
-    inWarehouseNumber: 0,
+    iwhn: 0,
     inPalletsNumber: 0,
 
     jump_data: '',
 
-    modalWarehouseData: {},    // 仓库扫描卡板得到需要展示的信息
-    modalPalletsData: {},     // 卡板扫描物料得到的需要展示的信息  
+    modalWarehouseData: {},  
+    modalPalletsData: {},  
 
-    collapse_unfoldFlag: [0,1],
+    collapse_ufg: [0,1],
   },
 
-  // 处理分栏面板的点击事件
   handleCollapseChange(event) {
     this.setData({
-      collapse_unfoldFlag: event.detail.value,
+      collapse_ufg: event.detail.value,
     });
   },
 
-  // 刷新动作事件
   handleRefresh() {
-    // 延迟动画加载
     setTimeout(() => {
       this.refreshData();
       console.log('handle refresh');
-      //停止下拉刷新
       wx.stopPullDownRefresh();
     }, 300)
   },
@@ -61,9 +57,7 @@ Page({
     this.handleRefresh()
   },
 
-  // 刷新页面重新拉取数据
   refreshData() {
-    // 获取设备列表
     this.getWarehouseList();
     this.getpalletsList();
   },
@@ -74,50 +68,37 @@ Page({
   },
 
   onShow: function (options) {
-    // this.refreshData();
     const that = this;
 
     wx.getStorage({
       key: 'jump_data',
       success(res) {
         
-        // 展开分栏
         that.setData({
-          // 展开分栏
-          collapse_unfoldFlag: [0,1],  
+          collapse_ufg: [0,1],  
         })
 
         const info_data = res.data;
         console.log(info_data)
 
-        // 判断列表是否为空
-
         let flag = 0;
-        // 判断是仓库还是卡板
-        if (info_data.repo_code) {   // 仓库
-          // console.log('yes')
+        if (info_data.repo_code) {  
           setTimeout(function(){
-            //ajax do something
             let warehouseList = that.data.warehouseList;
             for (let item of warehouseList) {
               if (item.repo_code == info_data.repo_code) {
-                // console.log(item.repo_code);
-                // 展开指定的info框
                 item.onHide = 0;
                 
-                // 更新信息
                 for (let key in info_data) {
                   if (item[key]) {
                     item[key] = info_data[key];
                   }
                 }
               } else {
-                // 折叠其他的信息
                 item.onHide = 1;
               }
             }
 
-            // 收起卡板信息框
             let palletsList = that.data.palletsList;
             for (let item of palletsList) {
               item.onHide = 1;
@@ -129,10 +110,8 @@ Page({
             });
           },300);
           setTimeout(function(){
-            // 滑动到指定位置
             wx.pageScrollTo({
               duration: 100,
-              // 偏移距离
               offsetTop: -150,
               selector: '#'+info_data.repo_code,
               success: (res) => {},
@@ -146,23 +125,17 @@ Page({
             let palletsList = that.data.palletsList;
             for (let item of palletsList) {
               if (item.pallet_code == info_data.pallet_code) {
-                // 展开指定的info框
                 item.onHide = 0;
 
-                // 更新信息
                 for (let key in info_data) {
-                  // console.log(key, info_data[key]);
-                  // 如果存在
                   if (item[key]) {
                     item[key] = info_data[key];
                   }
                 }
               } else {
-                // 折叠其他的信息
                 item.onHide = 1;
               }
 
-              // 收起仓库信息框
               let warehouseList = that.data.warehouseList;
               for (let item of warehouseList) {
                 item.onHide = 1;
@@ -175,17 +148,15 @@ Page({
             };
 
             setTimeout(function(){
-              // 滑动到指定位置
               wx.pageScrollTo({
-                duration: 100,
-                // 偏移距离
+                duration: 300,
                 offsetTop: -150,
                 selector: '#'+info_data.pallet_code,
                 success: (res) => {},
                 fail: (res) => {},
                 complete: (res) => {},
               })
-            },300);
+            },150);
           },300);
 
             
@@ -465,11 +436,11 @@ Page({
                   // 更新数据值
                   that.setData({
                     modalWarehouseData: data,
-                    inWarehouseNumber: data.material_num,
+                    iwhn: data.material_num,
                     title: title,
                     showCode: showCode,
 
-                    showWarehouseModal: true,
+                    swhm: true,
                   })
 
                 } else if (type == 'pallet') {
@@ -480,7 +451,7 @@ Page({
                     title: title,
                     showCode: showCode,
 
-                    showPalletsModal: true,
+                    spm: true,
                   })
                 } else {
                   app.showErrorToast('客服端错误501');
@@ -548,7 +519,7 @@ Page({
       success: (result) => {
         // console.log(result);
         this.setData({
-          inWarehouseNumber: 0,
+          iwhn: 0,
         });
         app.processPostRequestStatusCode(result.statusCode);
         if (result.statusCode == normalHttpCode) {
@@ -639,7 +610,7 @@ Page({
       url: app.globalData.serverUrl + '/pda/suz/repo/checkin',
       data: {
         repo_code: this.data.repo_code,
-        source: this.data.sourceArray[this.data.sourceIndex],
+        source: this.data.sa[this.data.si],
         material_code: this.data.material_code,
         material_num: this.data.material_num,
         work_code: '',
@@ -652,7 +623,7 @@ Page({
       method: 'post',
       success: (result) => {
         this.setData({
-          inWarehouseNumber: 0,
+          iwhn: 0,
         });
         app.processPostRequestStatusCode(result.statusCode);
         if (result.statusCode == normalHttpCode) {
@@ -681,7 +652,7 @@ Page({
     // 物料码
     let material_code = this.data.InWarehouseInfoArray[e.detail.value].material[0].material_code
     this.setData({
-      sourceIndex: e.detail.value,
+      si: e.detail.value,
       materialArray: materialArray,
       materialIndex: 0,
       material_num: material_num,
@@ -690,9 +661,9 @@ Page({
   },
   materialChange: function(e) {
 
-    let material_num = this.data.InWarehouseInfoArray[this.data.sourceIndex].material[e.detail.value].material_num;
+    let material_num = this.data.InWarehouseInfoArray[this.data.si].material[e.detail.value].material_num;
     // 物料码
-    let material_code = this.data.InWarehouseInfoArray[this.data.sourceIndex].material[e.detail.value].material_code;
+    let material_code = this.data.InWarehouseInfoArray[this.data.si].material[e.detail.value].material_code;
     // console.log(material_num);
     this.setData({
       materialIndex: e.detail.value,
@@ -704,7 +675,7 @@ Page({
 
   getInWarehouseNumInput(event) {
     this.setData({
-      inWarehouseNumber: Number(event.detail.value)
+      iwhn: Number(event.detail.value)
     });
   },
 

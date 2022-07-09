@@ -1,5 +1,5 @@
 <view class="container">
-  <t-collapse class="collapse-box" value="{{collapse_unfoldFlag}}" bind:change="handleCollapseChange">
+  <t-collapse class="collapse-box" value="{{collapse_ufg}}" bind:change="handleCollapseChange">
     <t-collapse-panel class="collapse-box" header="仓库列表" header-right-content="{{warehouseListHeaderText}}" value="{{0}}">
       <view class="info" wx:for="{{warehouseList}}" id="{{item.repo_code}}">
         
@@ -166,7 +166,7 @@
   </t-collapse>
 
   <!-- 设备扫码卡板后弹出的modal框 -->
-  <modal show="{{showWarehouseModal}}" height="75%" bind:cancel="modalCancel" bind:confirm="postWarehouse"  title="{{title}}" index="{{warehouseListIndex}}" showCode="{{showCode}}">
+  <modal show="{{swhm}}" height="75%" bind:cancel="modalCancel" bind:confirm="postWarehouse"  title="{{title}}" index="{{warehouseListIndex}}" showCode="{{showCode}}">
     <scroll-view scroll-y="true" style="height: 75%">
       <view class="main-content">
         <view class="modal-box">
@@ -207,7 +207,7 @@
   </modal>
 
   <!-- 卡板扫描物料后弹出的modal框 -->
-  <modal show="{{showPalletsModal}}" height="75%" bind:cancel="modalCancel" bind:confirm="postPallets" title="{{title}}" index="{{palletsListIndex}}" showCode="{{showCode}}">
+  <modal show="{{spm}}" height="75%" bind:cancel="modalCancel" bind:confirm="postPallets" title="{{title}}" index="{{palletsListIndex}}" showCode="{{showCode}}">
     <scroll-view scroll-y="true" style="height: 75%">
       <view class="main-content">
         <view class="modal-box">
