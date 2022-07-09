@@ -47,9 +47,9 @@ App({
   },
 
   globalData: {
-    // serverUrl: "http://202.116.3.50:8100",  // 测试服务器
+    serverUrl: "http://202.116.3.50:8100",  // 测试服务器
     // serverUrl: "https://api.jnurobot.com",  // 生产服务器 
-    serverUrl: "http://127.0.0.1:4523/mock/992675",  // MOCK数据
+    // serverUrl: "http://127.0.0.1:4523/mock/992675",  // MOCK数据
     backgroundColor: '#',
     emp_code: "",
     
